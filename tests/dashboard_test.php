@@ -17,14 +17,14 @@
 namespace report_dashboard;
 
 /**
- * The dashboard_test test class.
+ * The dashboard test class.
  *
  * @package     report_dashboard
  * @category    test
- * @copyright   2024 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+ * @copyright   2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class dashboard_test_test extends \advanced_testcase {
+final class dashboard_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
@@ -36,7 +36,7 @@ class dashboard_test_test extends \advanced_testcase {
      *
      * @coversNothing
      */
-    public function test_dummy() {
+    public function test_dummy(): void {
         $this->assertTrue(false);
     }
 }

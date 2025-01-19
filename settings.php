@@ -19,7 +19,7 @@
  *
  * @package     report_dashboard
  * @category    admin
- * @copyright   2024 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+ * @copyright   2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,6 +30,11 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
+        $settings->add(
+            new admin_setting_configtext(
+                'report_dashboard/instructions',
+                new lang_string('instructions', 'report_dashboard'),
+                new lang_string('instructions_desc', 'report_dashboard'),
+                '', PARAM_RAW));
     }
 }

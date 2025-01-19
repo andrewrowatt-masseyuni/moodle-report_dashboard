@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     report_dashboard
- * @copyright   2024 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+ * @copyright   2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

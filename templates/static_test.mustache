@@ -1,0 +1,213 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_dashboard/static_test
+
+    TODO describe template static_test
+
+    Example context (json):
+    {
+    }
+}}
+
+<div class="container">
+    <table id="dashboard" class="table table-striped table-bordered display nowrap" width="100%">
+        <thead>
+            <tr><th>Name</th><th>Last<br />accessed</th><th>Groups</th><th>Late<br />assessments</th></tr>
+            <tr class="filters">
+                <td>Name</td>
+                <td>
+                    <div class="dropdown" id="lastaccessed">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                            All
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_all" value="all" checked>
+                                    <label class="form-check-label" for="lastaccessed_all">
+                                        All
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_never" value="|never|">
+                                    <label class="form-check-label" for="lastaccessed_never">
+                                        Never
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_24hr" value="|1|">
+                                    <label class="form-check-label" for="lastaccessed_24hr">
+                                        <=1 day
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_2day" value="|2|">
+                                    <label class="form-check-label" for="lastaccessed_2day">
+                                        <=2 days
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_3day" value="|3|">
+                                    <label class="form-check-label" for="lastaccessed_3day">
+                                        <=3 days
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="|4|">
+                                    <label class="form-check-label" for="lastaccessed_4day">
+                                        <=4 days
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4plus" value="|4+|">
+                                    <label class="form-check-label" for="lastaccessed_4plus">
+                                        Over 4 days
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="dropdown" id="group">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                            All
+                        </button>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item all" id="group_select_all" disabled="disabled">All</button>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck" name="groups" value="|nogroups|" checked="checked">
+                                <label class="form-check-label" for="dropdownCheck">
+                                No groups
+                                </label>
+                            </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <h6 class="dropdown-header">Course groups</h6>
+                            <div class="dropdown-item disabled">None</div>
+                            
+                            <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck" name="groups" value="|1|" checked="checked">
+                                <label class="form-check-label" for="dropdownCheck">
+                                Auckland
+                                </label>
+                            </div>
+                            </div>
+
+
+                            <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck1" name="groups" value="|2|" checked="checked">
+                                <label class="form-check-label" for="dropdownCheck1">
+                                Distance
+                                </label>
+                            </div>
+                            </div>
+
+                            <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck3" name="groups" value="|3|" checked="checked">
+                                <label class="form-check-label" for="dropdownCheck3">
+                                Manawatū
+                                </label>
+                            </div>
+                            </div>
+
+
+                            <div class="dropdown-divider"></div>
+                            <h6 class="dropdown-header">Priority groups</h6>
+                            <div class="dropdown-item disabled">None</div>
+
+                            <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="dropdownCheck2" disabled="disabled" name="groups" value="|pg1|" checked="checked">
+                                <label class="form-check-label" for="dropdownCheck2">
+                                Māori
+                                </label>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                
+                <!-- Late assessments filter -->
+                <div class="dropdown" id="lateassessments">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        All
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_all" value="all" checked>
+                                <label class="form-check-label" for="lateassessments_all">
+                                    All
+                                </label>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_yes" value="yes">
+                                <label class="form-check-label" for="lateassessments_yes">
+                                    Yes
+                                </label>
+                            </div>
+                        </div>
+                        <div class="dropdown-item form-group mb-0">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_no" value="no">
+                                <label class="form-check-label" for="lateassessments_no">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td></tr>
+        </thead>
+        <tbody>
+
+
+<tr><td class="tc_name"><a target="_blank" href="#">98186700 Andrew Rowatt</a><div class="tools"><a class="tcl_sendmail btn btn-outline-secondary" ref="#" title="Send email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a><a class="tcl_copymail btn btn-outline-secondary" ref="#" title="Copy email address"><i class="fa fa-address-book" aria-hidden="true"></i></a></div></td><td class="tc_lastaccessed" data-filter-category="|4+|">30</td><td class="tc_groups" data-filter-category="|3|">Manawatū</td><td class="tc_lateassessments" data-filter-category="yes"><span>Yes</span></td></tr
+<tr><td class="tc_name"><a target="_blank" href="#">94088951 Patrick Rynhart</a><div class="tools"><a class="tcl_sendmail btn btn-outline-secondary" ref="#" title="Send email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a><a class="tcl_copymail btn btn-outline-secondary" ref="#" title="Copy email address"><i class="fa fa-address-book" aria-hidden="true"></i></a></div></td><td class="tc_lastaccessed" data-filter-category="|3|">3</td><td class="tc_groups" data-filter-category="|1|">Auckland</td><td class="tc_lateassessments" data-filter-category="no"><span>No</span></td></tr
+<tr><td class="tc_name"><a target="_blank" href="#">st100585 Andy Rowatt</a><div class="tools"><a class="tcl_sendmail btn btn-outline-secondary" ref="#" title="Send email"><i class="fa fa-envelope-o" aria-hidden="true"></i></a><a class="tcl_copymail btn btn-outline-secondary" ref="#" title="Copy email address"><i class="fa fa-address-book" aria-hidden="true"></i></a></div></td><td class="tc_lastaccessed" data-filter-category="|4+|">Never</td><td class="tc_groups" data-filter-category="|nogroups|"></td><td class="tc_lateassessments" data-filter-category="yes"><span>Yes</span></td></tr
+
+
+
+        </tbody>
+    </table>
+</div>
