@@ -25,4 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['dashboard:view'] = 'View Course coordinator dashboard';
+$string['instructions'] = 'Site-wide instructions';
+$string['instructions_desc'] = 'Site-wide instructions for the dasboard. Include usage notes, limitations etc';
 $string['pluginname'] = 'Course Dashboard';

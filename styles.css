@@ -1,0 +1,54 @@
+#dashboard {
+    --positive: #C5E0B4;
+    --warning: #FFF2CC;
+    --negative: #FBE4D5;
+}
+
+.tools {
+    display: none;
+    position: absolute;
+    left: 80%;
+    top: -20%;
+    height: 140%;
+    background-color: #fffe;
+
+    padding: 0 1em;
+
+    border: 1px solid #0001;
+
+    border-radius: 4px;
+
+    >* {
+        margin: 1em 0;
+    }
+}
+
+.tc_name {
+    position: relative;
+}
+
+.tc_name:hover {
+    .tools {
+        display: flex;
+        gap: 1em;
+        align-items: center;
+    }
+}
+
+.tc_lateassessments span {
+    border-radius: 12px;
+    padding: 2px 8px;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid #00000022;
+    min-width: 3em;
+    white-space: nowrap;
+}
+
+.tc_lateassessments[data-filter-category="yes"] span {
+    background-color: var(--warning);
+}
+
+.tc_lateassessments[data-filter-category="no"] span {
+    background-color: var(--positive);
+}
