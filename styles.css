@@ -1,7 +1,24 @@
 #dashboard {
-    --positive: #C5E0B4;
-    --warning: #FFF2CC;
-    --negative: #FBE4D5;
+    --positive: #c5e0b4;
+    --warning: #fff2cc;
+    --negative: #fbe4d5;
+    --note: #d9edf7;
+
+    span.tag {
+        border-radius: 12px;
+        padding: 2px 8px;
+        display: inline-block;
+        text-align: center;
+        border: 1px solid #0002;
+        min-width: 3em;
+        white-space: nowrap;
+    }
+
+    div.tag-group {
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.5em;
+    }
 }
 
 .tools {
@@ -35,20 +52,74 @@
     }
 }
 
-.tc_lateassessments span {
-    border-radius: 12px;
-    padding: 2px 8px;
-    display: inline-block;
-    text-align: center;
-    border: 1px solid #00000022;
-    min-width: 3em;
-    white-space: nowrap;
+.tc_lastaccessed {
+    span.tag {
+        &[data-filter-category="never"],
+        &[data-filter-category="4+"] {
+
+            background-color: var(--warning);
+        }
+
+        &[data-filter-category="4+"] {
+            background-color: var(--negative);
+        }
+    }
 }
 
-.tc_lateassessments[data-filter-category="yes"] span {
-    background-color: var(--warning);
+.tc_groups {
+
+    span.tag {
+        &[data-filter-category^="priority-"] {
+            background-color: var(--note);
+        }
+    }
 }
 
-.tc_lateassessments[data-filter-category="no"] span {
-    background-color: var(--positive);
+.tc_lateassessments {
+    span.tag {
+        &[data-filter-category="yes"] {
+            background-color: var(--warning);
+        }
+
+        &[data-filter-category="no"] {
+            background-color: var(--positive);
+        }
+    }
+}
+
+#assessment1,
+.tc_assessment {
+    span.tag {
+        &[data-filter-category="notdue"] {
+            background-color: var(--note);
+        }
+
+        &[data-filter-category="early"] {
+            background-color: var(--note);
+        }
+
+        &[data-filter-category="extension"] {
+            background-color: var(--note);
+        }
+
+        &[data-filter-category="notsubmitted"] {
+            background-color: var(--warning);
+        }
+
+        &[data-filter-category="submitted"] {
+            background-color: var(--positive);
+        }
+
+        &[data-filter-category="overdue"] {
+            background-color: var(--negative);
+        }
+
+        &[data-filter-category="failed"] {
+            background-color: var(--negative);
+        }
+
+        &[data-filter-category="passed"] {
+            background-color: var(--positive);
+        }
+    }
 }

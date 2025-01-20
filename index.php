@@ -44,16 +44,20 @@ $PAGE->set_title(
     get_string('pluginname', 'report_dashboard')
 );
 
-$PAGE->requires->css('/report/dashboard/styles.css');
-
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/libs/datatables.min.css');
-$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init', []);
+
+$data = [];
+$data['assessments'] = 2;
+$data['course'] = $course->shortname;
+
+$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init', $data);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
 echo "<p>TODO</p>";
+
 $data = [];
 
 echo $OUTPUT->render_from_template('report_dashboard/static_test', $data);
