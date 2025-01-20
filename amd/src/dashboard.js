@@ -57,28 +57,37 @@ export const init = (assessments, course) => {
             /*
                 Groups filter
             */
-            let anygroupmatch = false; // By default we assume that no groups are matching
-            let anygroupunchecked = false; // By default we assume that no groups are unchecked
-            let anygroupchecked = false; // By default we assume that no groups are checked
+            let groupmatch = false; // By default we assume that no groups are matching
 
             let groups = document.querySelectorAll("input[name='groups']");
+            let groupschecked = document.querySelectorAll("input[name='groups']:checked").length;
+            let anygroupunchecked = groups.length != groupschecked;
 
             for (const group of groups) {
                 if (group.checked) {
-                    anygroupchecked = true;
                     if (row.find(`td.tc_groups span[data-filter-category="${group.value}"]`).length > 0) {
-                        anygroupmatch = true;
+                        groupmatch = true;
                         break;
                     }
-                } else {
-                    anygroupunchecked = true;
                 }
             }
 
             document.getElementById("group_select_all").disabled = !anygroupunchecked;
-            document.getElementById("group_select_none").disabled = !anygroupchecked;
+            document.getElementById("group_select_none").disabled = groupschecked == 0;
 
-            if (!anygroupmatch) {
+            let dropdownlabel = "All"; // Default label for the dropdown
+
+            if (groupschecked == 0) {
+                dropdownlabel = "None";
+            } else if (groupschecked == 1) {
+                dropdownlabel = "1 Group";
+            } else if (anygroupunchecked) {
+                dropdownlabel = "Multiple Groups";
+            }
+
+            document.querySelector("#group > button > span").textContent = dropdownlabel;
+
+            if (!groupmatch) {
                 return false;
             }
 
@@ -88,7 +97,7 @@ export const init = (assessments, course) => {
             let lateassessments = document.querySelector("input[name='lateassessments']:checked").value;
 
             if (lateassessments != "all") {
-                if (row.find("td.tc_lateassessments").data("filter-category") != lateassessments) {
+                if (row.find(`td.tc_lateassessments span[data-filter-category="${lateassessments}"]`).length == 0) {
                     return false;
                 }
             }
