@@ -23,8 +23,8 @@
 import $ from 'jquery';
 import DataTable from 'report_dashboard/datatables';
 
-export const init = () => {
-    console.log("AJR Init");
+export const init = (assessments, course) => {
+    console.log(`AJR Init ${assessments} ${course}`);
 
     $(document).ready(function() {
         var table = new DataTable('#dashboard',
@@ -40,7 +40,7 @@ export const init = () => {
         );
 
         /* Custom filter for last access */
-        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             let row = $(table.row(dataIndex).node());
 
             /*
@@ -49,7 +49,7 @@ export const init = () => {
             let lastaccessed = document.querySelector("input[name='lastaccessed']:checked").value;
 
             if (lastaccessed != "all") {
-                if (row.find("td.tc_lastaccessed").data("filter-category") != lastaccessed) {
+                if (row.find(`td.tc_lastaccessed span[data-filter-category="${lastaccessed}"]`).length == 0) {
                     return false;
                 }
             }
@@ -59,11 +59,14 @@ export const init = () => {
             */
             let anygroupmatch = false; // By default we assume that no groups are matching
             let anygroupunchecked = false; // By default we assume that no groups are unchecked
+            let anygroupchecked = false; // By default we assume that no groups are checked
+
             let groups = document.querySelectorAll("input[name='groups']");
 
             for (const group of groups) {
                 if (group.checked) {
-                    if (row.find("td.tc_groups").data("filter-category").toString().includes(group.value)) {
+                    anygroupchecked = true;
+                    if (row.find(`td.tc_groups span[data-filter-category="${group.value}"]`).length > 0) {
                         anygroupmatch = true;
                         break;
                     }
@@ -73,6 +76,7 @@ export const init = () => {
             }
 
             document.getElementById("group_select_all").disabled = !anygroupunchecked;
+            document.getElementById("group_select_none").disabled = !anygroupchecked;
 
             if (!anygroupmatch) {
                 return false;
@@ -98,12 +102,14 @@ export const init = () => {
             */
             switch (e.target.id) {
                 case "group_select_all":
-                    e.target.disabled = true;
-
-                    for (const group of document.querySelectorAll("input[name='groups']")) {
+                    document.querySelectorAll("input[name='groups']").forEach((group) => {
                         group.checked = true;
-                    }
-
+                    });
+                    break;
+                case "group_select_none":
+                    document.querySelectorAll("input[name='groups']").forEach((group) => {
+                        group.checked = false;
+                    });
                     break;
             }
             table.draw();
