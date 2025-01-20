@@ -33,7 +33,7 @@
                 <td>
                     <div class="dropdown" id="lastaccessed">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                            All
+                            <span>All</span>
                         </button>
                         <div class="dropdown-menu">
                             <div class="dropdown-item form-group mb-0">
@@ -101,7 +101,7 @@
                 <td>
                     <div class="dropdown" id="group">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                            All
+                            <span>All</span>
                         </button>
                         <div class="dropdown-menu">
                             <button class="dropdown-item all" id="group_select_all" disabled="disabled">Select all</button>
@@ -167,7 +167,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_yes" value="yes">
                                 <label class="form-check-label" for="lateassessments_yes">
-                                    <span data-filter-category="yes">Yes</span>
+                                    Yes<span class="tag" data-filter-category="yes"></span>
                                 </label>
                             </div>
                         </div>
@@ -175,7 +175,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_no" value="no">
                                 <label class="form-check-label" for="lateassessments_no">
-                                    No
+                                    No<span class="tag" data-filter-category="no"></span>
                                 </label>
                             </div>
                         </div>
@@ -192,12 +192,30 @@
                             <button class="dropdown-item all" id="assessment1_select_none">Clear all</button>
 
                             <div class="dropdown-divider"></div>
-							
+
                             <div class="dropdown-item form-group mb-0">
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input" name="assessment1_filter" value="notdue" checked="checked">
-                                        <span class="tag" data-filter-category="notdue">Not due</span>
+                                        Not due<span class="tag" data-filter-category="notdue"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="assessment1_filter" value="notsubmitted" checked="checked">
+                                        Not submitted<span class="tag" data-filter-category="notsubmitted"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-item form-group mb-0">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="assessment1_filter" value="overdue" checked="checked">
+                                        Over due<span class="tag" data-filter-category="overdue"></span>
                                     </label>
                                 </div>
                             </div>
@@ -209,7 +227,7 @@
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input" name="assessment1_filter" value="passed" checked="checked">
-                                        <span class="tag" data-filter-category="passed">Passed</span>
+                                        Passed<span class="tag" data-filter-category="passed"></span>
                                     </label>
                                 </div>
                             </div>
@@ -218,7 +236,7 @@
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input" name="assessment1_filter" value="failed" checked="checked">
-                                        <span class="tag" data-filter-category="failed">Failed</span>
+                                        Failed<span class="tag" data-filter-category="failed"></span>
                                     </label>
                                 </div>
                             </div>
@@ -229,7 +247,7 @@
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input" name="assessment1_filter" value="extension" checked="checked">
-                                        <span class="tag" data-filter-category="extension">Extension granted</span>
+                                        Extension granted<span class="tag" data-filter-category="extension"></span>
                                     </label>
                                 </div>
                             </div>

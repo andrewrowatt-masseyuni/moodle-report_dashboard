@@ -12,6 +12,25 @@
         border: 1px solid #0002;
         min-width: 3em;
         white-space: nowrap;
+        background-color: #fff7;
+    }
+
+    label.form-check-label:has(span:empty.tag) {
+        /* To ensure the circle is on the right-margin */
+        width: 100%;
+
+        /* To ensure the circle does make the dropdown-item wrap 2em = width 1.5 + margin-left 0.5 */
+        margin-right: 2em;
+    }
+
+    /* If empty, tag is rendered as an empty coloured circle */
+    span:empty.tag {
+        display: block;
+        min-width: 1.5em;
+        width: 1.5em;
+        height: 1.5em;
+        margin-left: 0.5em;
+        float: right;
     }
 
     div.tag-group {
@@ -19,107 +38,107 @@
         justify-content: flex-start;
         gap: 0.5em;
     }
-}
 
-.tools {
-    display: none;
-    position: absolute;
-    left: 80%;
-    top: -20%;
-    height: 140%;
-    background-color: #fffe;
-
-    padding: 0 1em;
-
-    border: 1px solid #0001;
-
-    border-radius: 4px;
-
-    >* {
-        margin: 1em 0;
-    }
-}
-
-.tc_name {
-    position: relative;
-}
-
-.tc_name:hover {
     .tools {
-        display: flex;
-        gap: 1em;
-        align-items: center;
-    }
-}
+        display: none;
+        position: absolute;
+        left: 80%;
+        top: -20%;
+        height: 140%;
+        background-color: #fffe;
 
-.tc_lastaccessed {
-    span.tag {
-        &[data-filter-category="never"],
-        &[data-filter-category="4+"] {
+        padding: 0 1em;
 
-            background-color: var(--warning);
-        }
+        border: 1px solid #0001;
 
-        &[data-filter-category="4+"] {
-            background-color: var(--negative);
-        }
-    }
-}
+        border-radius: 4px;
 
-.tc_groups {
-
-    span.tag {
-        &[data-filter-category^="priority-"] {
-            background-color: var(--note);
+        >* {
+            margin: 1em 0;
         }
     }
-}
 
-.tc_lateassessments {
-    span.tag {
-        &[data-filter-category="yes"] {
-            background-color: var(--warning);
-        }
+    .tc_name {
+        position: relative;
+    }
 
-        &[data-filter-category="no"] {
-            background-color: var(--positive);
+    .tc_name:hover {
+        .tools {
+            display: flex;
+            gap: 1em;
+            align-items: center;
         }
     }
-}
 
-#assessment1,
-.tc_assessment {
-    span.tag {
-        &[data-filter-category="notdue"] {
-            background-color: var(--note);
+    .tc_lastaccessed {
+        span.tag {
+            &[data-filter-category="never"],
+            &[data-filter-category="4+"] {
+
+                background-color: var(--warning);
+            }
+
+            &[data-filter-category="4+"] {
+                background-color: var(--negative);
+            }
         }
+    }
 
-        &[data-filter-category="early"] {
-            background-color: var(--note);
+    .tc_groups {
+        span.tag {
+            &[data-filter-category^="priority-"] {
+                background-color: var(--note);
+            }
         }
+    }
 
-        &[data-filter-category="extension"] {
-            background-color: var(--note);
+    tr.filters,
+    .tc_lateassessments {
+        span.tag {
+            &[data-filter-category="yes"] {
+                background-color: var(--warning);
+            }
+
+            &[data-filter-category="no"] {
+                background-color: var(--positive);
+            }
         }
+    }
 
-        &[data-filter-category="notsubmitted"] {
-            background-color: var(--warning);
-        }
+    tr.filters,
+    .tc_assessment {
+        span.tag {
+            &[data-filter-category="notdue"] {
+                background-color: var(--note);
+            }
 
-        &[data-filter-category="submitted"] {
-            background-color: var(--positive);
-        }
+            &[data-filter-category="early"] {
+                background-color: var(--note);
+            }
 
-        &[data-filter-category="overdue"] {
-            background-color: var(--negative);
-        }
+            &[data-filter-category="extension"] {
+                background-color: var(--note);
+            }
 
-        &[data-filter-category="failed"] {
-            background-color: var(--negative);
-        }
+            &[data-filter-category="notsubmitted"] {
+                background-color: var(--note);
+            }
 
-        &[data-filter-category="passed"] {
-            background-color: var(--positive);
+            &[data-filter-category="submitted"] {
+                background-color: var(--positive);
+            }
+
+            &[data-filter-category="overdue"] {
+                background-color: var(--negative);
+            }
+
+            &[data-filter-category="failed"] {
+                background-color: var(--negative);
+            }
+
+            &[data-filter-category="passed"] {
+                background-color: var(--positive);
+            }
         }
     }
 }
