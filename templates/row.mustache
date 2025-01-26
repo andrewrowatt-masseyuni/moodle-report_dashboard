@@ -1,0 +1,74 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_dashboard/row
+
+    TODO describe template row
+
+    Example context (json):
+    {
+    }
+}}
+<tr>
+<td class="tc_name">
+    {{row.username}}
+</td>
+<td class="tc_lastaccessed">
+    <span class="tag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
+</td>
+<td class="tc_groups">
+<div class="tag-group">
+{{#groups}}
+<span class="tag {{class}}" data-filter-category="{{id}}">{{groupname}}</span>
+{{/groups}}
+{{#row.international}}
+<span class="tag tag-priority-group" data-filter-category="priority-international">International</span>
+{{/row.international}}
+{{#row.maori}}
+<span class="tag tag-priority-group" data-filter-category="priority-maori">Māori</span>
+{{/row.maori}}
+{{#row.pacific}}
+<span class="tag tag-priority-group" data-filter-category="priority-pacific">Pacific</span>
+{{/row.pacific}}
+{{#row.new}}
+<span class="tag tag-priority-group" data-filter-category="priority-new">New to Massey</span>
+{{/row.new}}
+</div>
+</td>
+<td class="tc_lateassessments">
+{{#row.lateassessments}}
+<span class="tag" data-filter-category="yes">Yes</span>
+{{/row.lateassessments}}
+{{^row.lateassessments}}
+<span class="tag" data-filter-category="no">No</span>
+{{/row.lateassessments}}
+</td>
+{{#assessments}}
+<td class="tc_assessment">
+    <div class="tag-group">
+        <span class="tag" data-filter-category="{{status}}">
+            {{label}}
+        </span>
+        {{#extension_date}}
+        <span class="tag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
+            {{#str}} assessmentstatus_extension, report_dashboard {{/str}}
+        </span>
+        {{/extension_date}}
+    </div>
+</td>
+{{/assessments}}
+</tr>

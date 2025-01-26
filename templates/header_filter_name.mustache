@@ -1,0 +1,115 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_dashboard/header_filter_name
+
+    TODO describe template header_filter_name
+
+    Example context (json):
+    {
+    }
+}}
+<tr class="filters">
+    <td>[Name]</td>
+    <!-- Last accessed -->
+    <td>
+        <div class="dropdown" id="lastaccessed">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                <span>All</span>
+            </button>
+            <div class="dropdown-menu">
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_all" value="all" checked>
+                        <label class="form-check-label" for="lastaccessed_all">
+                            All
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_never" value="never">
+                        <label class="form-check-label" for="lastaccessed_never">
+                            Never<span class="tag" data-filter-category="never"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_24hr" value="today">
+                        <label class="form-check-label" for="lastaccessed_24hr">
+                            In the last 24hrs
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_2day" value="yesterday">
+                        <label class="form-check-label" for="lastaccessed_2day">
+                            Over 1 day ago
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_3day" value="1week">
+                        <label class="form-check-label" for="lastaccessed_3day">
+                            In the last 7 days
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over1week">
+                        <label class="form-check-label" for="lastaccessed_4day">
+                            Over a week ago
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over2week">
+                        <label class="form-check-label" for="lastaccessed_4day">
+                            Over 2 weeks ago
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over3week">
+                        <label class="form-check-label" for="lastaccessed_4day">
+                            Over 3 weeks ago
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4plus" value="over4week">
+                        <label class="form-check-label" for="lastaccessed_4plus">
+                            Over 4 weeks ago
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
