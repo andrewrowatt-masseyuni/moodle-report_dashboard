@@ -3,6 +3,7 @@
     --warning: #fff2cc;
     --negative: #fbe4d5;
     --note: #d9edf7;
+    --neutral: #00000007;
 
     span.tag {
         border-radius: 12px;
@@ -45,7 +46,7 @@
         left: 80%;
         top: -20%;
         height: 140%;
-        background-color: #fffe;
+        background-color: var(--neutral);
 
         padding: 0 1em;
 
@@ -70,24 +71,45 @@
         }
     }
 
+    tr.filters,
     .tc_lastaccessed {
         span.tag {
             &[data-filter-category="never"],
-            &[data-filter-category="4+"] {
-
-                background-color: var(--warning);
+            &[data-filter-category="over4week"] {
+                background-color: var(--negative);
             }
 
-            &[data-filter-category="4+"] {
-                background-color: var(--negative);
+            &[data-filter-category="today"],
+            &[data-filter-category="yesterday"],
+            &[data-filter-category="1week"] {
+                background-color: var(--positive);
+            }
+
+            &[data-filter-category="over1week"],
+            &[data-filter-category="over2week"],
+            &[data-filter-category="over3week"] {
+                background-color: var(--warning);
             }
         }
     }
 
+    tr.filters,
     .tc_groups {
         span.tag {
-            &[data-filter-category^="priority-"] {
+            max-width: 10em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            &.tag-course-group {
+                background-color: var(--neutral);
+            }
+
+            &.tag-cohort-group {
                 background-color: var(--note);
+            }
+
+            &.tag-priority-group {
+                background-color: var(--warning);
             }
         }
     }
@@ -96,7 +118,7 @@
     .tc_lateassessments {
         span.tag {
             &[data-filter-category="yes"] {
-                background-color: var(--warning);
+                background-color: var(--negative);
             }
 
             &[data-filter-category="no"] {
@@ -109,19 +131,7 @@
     .tc_assessment {
         span.tag {
             &[data-filter-category="notdue"] {
-                background-color: var(--note);
-            }
-
-            &[data-filter-category="early"] {
-                background-color: var(--note);
-            }
-
-            &[data-filter-category="extension"] {
-                background-color: var(--note);
-            }
-
-            &[data-filter-category="notsubmitted"] {
-                background-color: var(--note);
+                background-color: var(--neutral);
             }
 
             &[data-filter-category="submitted"] {
@@ -132,13 +142,32 @@
                 background-color: var(--negative);
             }
 
+            &[data-filter-category="passed"] {
+                background-color: var(--positive);
+            }
+
             &[data-filter-category="failed"] {
                 background-color: var(--negative);
             }
 
-            &[data-filter-category="passed"] {
-                background-color: var(--positive);
+            &[data-filter-category="extension"] {
+                background-color: var(--note);
             }
+        }
+    }
+
+    #group label span.membercount {
+        /* membercount */
+        font-size: smaller;
+        color: #6a737b; /* same as dropdown-header */
+        margin-left: 0.25em;
+
+        &::before {
+            content: "(";
+        }
+
+        &::after {
+            content: ")";
         }
     }
 }

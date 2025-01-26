@@ -25,7 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['assessmentstatus_extension'] = 'Extension';
+$string['assessmentstatus_failed'] = 'Failed';
+$string['assessmentstatus_notdue'] = 'Not due';
+$string['assessmentstatus_overdue'] = 'Overdue';
+$string['assessmentstatus_passed'] = 'Passed';
+$string['assessmentstatus_submitted'] = 'Submitted';
 $string['dashboard:view'] = 'View Course coordinator dashboard';
 $string['instructions'] = 'Site-wide instructions';
 $string['instructions_desc'] = 'Site-wide instructions for the dasboard. Include usage notes, limitations etc';
+$string['lastaccessed_over_1_week'] = '>1 week ago';
+$string['lastaccessed_over_28_days'] = 'Over 4 weeks ago';
+$string['lastaccessed_over_2_week'] = '> 2 weeks ago';
+$string['lastaccessed_over_3_week'] = '> 3 weeks ago';
+$string['lastaccessed_over_n_days'] = 'Over {$a} days ago';
+$string['never'] = 'Never';
 $string['pluginname'] = 'Course Dashboard';

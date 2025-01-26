@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_dashboard/header_filter_groups
+
+    TODO describe template header_filter_groups
+
+    Example context (json):
+    {
+    }
+}}
+<td>
+    <div class="dropdown" id="group">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+            <span>All</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item all" id="group_select_all" disabled="disabled">Select all</button>
+            <button class="dropdown-item all" id="group_select_none">Clear all</button>
+
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header" title="help text here">Cohort groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
+            {{^cohort_groups}}
+            <div class="dropdown-item disabled">None</div>
+            {{/cohort_groups}}
+            {{#cohort_groups}}
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
+                        <span class="tag tag-cohort-group"></span>
+                        </label>
+                    </div>
+                </div>
+            {{/cohort_groups}}
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Course groups</h6>
+            {{^groups}}
+            <div class="dropdown-item disabled">None</div>
+            {{/groups}}
+            {{#groups}}
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span></label>
+                    </div>
+                </div>
+            {{/groups}}
+
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header" title="Priority groups help text here">Priority groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
+            <!-- <div class="dropdown-item disabled">None</div> -->
+
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked">International<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-new" checked="checked">New<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-maori" checked="checked">Māori<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-pacific" checked="checked">Pacific<span class="tag tag-priority-group"></span></label></div></div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-item form-group mb-0">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked">
+                        No groups
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</td>
