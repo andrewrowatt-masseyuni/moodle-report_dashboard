@@ -34,7 +34,7 @@
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_all" value="all" checked>
                     <label class="form-check-label" for="lateassessments_all">
-                        All
+                        <span>All</span>
                     </label>
                 </div>
             </div>
@@ -60,9 +60,9 @@
 </td>
 {{#assessments}}
 <td>
-    <div class="dropdown" id="assessment{{id}}">
+    <div class="dropdown assessment_filter" id="assessment{{id}}" data-assessment-id="{{id}}">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-            All
+            <span>All</span>
         </button>
         <div class="dropdown-menu">
             <button class="dropdown-item all" id="assessment{{id}}_select_all" disabled="disabled">Select all</button>
@@ -73,7 +73,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="notdue" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="notdue" checked="checked" data-label="{{#str}} assessmentstatus_notdue, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_notdue, report_dashboard {{/str}}<span class="tag" data-filter-category="notdue"></span>
                     </label>
                 </div>
@@ -82,7 +82,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="submitted" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="submitted" checked="checked" data-label="{{#str}} assessmentstatus_submitted, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_submitted, report_dashboard {{/str}}<span class="tag" data-filter-category="submitted"></span>
                     </label>
                 </div>
@@ -91,7 +91,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="overdue" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="overdue" checked="checked" data-label="{{#str}} assessmentstatus_overdue, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_overdue, report_dashboard {{/str}}<span class="tag" data-filter-category="overdue"></span>
                     </label>
                 </div>
@@ -103,7 +103,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="passed" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="passed" checked="checked" data-label="{{#str}} assessmentstatus_passed, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_passed, report_dashboard {{/str}}<span class="tag" data-filter-category="passed"></span>
                     </label>
                 </div>
@@ -112,7 +112,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="failed" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="failed" checked="checked" data-label="{{#str}} assessmentstatus_failed, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_failed, report_dashboard {{/str}}<span class="tag" data-filter-category="failed"></span>
                     </label>
                 </div>
@@ -123,7 +123,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="extension" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="extension" checked="checked" data-label="{{#str}} assessmentstatus_notdue, report_dashboard {{/str}}">
                         {{#str}} assessmentstatus_extension, report_dashboard {{/str}}<span class="tag" data-filter-category="extension"></span>
                     </label>
                 </div>

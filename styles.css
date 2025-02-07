@@ -156,6 +156,17 @@
         }
     }
 
+    .tc_assessment {
+        span.tag:where([data-filter-category="passed"], [data-filter-category="failed"]) {
+            &::after {
+                content: "%";
+                font-size: 0.8rem;
+                color: #0007;
+                padding-left: 0.1rem;
+            }
+        }
+    }
+
     #group label span.membercount {
         /* membercount */
         font-size: smaller;

@@ -40,7 +40,7 @@
             {{#cohort_groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
                         <span class="tag tag-cohort-group"></span>
                         </label>
                     </div>
@@ -54,7 +54,7 @@
             {{#groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span></label>
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span></label>
                     </div>
                 </div>
             {{/groups}}
@@ -63,10 +63,10 @@
             <h6 class="dropdown-header" title="Priority groups help text here">Priority groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
             <!-- <div class="dropdown-item disabled">None</div> -->
 
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked">International<span class="tag tag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-new" checked="checked">New<span class="tag tag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-maori" checked="checked">Māori<span class="tag tag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-pacific" checked="checked">Pacific<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked" data-label="International">International<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-new" checked="checked" data-label="New">New<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-maori" checked="checked" data-label="Māori">Māori<span class="tag tag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-pacific" checked="checked" data-label="Pacific">Pacific<span class="tag tag-priority-group"></span></label></div></div>
 
             <div class="dropdown-divider"></div>
 

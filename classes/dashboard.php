@@ -90,11 +90,44 @@ class dashboard {
         */
     }
 
+    public static function get_user_assessments(int $courseid): array {
+
+        return [
+            ['userid' => 1, 'assessmentid' => 1, 'status' => 'passed', 'extension_date' => 0, 'grade' => 98],
+            ['userid' => 1, 'assessmentid' => 2, 'status' => 'overdue', 'extension_date' => 1737867307, 'grade' => 0],
+            ['userid' => 1, 'assessmentid' => 3, 'status' => 'notdue', 'extension_date' => 1737867307, 'grade' => 0],
+            ['userid' => 1, 'assessmentid' => 4, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+
+            ['userid' => 2, 'assessmentid' => 1, 'status' => 'passed', 'extension_date' => 0, 'grade' => 94],
+            ['userid' => 2, 'assessmentid' => 2, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+            ['userid' => 2, 'assessmentid' => 3, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+            ['userid' => 2, 'assessmentid' => 4, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+
+            ['userid' => 3, 'assessmentid' => 1, 'status' => 'failed', 'extension_date' => 0, 'grade' => 23],
+            ['userid' => 3, 'assessmentid' => 2, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+            ['userid' => 3, 'assessmentid' => 3, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+            ['userid' => 3, 'assessmentid' => 4, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
+        ];
+
+        /*
+
+        global $DB;
+
+        // ... Get user assessments. Must be ordered by [last, first, username, userid]="user sortorder" then assessment sortorder (not id).
+
+        $sql = "SELECT a.id, a.name
+                FROM {assign} a
+                WHERE a.course = :courseid";
+        return $DB->get_records_sql($sql, ['courseid' => $courseid]);
+        */
+    }
+
     public static function get_assessments(int $courseid): array {
         return [
-            ['id' => 1, 'name' => 'Assignment 1'],
-            ['id' => 2, 'name' => 'Assignment 2'],
-            ['id' => 3, 'name' => 'Exam'],
+            ['id' => 1, 'name' => 'Assignment 1', 'sortorder' => 1],
+            ['id' => 2, 'name' => 'Assignment 2', 'sortorder' => 2],
+            ['id' => 3, 'name' => 'Assignment 3', 'sortorder' => 3],
+            ['id' => 4, 'name' => 'Exam', 'sortorder' => 4],
         ];
 
         /*
@@ -122,10 +155,13 @@ class dashboard {
             'passed' => self::get_assessment_status_string('passed'),
             'failed' => self::get_assessment_status_string('failed'),
             'extension' => self::get_assessment_status_string('extension'),
+            'graded' => self::get_assessment_status_string('graded'),
         ];
     }
 
-    public static function get_dataset(int $courseid): array {
+    public static function get_user_dataset(int $courseid): array {
+        // ...Must be ordered by [last, first, username, userid]="user sortorder"
+
         $data = [
             [
                 'userid' => 1,
@@ -140,19 +176,6 @@ class dashboard {
                 'maori' => 0,
                 'pacific' => 0,
                 'new' => 0,
-                'lateassessments' => 1,
-
-                'assessment0_grade' => 0,
-                'assessment0_status' => 'overdue',
-                'assessment0_extension_date' => 1737867307,
-
-                'assessment1_grade' => 0,
-                'assessment1_status' => 'notdue',
-                'assessment1_extension_date' => 1737867307,
-
-                'assessment2_grade' => 0,
-                'assessment2_status' => 'notdue',
-                'assessment2_extension_date' => 1737867307,
 
                 'course_total_grade' => 0,
             ],
@@ -170,22 +193,11 @@ class dashboard {
                 'maori' => 0,
                 'pacific' => 0,
                 'new' => 0,
-                'lateassessments' => 0,
-
-                'assessment0_grade' => 0,
-                'assessment0_status' => 'submitted',
-                'assessment0_extension_date' => 0,
-                'assessment1_grade' => 0,
-                'assessment1_status' => 'notdue',
-                'assessment1_extension_date' => 0,
-                'assessment2_grade' => 0,
-                'assessment2_status' => 'notdue',
-                'assessment2_extension_date' => 0,
 
                 'course_total_grade' => 0,
             ],
             [
-                'userid' => 1,
+                'userid' => 3,
                 'username' => '23006700',
                 'firstname' => 'McKenzie',
                 'lastname' => 'Rowatt',
@@ -197,17 +209,6 @@ class dashboard {
                 'maori' => 0,
                 'pacific' => 0,
                 'new' => 1,
-                'lateassessments' => 0,
-
-                'assessment0_grade' => 0,
-                'assessment0_status' => 'notdue',
-                'assessment0_extension_date' => 0,
-                'assessment1_grade' => 0,
-                'assessment1_status' => 'notdue',
-                'assessment1_extension_date' => 0,
-                'assessment2_grade' => 0,
-                'assessment2_status' => 'notdue',
-                'assessment2_extension_date' => 0,
 
                 'course_total_grade' => 0,
             ],
