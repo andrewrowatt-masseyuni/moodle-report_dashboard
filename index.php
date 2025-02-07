@@ -70,7 +70,9 @@ $coursecohortgroups = \report_dashboard\dashboard::get_cohort_groups($courseid);
 $assessments = \report_dashboard\dashboard::get_assessments($courseid);
 $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
 
-$dataset = \report_dashboard\dashboard::get_dataset($courseid);
+$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid);
+
+$userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
 echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $assessments]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
@@ -79,7 +81,22 @@ echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments',
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
-foreach($dataset as $row) {
+$usercount = count($userdataset);
+$assessmentcount = count($assessments);
+$userassessmentscount = count($userassessments);
+
+$userindex = 0;
+$userassessmentindex = 0;
+
+// ... Because we are using carefully sorted but separate arrays we need to do additional checking
+if (($usercount * $assessmentcount) != $userassessmentscount) {
+    throw new moodle_exception('User assessments count does not match user count * assessment count');
+}
+
+for($userindex = 0; $userindex < $usercount;  $userindex++) {
+    $row = $userdataset[$userindex];
+    $currentuserid = $row['userid'];
+
     if($row['lastaccessed_timestamp'] == -1) {
         $row['lastaccessed_filter_category'] = 'never';
         $row['lastaccessed_label'] = get_string('never', 'report_dashboard');
@@ -130,22 +147,33 @@ foreach($dataset as $row) {
     }
 
     $assessments = [];
-    $assessments[] = [
-        'grade' => $row['assessment0_grade'], 
-        'status' => $row['assessment0_status'],
-        'extension_date' => $row['assessment0_extension_date'],
-        'label' => $assessmentstatuses[$row['assessment0_status']]];
+    $lateassessments = false;
 
-    $assessments[] = ['grade' => $row['assessment1_grade'], 'status' => $row['assessment1_status'], 'extension_date' => $row['assessment1_extension_date'],
-        'label' => $assessmentstatuses[$row['assessment1_status']]];
-    $assessments[] = ['grade' => $row['assessment2_grade'], 'status' => $row['assessment2_status'], 'extension_date' => $row['assessment2_extension_date'],
-        'label' => $assessmentstatuses[$row['assessment2_status']]];
+    for($assessmentindex = 0; $assessmentindex < $assessmentcount; $assessmentindex++) {
+        $assessment = $userassessments[$userassessmentindex];
 
+        // ... Because we are using carefully sorted but separate arrays we need to do additional checking
+        if ($assessment['userid'] != $currentuserid) {
+            throw new moodle_exception("Assessment user id: $assessment[userid] does not match current user id: $currentuserid where user assessment index = $userassessmentindex");
+        }
 
+        $label = $assessmentstatuses[$assessment['status']];
 
+        if (in_array($assessment['status'],['passed','failed'])) {
+            $label = $assessment['grade'];
+        }
 
+        $assessments[] = $assessment + ['label' => $label];
 
-    echo $OUTPUT->render_from_template('report_dashboard/row', ['row' => $row, 'groups' => $groups, 'assessments' => $assessments]);
+        if($assessment['status'] == 'overdue') {
+            $lateassessments = true;
+        }
+        
+        $userassessmentindex += 1;
+    }
+
+    echo $OUTPUT->render_from_template('report_dashboard/row',
+        ['row' => $row,'groups' => $groups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
 }
 
 // iterate over $dataset using render_from_template OR html_writer??

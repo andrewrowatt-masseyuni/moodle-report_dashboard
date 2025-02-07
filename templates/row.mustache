@@ -25,7 +25,7 @@
 }}
 <tr>
 <td class="tc_name">
-    {{row.username}}
+    {{row.username}} {{row.firstname}} {{row.lastname}}
 </td>
 <td class="tc_lastaccessed">
     <span class="tag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
@@ -50,19 +50,17 @@
 </div>
 </td>
 <td class="tc_lateassessments">
-{{#row.lateassessments}}
+{{#lateassessments}}
 <span class="tag" data-filter-category="yes">Yes</span>
-{{/row.lateassessments}}
-{{^row.lateassessments}}
+{{/lateassessments}}
+{{^lateassessments}}
 <span class="tag" data-filter-category="no">No</span>
-{{/row.lateassessments}}
+{{/lateassessments}}
 </td>
 {{#assessments}}
-<td class="tc_assessment">
+<td class="tc_assessment assessment{{assessmentid}}">
     <div class="tag-group">
-        <span class="tag" data-filter-category="{{status}}">
-            {{label}}
-        </span>
+        <span class="tag" data-filter-category="{{status}}">{{label}}</span>
         {{#extension_date}}
         <span class="tag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
             {{#str}} assessmentstatus_extension, report_dashboard {{/str}}

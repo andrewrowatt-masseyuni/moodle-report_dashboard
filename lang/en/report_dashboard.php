@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['assessmentstatus_extension'] = 'Extension';
 $string['assessmentstatus_failed'] = 'Failed';
+$string['assessmentstatus_graded'] = 'Graded';
 $string['assessmentstatus_notdue'] = 'Not due';
 $string['assessmentstatus_overdue'] = 'Overdue';
 $string['assessmentstatus_passed'] = 'Passed';
