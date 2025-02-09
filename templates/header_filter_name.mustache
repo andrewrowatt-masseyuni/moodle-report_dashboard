@@ -24,8 +24,12 @@
     }
 }}
 <tr class="filters">
+    <!-- Select checkbox -->
     <td></td>
-    <td>[Name]</td>
+    <!-- Name -->
+    <td>
+        <input type="search" class="form-control" id="name_filter" placeholder="Start typing to filter by name or ID" spellcheck="false">
+    </td>
     <!-- Last accessed -->
     <td>
         <div class="dropdown" id="lastaccessed">
@@ -35,7 +39,7 @@
             <div class="dropdown-menu">
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_all" value="all" checked>
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_all" value="all" checked data-label="All">
                         <label class="form-check-label" for="lastaccessed_all">
                             All
                         </label>
@@ -44,7 +48,7 @@
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_never" value="never">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_never" value="never" data-label="Never">
                         <label class="form-check-label" for="lastaccessed_never">
                             Never<span class="tag" data-filter-category="never"></span>
                         </label>
@@ -53,7 +57,7 @@
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_24hr" value="today">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_24hr" value="today" data-label="In the last 24hrs">
                         <label class="form-check-label" for="lastaccessed_24hr">
                             In the last 24hrs
                         </label>
@@ -61,7 +65,7 @@
                 </div>
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_2day" value="yesterday">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_2day" value="yesterday" data-label="Over 1 day ago">
                         <label class="form-check-label" for="lastaccessed_2day">
                             Over 1 day ago
                         </label>
@@ -69,7 +73,7 @@
                 </div>
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_3day" value="1week">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_3day" value="1week" data-label="In the last 7 days">
                         <label class="form-check-label" for="lastaccessed_3day">
                             In the last 7 days
                         </label>
@@ -78,7 +82,7 @@
                 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over1week">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over1week" data-label="Over a week ago">
                         <label class="form-check-label" for="lastaccessed_4day">
                             Over a week ago
                         </label>
@@ -87,7 +91,7 @@
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over2week">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over2week" data-label="Over 2 weeks ago">
                         <label class="form-check-label" for="lastaccessed_4day">
                             Over 2 weeks ago
                         </label>
@@ -96,7 +100,7 @@
 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over3week">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4day" value="over3week" data-label="Over 3 weeks ago">
                         <label class="form-check-label" for="lastaccessed_4day">
                             Over 3 weeks ago
                         </label>
@@ -105,7 +109,7 @@
 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4plus" value="over4week">
+                        <input class="form-check-input" type="radio" name="lastaccessed" id="lastaccessed_4plus" value="over4week" data-label="Over 4 weeks ago">
                         <label class="form-check-label" for="lastaccessed_4plus">
                             Over 4 weeks ago
                         </label>

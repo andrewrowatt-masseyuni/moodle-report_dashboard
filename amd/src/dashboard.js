@@ -37,7 +37,7 @@ export const init = () => {
                 },
                 responsive: false,
                 autoWidth: false,
-                dom: 'firtB',
+                dom: 'irt',
                 columnDefs: [
                     {
                         orderable: false,
@@ -54,16 +54,36 @@ export const init = () => {
         );
 
         /* Custom filter for last access */
+        /* eslint complexity: ["error", {"max": 25 }] */
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             let row = $(table.row(dataIndex).node());
+            /*
+                Name filter
+            */
+            let name = document.getElementById("name_filter").value.toLowerCase();
+            let namematch = false;
+
+            if (name == "") {
+                namematch = true;
+            } else {
+                if (row.find("td.tc_name").first().text().toLowerCase().includes(name)) {
+                    namematch = true;
+                }
+            }
+
+            if (!namematch) {
+                return false;
+            }
+
 
             /*
                 Last access filter
             */
-            let lastaccessed = document.querySelector("input[name='lastaccessed']:checked").value;
+            let lastaccessed = document.querySelector("input[name='lastaccessed']:checked");
+            document.querySelector("#lastaccessed > button > span").textContent = lastaccessed.dataset.label;
 
-            if (lastaccessed != "all") {
-                if (row.find(`td.tc_lastaccessed span[data-filter-category="${lastaccessed}"]`).length == 0) {
+            if (lastaccessed.value != "all") {
+                if (row.find(`td.tc_lastaccessed span[data-filter-category="${lastaccessed.value}"]`).length == 0) {
                     return false;
                 }
             }
@@ -113,10 +133,11 @@ export const init = () => {
             /*
                 Late assessments filter
             */
-            let lateassessments = document.querySelector("input[name='lateassessments']:checked").value;
+            let lateassessments = document.querySelector("input[name='lateassessments']:checked");
+            document.querySelector("#lateassessments > button > span").textContent = lateassessments.dataset.label;
 
-            if (lateassessments != "all") {
-                if (row.find(`td.tc_lateassessments span[data-filter-category="${lateassessments}"]`).length == 0) {
+            if (lateassessments.value != "all") {
+                if (row.find(`td.tc_lateassessments span[data-filter-category="${lateassessments.value}"]`).length == 0) {
                     return false;
                 }
             }
@@ -170,6 +191,10 @@ export const init = () => {
 
 
             return true;
+        });
+
+        $("#name_filter").on("input", function() {
+            table.draw();
         });
 
         $("tr.filters .assessment_filter").on("click", (e) => {
