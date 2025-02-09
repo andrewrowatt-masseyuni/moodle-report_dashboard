@@ -21,13 +21,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import $ from 'jquery';
-import DataTable from 'report_dashboard/datatables';
+import DataTable from 'report_dashboard/dataTables';
+import 'report_dashboard/dataTables.bootstrap';
+import 'report_dashboard/dataTables.select';
 
-export const init = (assessments, course) => {
-    console.log(`AJR Init ${assessments} ${course}`);
-
-    $(document).ready(function() {
-        var table = new DataTable('#dashboard',
+export const init = () => {
+    $(function() {
+        var table = new DataTable('#report_dashboard_dashboard',
             {
                 orderCellsTop: true,
                 paging: false,
@@ -35,7 +35,21 @@ export const init = (assessments, course) => {
                     search: "Filter:",
                     searchPlaceholder: "Start typing to filter"
                 },
+                responsive: false,
+                autoWidth: false,
                 dom: 'firtB',
+                columnDefs: [
+                    {
+                        orderable: false,
+                        render: DataTable.render.select(),
+                        targets: 0
+                    }
+                ],
+                select: {
+                    style: 'multi',
+                    headerCheckbox: 'select-page'
+                },
+                order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
             }
         );
 

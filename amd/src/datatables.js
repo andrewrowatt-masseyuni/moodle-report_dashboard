@@ -1,16 +1,4 @@
-/*
- * This combined file was created by the DataTables downloader builder:
- *   https://datatables.net/download
- *
- * To rebuild or modify this file with the latest versions of the included
- * software please visit:
- *   https://datatables.net/download/#bs4/dt-2.2.1
- *
- * Included libraries:
- *  DataTables 2.2.1
- */
-
-/*! DataTables 2.2.1
+/*! DataTables 2.2.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -519,7 +507,7 @@
 		 *
 		 *  @type string
 		 */
-		builder: "bs4/dt-2.2.1",
+		builder: "-source-",
 	
 	
 		/**
@@ -5556,6 +5544,15 @@
 				// This flag allows the above to be satisfied.
 				var first = $(settings.nTableWrapper).is(':visible');
 	
+				// Use an empty div to attach the observer so it isn't impacted by height changes
+				var resizer = $('<div>')
+					.css({
+						width: '100%',
+						height: 0
+					})
+					.addClass('dt-autosize')
+					.appendTo(settings.nTableWrapper);
+	
 				settings.resizeObserver = new ResizeObserver(function (e) {
 					if (first) {
 						first = false;
@@ -5565,7 +5562,7 @@
 					}
 				});
 	
-				settings.resizeObserver.observe(settings.nTableWrapper);
+				settings.resizeObserver.observe(resizer[0]);
 			}
 			else {
 				// For old browsers, the best we can do is listen for a window resize
@@ -5897,10 +5894,14 @@
 			displayMaster = oSettings.aiDisplayMaster,
 			aSort;
 	
+		// Make sure the columns all have types defined
+		_fnColumnTypes(oSettings);
+	
 		// Allow a specific column to be sorted, which will _not_ alter the display
 		// master
 		if (col !== undefined) {
 			var srcCol = oSettings.aoColumns[col];
+	
 			aSort = [{
 				src:       col,
 				col:       col,
@@ -9844,12 +9845,14 @@
 		// Function to run either once the table becomes ready or
 		// immediately if it is already ready.
 		return this.tables().every(function () {
+			var api = this;
+	
 			if (this.context[0]._bInitComplete) {
-				fn.call(this);
+				fn.call(api);
 			}
 			else {
 				this.on('init.dt.DT', function () {
-					fn.call(this);
+					fn.call(api);
 				});
 			}
 		} );
@@ -9905,20 +9908,37 @@
 				jqTable.append( tfoot );
 			}
 	
+			// Clean up the header
+			$(thead).find('span.dt-column-order').remove();
+			$(thead).find('span.dt-column-title').each(function () {
+				var title = $(this).html();
+				$(this).parent().append(title);
+				$(this).remove();
+			});
+	
 			settings.colgroup.remove();
 	
 			settings.aaSorting = [];
 			settings.aaSortingFixed = [];
 			_fnSortingClasses( settings );
 	
+			$(jqTable).find('th, td').removeClass(
+				$.map(DataTable.ext.type.className, function (v) {
+					return v;
+				}).join(' ')
+			);
+	
 			$('th, td', thead)
 				.removeClass(
+					orderClasses.none + ' ' +
 					orderClasses.canAsc + ' ' +
 					orderClasses.canDesc + ' ' +
 					orderClasses.isAsc + ' ' +
 					orderClasses.isDesc
 				)
-				.css('width', '');
+				.css('width', '')
+				.removeAttr('data-dt-column')
+				.removeAttr('aria-sort');
 	
 			// Add the TR elements back into the table in their original order
 			jqTbody.children().detach();
@@ -10006,7 +10026,7 @@
 	 *  @type string
 	 *  @default Version number
 	 */
-	DataTable.version = "2.2.1";
+	DataTable.version = "2.2.2";
 	
 	/**
 	 * Private data store, containing all of the settings objects that are
@@ -13047,16 +13067,16 @@
 						cell.removeAttr('aria-sort');
 					}
 	
-					cell.attr('aria-label', orderable
-						? col.ariaTitle + ctx.api.i18n('oAria.orderable' + ariaType)
-						: col.ariaTitle
-					);
-	
 					// Make the headers tab-able for keyboard navigation
 					if (orderable) {
 						var orderSpan = cell.find('.dt-column-order');
 						
-						orderSpan.attr('role', 'button');
+						orderSpan
+							.attr('role', 'button')
+							.attr('aria-label', orderable
+								? col.ariaTitle + ctx.api.i18n('oAria.orderable' + ariaType)
+								: col.ariaTitle
+							);
 	
 						if (tabIndex !== -1) {
 							orderSpan.attr('tabindex', tabIndex);
@@ -13821,128 +13841,3 @@
 
 	return DataTable;
 }));
-
-
-/*! DataTables Bootstrap 4 integration
- * © SpryMedia Ltd - datatables.net/license
- */
-
-(function( factory ){
-	if ( typeof define === 'function' && define.amd ) {
-		// AMD
-		define( ['jquery', 'datatables.net'], function ( $ ) {
-			return factory( $, window, document );
-		} );
-	}
-	else if ( typeof exports === 'object' ) {
-		// CommonJS
-		var jq = require('jquery');
-		var cjsRequires = function (root, $) {
-			if ( ! $.fn.dataTable ) {
-				require('datatables.net')(root, $);
-			}
-		};
-
-		if (typeof window === 'undefined') {
-			module.exports = function (root, $) {
-				if ( ! root ) {
-					// CommonJS environments without a window global must pass a
-					// root. This will give an error otherwise
-					root = window;
-				}
-
-				if ( ! $ ) {
-					$ = jq( root );
-				}
-
-				cjsRequires( root, $ );
-				return factory( $, root, root.document );
-			};
-		}
-		else {
-			cjsRequires( window, jq );
-			module.exports = factory( jq, window, window.document );
-		}
-	}
-	else {
-		// Browser
-		factory( jQuery, window, document );
-	}
-}(function( $, window, document ) {
-'use strict';
-var DataTable = $.fn.dataTable;
-
-
-
-/**
- * DataTables integration for Bootstrap 4.
- *
- * This file sets the defaults and adds options to DataTables to style its
- * controls using Bootstrap. See https://datatables.net/manual/styling/bootstrap
- * for further information.
- */
-
-/* Set the defaults for DataTables initialisation */
-$.extend( true, DataTable.defaults, {
-	renderer: 'bootstrap'
-} );
-
-
-/* Default class modification */
-$.extend( true, DataTable.ext.classes, {
-	container: "dt-container dt-bootstrap4",
-	search: {
-		input: "form-control form-control-sm"
-	},
-	length: {
-		select: "custom-select custom-select-sm form-control form-control-sm"
-	},
-	processing: {
-		container: "dt-processing card"
-	},
-	layout: {
-		row: 'row justify-content-between',
-		cell: 'd-md-flex justify-content-between align-items-center',
-		tableCell: 'col-12',
-		start: 'dt-layout-start col-md-auto mr-auto',
-		end: 'dt-layout-end col-md-auto ml-auto',
-		full: 'dt-layout-full col-md'
-	}
-} );
-
-
-/* Bootstrap paging button renderer */
-DataTable.ext.renderer.pagingButton.bootstrap = function (settings, buttonType, content, active, disabled) {
-	var btnClasses = ['dt-paging-button', 'page-item'];
-
-	if (active) {
-		btnClasses.push('active');
-	}
-
-	if (disabled) {
-		btnClasses.push('disabled')
-	}
-
-	var li = $('<li>').addClass(btnClasses.join(' '));
-	var a = $('<a>', {
-		'href': disabled ? null : '#',
-		'class': 'page-link'
-	})
-		.html(content)
-		.appendTo(li);
-
-	return {
-		display: li,
-		clicker: a
-	};
-};
-
-DataTable.ext.renderer.pagingContainer.bootstrap = function (settings, buttonEls) {
-	return $('<ul/>').addClass('pagination').append(buttonEls);
-};
-
-
-return DataTable;
-}));
-
-

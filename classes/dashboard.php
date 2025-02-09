@@ -98,7 +98,7 @@ class dashboard {
             ['userid' => 1, 'assessmentid' => 3, 'status' => 'notdue', 'extension_date' => 1737867307, 'grade' => 0],
             ['userid' => 1, 'assessmentid' => 4, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
 
-            ['userid' => 2, 'assessmentid' => 1, 'status' => 'passed', 'extension_date' => 0, 'grade' => 94],
+            ['userid' => 2, 'assessmentid' => 1, 'status' => 'overdue', 'extension_date' => 0, 'grade' => 94],
             ['userid' => 2, 'assessmentid' => 2, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
             ['userid' => 2, 'assessmentid' => 3, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
             ['userid' => 2, 'assessmentid' => 4, 'status' => 'notdue', 'extension_date' => 0, 'grade' => 0],
