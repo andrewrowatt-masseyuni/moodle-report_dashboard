@@ -47,12 +47,7 @@ $PAGE->set_title(
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/libs/datatables.min.css');
 
-// ...Just testing passing parameters to JavaScript
-$data = [];
-$data['assessments'] = 2;
-$data['course'] = $course->shortname;
-
-$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init', $data);
+$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
