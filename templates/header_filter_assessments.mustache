@@ -24,7 +24,7 @@
     }
 }}
 <!-- Late assessments filter -->
-<td>
+<th>
     <div class="dropdown" id="lateassessments">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
             <span>All</span>
@@ -57,14 +57,14 @@
             </div>
         </div>
     </div>
-</td>
+</th>
 {{#assessments}}
-<td class="dt-left">
-    <div class="dropdown assessment_filter" id="assessment{{id}}" data-assessment-id="{{id}}">
+<th class="dt-left">
+    <div class="dropdown assessment_filter" id="assessment{{id}}" data-assessmentid="{{id}}">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
             <span>All</span>
         </button>
-        <div class="dropdown-menu">
+        <div class="dropdown-menu" data-assessmentid="{{id}}">
             <button class="dropdown-item all" id="assessment{{id}}_select_all" disabled="disabled">Select all</button>
             <button class="dropdown-item all" id="assessment{{id}}_select_none">Clear all</button>
 
@@ -130,5 +130,5 @@
             </div>
         </div>
     </div>
-</td>
+</th>
 {{/assessments}}

@@ -24,6 +24,8 @@ import $ from 'jquery';
 import DataTable from 'report_dashboard/dataTables';
 import 'report_dashboard/dataTables.bootstrap';
 import 'report_dashboard/dataTables.select';
+// ... Remove for debugging import 'report_dashboard/dataTables.fixedHeader';
+// ... Remove for debugging import 'report_dashboard/dataTables.fixedColumns';
 
 export const init = () => {
     $(function() {
@@ -50,12 +52,18 @@ export const init = () => {
                     headerCheckbox: 'select-page'
                 },
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
+                /* fixedHeader: true, */
+                scrollX: true,
+                fixedColumns: {
+                    start: 2
+                },
             }
         );
 
-        /* Custom filter for last access */
         /* eslint complexity: ["error", {"max": 25 }] */
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            console.log("Filtering data");
+
             let row = $(table.row(dataIndex).node());
             /*
                 Name filter
@@ -149,10 +157,10 @@ export const init = () => {
             let assessmentFilters = document.querySelectorAll(".assessment_filter");
 
             for (const assessmentFilter of assessmentFilters) {
-                let id = assessmentFilter.id;
+                let id = assessmentFilter.dataset.assessmentid;
                 let itemMatch = false;
-                let items = document.querySelectorAll(`input[name='${id}_filter']`);
-                let itemsChecked = document.querySelectorAll(`input[name='${id}_filter']:checked`).length;
+                let items = document.querySelectorAll(`input[name='assessment${id}_filter']`);
+                let itemsChecked = document.querySelectorAll(`input[name='assessment${id}_filter']:checked`).length;
                 let anyUnchecked = items.length != itemsChecked;
 
                 let dropdownlabel = "Unknown"; // Default label for the dropdown
@@ -161,15 +169,15 @@ export const init = () => {
                     if (item.checked) {
                         dropdownlabel = item.dataset.label;
 
-                        if (row.find(`td.tc_assessment.${id} span[data-filter-category="${item.value}"]`).length > 0) {
+                        if (row.find(`td.tc_assessment.assessment${id} span[data-filter-category="${item.value}"]`).length > 0) {
                             itemMatch = true;
                             break;
                         }
                     }
                 }
 
-                document.getElementById(`${id}_select_all`).disabled = !anyUnchecked;
-                document.getElementById(`${id}_select_none`).disabled = itemsChecked == 0;
+                document.getElementById(`assessment${id}_select_all`).disabled = !anyUnchecked;
+                document.getElementById(`assessment${id}_select_none`).disabled = itemsChecked == 0;
 
                 if (itemsChecked == 0) {
                     dropdownlabel = "None";
@@ -182,7 +190,7 @@ export const init = () => {
                     dropdownlabel = "All";
                 }
 
-                document.querySelector(`#${id} > button > span`).textContent = dropdownlabel;
+                document.querySelector(`#assessment${id} > button > span`).textContent = dropdownlabel;
 
                 if (!itemMatch) {
                     return false;
@@ -197,33 +205,36 @@ export const init = () => {
             table.draw();
         });
 
-        $("tr.filters .assessment_filter").on("click", (e) => {
-            let id = e.currentTarget.id;
+        $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
+            let id = e.currentTarget.dataset.assessmentid;
 
+            console.log("event1");
             switch (e.target.id) {
-                case `${id}_select_all`:
-                    document.querySelectorAll(`input[name='${id}_filter']`).forEach((item) => {
+                case `assessment${id}_select_all`:
+                    document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
                         item.checked = true;
                     });
                     break;
-                case `${id}_select_none`:
-                    document.querySelectorAll(`input[name='${id}_filter']`).forEach((item) => {
+                case `assessment${id}_select_none`:
+                    document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
                         item.checked = false;
                     });
                     break;
             }
-            // ... dont need to call table.draw() here as the code below will do it
         });
 
-        $("tr.filters").on("click", (e) => {
+        $("tr.filters .dropdown-menu").on("click", (e) => {
             /*
                 Special handling cases for filters
             */
+                console.log("event2");
+
             switch (e.target.id) {
                 case "group_select_all":
                     document.querySelectorAll("input[name='groups']").forEach((group) => {
                         group.checked = true;
                     });
+
                     break;
                 case "group_select_none":
                     document.querySelectorAll("input[name='groups']").forEach((group) => {
@@ -231,6 +242,7 @@ export const init = () => {
                     });
                     break;
             }
+
             table.draw();
         });
 

@@ -34,8 +34,11 @@
 <td class="tc_groups">
 <div class="tag-group">
 {{#groups}}
-<span class="tag {{class}}" data-filter-category="{{id}}">{{groupname}}</span>
+<span class="tag {{class}}" data-filter-category="group-{{id}}">{{groupname}}</span>
 {{/groups}}
+{{#cohort_groups}}
+<span class="tag {{class}}" data-filter-category="cohortgroup-{{id}}">{{groupname}}</span>
+{{/cohort_groups}}
 {{#row.international}}
 <span class="tag tag-priority-group" data-filter-category="priority-international">International</span>
 {{/row.international}}
@@ -46,7 +49,7 @@
 <span class="tag tag-priority-group" data-filter-category="priority-pacific">Pacific</span>
 {{/row.pacific}}
 {{#row.new}}
-<span class="tag tag-priority-group" data-filter-category="priority-new">New to Massey</span>
+<span class="tag tag-priority-group" data-filter-category="priority-new" title="New to Massey">New</span>
 {{/row.new}}
 </div>
 </td>
