@@ -90,7 +90,7 @@ if (($usercount * $assessmentcount) != $userassessmentscount) {
 
 for($userindex = 0; $userindex < $usercount;  $userindex++) {
     $row = $userdataset[$userindex];
-    $currentuserid = $row['userid'];
+    $currentuserid = $row['id'];
 
     if($row['lastaccessed_timestamp'] == -1) {
         $row['lastaccessed_filter_category'] = 'never';
@@ -136,9 +136,11 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
         $groups[] = $group_details + ['class' => 'tag-course-group'];
     }
 
-    foreach($row['cohort_groups'] as $group_id) {
+    $cohortgroups = [];
+
+    foreach($row['cohortgroups'] as $group_id) {
         $group_details = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $group_id);
-        $groups[] = $group_details + ['class' => 'tag-cohort-group'];
+        $cohortgroups[] = $group_details + ['class' => 'tag-cohort-group'];
     }
 
     $assessments = [];
@@ -168,7 +170,7 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
     }
 
     echo $OUTPUT->render_from_template('report_dashboard/row',
-        ['row' => $row,'groups' => $groups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
+        ['row' => $row,'groups' => $groups, 'cohort_groups' => $cohortgroups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
 }
 
 // iterate over $dataset using render_from_template OR html_writer??

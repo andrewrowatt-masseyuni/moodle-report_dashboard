@@ -1,9 +1,29 @@
+.dashboard_container {
+    position: relative;
+}
+
 #report_dashboard_dashboard {
     --positive: #c5e0b4;
     --warning: #fff2cc;
     --negative: #fbe4d5;
     --note: #d9edf7;
+    --note2: rgb(248, 243, 252);
+    --note3: rgb(244, 238, 238);
     --neutral: #00000007;
+
+    thead {
+        position: sticky;
+        top: 60px;
+        z-index: 1060; /* Above the Boost fixed header */
+
+        th {
+            background-color: #eee;
+        }
+
+        tr.filters th {
+            border-bottom: 1px solid #999;
+        }
+    }
 
     span.tag {
         border-radius: 12px;
@@ -47,11 +67,8 @@
         top: -20%;
         height: 140%;
         background-color: var(--neutral);
-
         padding: 0 1em;
-
         border: 1px solid #0001;
-
         border-radius: 4px;
 
         >* {
@@ -60,8 +77,6 @@
     }
 
     .tc_name {
-        position: relative;
-
         > div {
             display: flex;
             flex-direction: row;
@@ -114,11 +129,11 @@
             overflow: hidden;
 
             &.tag-course-group {
-                background-color: var(--neutral);
+                background-color: var(--note2);
             }
 
             &.tag-cohort-group {
-                background-color: var(--note);
+                background-color: var(--note3);
             }
 
             &.tag-priority-group {

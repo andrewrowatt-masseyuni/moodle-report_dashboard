@@ -23,7 +23,7 @@
     {
     }
 }}
-<td>
+<th>
     <div class="dropdown" id="group">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
             <span>All</span>
@@ -40,7 +40,7 @@
             {{#cohort_groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="cohortgroup-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
                         <span class="tag tag-cohort-group"></span>
                         </label>
                     </div>
@@ -54,7 +54,8 @@
             {{#groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span></label>
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="group-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
+                        <span class="tag tag-course-group"></span></label>
                     </div>
                 </div>
             {{/groups}}
@@ -73,7 +74,7 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked">
+                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked" data-label="No groups">
                         No groups
                     </label>
                 </div>
@@ -81,4 +82,4 @@
 
         </div>
     </div>
-</td>
+</th>
