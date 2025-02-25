@@ -44,6 +44,21 @@ $PAGE->set_title(
     get_string('pluginname', 'report_dashboard')
 );
 
+$savedhiddenassessmentcmids = unserialize(get_user_preferences('report_dashboard_hidden_assessments',  serialize([])));
+
+$action = optional_param('action', '', PARAM_ALPHA);
+switch ($action) {
+    case 'hideassessment':
+        $savedhiddenassessmentcmids[] = required_param('assessmentcmid', PARAM_INT);
+        break;
+    case 'showassessment':
+        $assessmentcmid = required_param('assessmentcmid', PARAM_INT);
+        $savedhiddenassessmentcmids = array_diff($savedhiddenassessmentcmids, [$assessmentcmid]);
+        break;
+    default:
+        // ... Display the report
+}
+
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/libs/datatables.min.css');
 
@@ -63,21 +78,40 @@ $coursegroups = \report_dashboard\dashboard::get_groups($courseid);
 $coursecohortgroups = \report_dashboard\dashboard::get_cohort_groups($courseid);
 
 $assessments = \report_dashboard\dashboard::get_assessments($courseid);
+
+
+
+$actualhiddenassessmentcmids = []; // ... savehiddenassessmentcmids may contain cmids that no longer exist
+
+$visibleassessments = [];
+$hiddenassessments = [];
+
+foreach($assessments as $assessment) {
+    if(in_array($assessment['assessmentcmid'], $savedhiddenassessmentcmids)) {
+        $hiddenassessments[] = $assessment;
+        $actualhiddenassessmentcmids[] = $assessment['assessmentcmid'];
+    } else {
+        $visibleassessments[] = $assessment;
+    }
+}
+
+set_user_preference('report_dashboard_hidden_assessments', serialize($actualhiddenassessmentcmids));
+
 $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
 
-$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid);
+$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, $actualhiddenassessmentcmids);
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
-echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $assessments]);
+echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $visibleassessments, 'hiddenassessments' => $hiddenassessments, 'courseid' => $courseid]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroups,'groups' => $coursegroups]);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $assessments]); // ... include Late Assessments here? Yes as it is Yes or No only.
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid]); // ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
 $usercount = count($userdataset);
-$assessmentcount = count($assessments);
+$assessmentcount = count($visibleassessments);
 $userassessmentscount = count($userassessments);
 
 $userindex = 0;
@@ -92,12 +126,19 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
     $row = $userdataset[$userindex];
     $currentuserid = $row['id'];
 
+    /*
+        Last accessed timestamp is 10000000000 if never accessed. This was done so when sorted by last accessed, the nevers are at the end. This is hardcoded in the SQL query as well.
+    */
+
     if($row['lastaccessed_timestamp'] == -1) {
         $row['lastaccessed_filter_category'] = 'never';
         $row['lastaccessed_label'] = get_string('never', 'report_dashboard');
 
+        // $row['lastaccessed_timestamp'] = -1;
+
     } else {
         $delta_days = floor((time() - $row['lastaccessed_timestamp']) / 86400);
+
         switch ($delta_days) {
             case 0:
                 $row['lastaccessed_filter_category'] = 'today';
@@ -105,7 +146,7 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
                 break;
             case 1:
                 $row['lastaccessed_filter_category'] = 'yesterday';
-                $row['lastaccessed_label'] = '> 1 day ago'; // get_string('over_1_days', 'report_dashboard');
+                $row['lastaccessed_label'] = '~ 1 day ago'; // get_string('over_1_days', 'report_dashboard');
                 break;
             case $delta_days < 7:
                 $row['lastaccessed_filter_category'] = '1week';

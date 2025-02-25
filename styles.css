@@ -11,10 +11,12 @@
     --note3: rgb(244, 238, 238);
     --neutral: #00000007;
 
+    table-layout: auto;
+
     thead {
         position: sticky;
         top: 60px;
-        z-index: 1060; /* Above the Boost fixed header */
+        z-index: 1051; /* Above the Boost fixed header and just below the modal default of 1052 */
 
         th {
             background-color: #eee;
@@ -87,6 +89,7 @@
                 max-width: 15em;
                 text-overflow: ellipsis;
                 overflow: hidden;
+                white-space: nowrap;
             }
         }
     }
