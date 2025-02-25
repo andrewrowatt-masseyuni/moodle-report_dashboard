@@ -24,22 +24,20 @@ import $ from 'jquery';
 import DataTable from 'report_dashboard/dataTables';
 import 'report_dashboard/dataTables.bootstrap';
 import 'report_dashboard/dataTables.select';
-// ... Remove for debugging import 'report_dashboard/dataTables.fixedHeader';
-// ... Remove for debugging import 'report_dashboard/dataTables.fixedColumns';
 
 export const init = () => {
     $(function() {
         var table = new DataTable('#report_dashboard_dashboard',
             {
                 orderCellsTop: true,
-                paging: false,
-                language: {
-                    search: "Filter:",
-                    searchPlaceholder: "Start typing to filter"
-                },
                 responsive: false,
-                autoWidth: false,
-                dom: 'irt',
+                autoWidth: true,
+                layout: {
+                    topStart: 'info',
+                    topEnd: null,
+                    bottomStart: 'pageLength',
+                    bottonEnd: 'paging',
+                },
                 columnDefs: [
                     {
                         orderable: false,
@@ -52,11 +50,6 @@ export const init = () => {
                     headerCheckbox: 'select-page'
                 },
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
-                /* fixedHeader: true, */
-                scrollX: true,
-                fixedColumns: {
-                    start: 2
-                },
             }
         );
 
@@ -65,24 +58,6 @@ export const init = () => {
             console.log("Filtering data");
 
             let row = $(table.row(dataIndex).node());
-            /*
-                Name filter
-            */
-            let name = document.getElementById("name_filter").value.toLowerCase();
-            let namematch = false;
-
-            if (name == "") {
-                namematch = true;
-            } else {
-                if (row.find("td.tc_name").first().text().toLowerCase().includes(name)) {
-                    namematch = true;
-                }
-            }
-
-            if (!namematch) {
-                return false;
-            }
-
 
             /*
                 Last access filter
@@ -202,7 +177,8 @@ export const init = () => {
         });
 
         $("#name_filter").on("input", function() {
-            table.draw();
+            // ... Modern search approach
+            table.columns(1).search(this.value).draw();
         });
 
         $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
