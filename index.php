@@ -68,7 +68,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
 // ... Need to output global instructions - or - include that in the header template?
-echo "<p>[TODO: Need to output global instructions - or - include that in the header template]</p>";
+echo "<p>[TODO: Need to output global instructions (setting report_dashboard/instructions)- or - include that in the header template]</p>";
 
 // echo $OUTPUT->render_from_template('report_dashboard/static_test', $data);
 
