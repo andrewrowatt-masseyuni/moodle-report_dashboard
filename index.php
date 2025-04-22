@@ -67,6 +67,8 @@ $PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
+echo get_config('report_dashboard', 'instructions');
+
 // ... Need to output global instructions - or - include that in the header template?
 echo "<p>[TODO: Need to output global instructions (setting report_dashboard/instructions)- or - include that in the header template v3]</p>";
 

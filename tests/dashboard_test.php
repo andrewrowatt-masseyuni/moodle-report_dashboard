@@ -32,11 +32,83 @@ final class dashboard_test extends \advanced_testcase {
     /**
      * Dummy test.
      *
-     * This is to be replaced by some actually usefule test.
+     * This is to be replaced by some actually useful test.
      *
-     * @coversNothing
+     * @covers ::dashboard
      */
-    public function test_dummy(): void {
-        $this->assertTrue(false);
+    public function test_basics(): void {
+        global $DB, $USER;
+
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        set_config('mastersql', str_replace('mdl_','phpu_',dashboard::get_default_mastersql()), 'report_dashboard');
+
+        $now = time();
+
+        $user1 = $this->getDataGenerator()->create_user([
+            'email'=>'user1@example.com',
+            'username'=>'98186051',
+            'firstname'=>'Andy',
+            'lastname'=>'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email'=>'user1@example.com',
+            'username'=>'98186053',
+            'firstname'=>'Betty',
+            'lastname'=>'Rowatt',
+        ]);
+
+        $user3 = $this->getDataGenerator()->create_user([
+            'email'=>'user1@example.com',
+            'username'=>'98186052',
+            'firstname'=>'Carol',
+            'lastname'=>'Rowatt',
+        ]);
+
+        $user4 = $this->getDataGenerator()->create_user([
+            'email'=>'user1@example.com',
+            'username'=>'98186054',
+            'firstname'=>'David',
+            'lastname'=>'Rowatt',
+        ]);
+
+        $course1 = $this->getDataGenerator()->create_course();
+
+        $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user3->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user4->id, $course1->id);
+
+        $dataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(4, count($dataset));
+
+        $assessment1 = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course1->id,
+            'name' => 'Assignment 1',
+            'duedate' => $now + 86400,]
+        );
+
+        $assessment2 = $this->getDataGenerator()->create_module('quiz', [
+            'course' => $course1->id,
+            'name' => 'Assignment 2',
+            'timeclose' => $now + 86400,]
+        );
+
+        $assessment3 = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course1->id,
+            'name' => 'Test 1',
+            'duedate' => $now + 86400,]
+        );
+
+        $dataset =  dashboard::get_assessments($course1->id);
+        $this->assertEquals(3, count($dataset));
+
+        $dataset = dashboard::get_user_assessments($course1->id, []);
+        $this->assertEquals(4 * 3, count($dataset));
+
+        // TO-DO: Add the remainder of get_XXX
+
     }
 }

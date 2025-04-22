@@ -40,5 +40,7 @@ $string['lastaccessed_over_28_days'] = 'Over 4 weeks ago';
 $string['lastaccessed_over_2_week'] = '> 2 weeks ago';
 $string['lastaccessed_over_3_week'] = '> 3 weeks ago';
 $string['lastaccessed_over_n_days'] = 'Over {$a} days ago';
+$string['mastersql'] = 'Master SQL statement';
+$string['mastersql_desc'] = 'Contains the master SQL statement for all aspects of the dashboard. Updated SQL should be tested in a non-production environment to ensure it is functional and to avoid performance and stability issues.';
 $string['never'] = 'Never';
 $string['pluginname'] = 'Course Dashboard';

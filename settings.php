@@ -36,5 +36,12 @@ if ($hassiteconfig) {
                 new lang_string('instructions', 'report_dashboard'),
                 new lang_string('instructions_desc', 'report_dashboard'),
                 '', PARAM_RAW));
+
+        $settings->add(
+            new admin_setting_configtextarea(
+                'report_dashboard/mastersql',
+                new lang_string('mastersql', 'report_dashboard'),
+                new lang_string('mastersql_desc', 'report_dashboard'),
+                'select 1 as one', PARAM_RAW, 80, 20));
     }
 }
