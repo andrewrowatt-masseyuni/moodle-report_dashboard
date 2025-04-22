@@ -105,7 +105,7 @@ $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
 echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $visibleassessments, 'hiddenassessments' => $hiddenassessments, 'courseid' => $courseid]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroups,'groups' => $coursegroups]);
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroups, 'groups' => $coursegroups]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid]); // ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
@@ -122,7 +122,7 @@ if (($usercount * $assessmentcount) != $userassessmentscount) {
     throw new moodle_exception('User assessments count does not match user count * assessment count');
 }
 
-for($userindex = 0; $userindex < $usercount;  $userindex++) {
+for($userindex = 0; $userindex < $usercount; $userindex++) {
     $row = $userdataset[$userindex];
     $currentuserid = $row['id'];
 
@@ -137,9 +137,9 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
         // $row['lastaccessed_timestamp'] = -1;
 
     } else {
-        $delta_days = floor((time() - $row['lastaccessed_timestamp']) / 86400);
+        $deltadays = floor((time() - $row['lastaccessed_timestamp']) / 86400);
 
-        switch ($delta_days) {
+        switch ($deltadays) {
             case 0:
                 $row['lastaccessed_filter_category'] = 'today';
                 $row['lastaccessed_label'] = 'Last 24 hrs'; // get_string('over_5_days', 'report_dashboard');
@@ -148,19 +148,19 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
                 $row['lastaccessed_filter_category'] = 'yesterday';
                 $row['lastaccessed_label'] = '~ 1 day ago'; // get_string('over_1_days', 'report_dashboard');
                 break;
-            case $delta_days < 7:
+            case $deltadays < 7:
                 $row['lastaccessed_filter_category'] = '1week';
-                $row['lastaccessed_label'] = get_string('lastaccessed_over_n_days', 'report_dashboard',$delta_days);
+                $row['lastaccessed_label'] = get_string('lastaccessed_over_n_days', 'report_dashboard', $deltadays);
                 break;
-            case $delta_days < 14:
+            case $deltadays < 14:
                 $row['lastaccessed_filter_category'] = 'over1week';
                 $row['lastaccessed_label'] = get_string('lastaccessed_over_1_week', 'report_dashboard');
                 break;
-            case $delta_days < 21:
+            case $deltadays < 21:
                 $row['lastaccessed_filter_category'] = 'over2week';
                 $row['lastaccessed_label'] = get_string('lastaccessed_over_2_week', 'report_dashboard');
                 break;
-            case $delta_days < 28:
+            case $deltadays < 28:
                 $row['lastaccessed_filter_category'] = 'over3week';
                 $row['lastaccessed_label'] = get_string('lastaccessed_over_3_week', 'report_dashboard');
                 break;
@@ -172,16 +172,16 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
 
     $groups = [];
 
-    foreach($row['groups'] as $group_id) {
-        $group_details = \report_dashboard\dashboard::get_item_by_id($coursegroups, $group_id);
-        $groups[] = $group_details + ['class' => 'tag-course-group'];
+    foreach($row['groups'] as $groupid) {
+        $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
+        $groups[] = $groupdetails + ['class' => 'tag-course-group'];
     }
 
     $cohortgroups = [];
 
-    foreach($row['cohortgroups'] as $group_id) {
-        $group_details = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $group_id);
-        $cohortgroups[] = $group_details + ['class' => 'tag-cohort-group'];
+    foreach($row['cohortgroups'] as $groupid) {
+        $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
+        $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
     }
 
     $assessments = [];
@@ -197,7 +197,7 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
 
         $label = $assessmentstatuses[$assessment['status']];
 
-        if (in_array($assessment['status'],['passed','failed'])) {
+        if (in_array($assessment['status'], ['passed', 'failed'])) {
             $label = $assessment['grade'];
         }
 
@@ -206,17 +206,17 @@ for($userindex = 0; $userindex < $usercount;  $userindex++) {
         if($assessment['status'] == 'overdue') {
             $lateassessments = true;
         }
-        
+
         $userassessmentindex += 1;
     }
 
     echo $OUTPUT->render_from_template('report_dashboard/row',
-        ['row' => $row,'groups' => $groups, 'cohort_groups' => $cohortgroups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
+        ['row' => $row, 'groups' => $groups, 'cohort_groups' => $cohortgroups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
 }
 
 // iterate over $dataset using render_from_template OR html_writer??
 
-echo $OUTPUT->render_from_template('report_dashboard/footer',[]);
+echo $OUTPUT->render_from_template('report_dashboard/footer', []);
 
 // var_dump($dataset);
 
