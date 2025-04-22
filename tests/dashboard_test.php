@@ -30,48 +30,48 @@ final class dashboard_test extends \advanced_testcase {
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
 
     /**
-     * Dummy test.
-     *
-     * This is to be replaced by some actually useful test.
+     * Tests all dataset operations in a single offering ("one to one") course.
      *
      * @covers ::dashboard
      */
-    public function test_basics(): void {
+    public function test_single_offering_course(): void {
         global $DB, $USER;
 
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
-        set_config('mastersql', str_replace('mdl_','phpu_',dashboard::get_default_mastersql()), 'report_dashboard');
+        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
 
         $now = time();
 
+        // Basic user test
+
         $user1 = $this->getDataGenerator()->create_user([
-            'email'=>'user1@example.com',
-            'username'=>'98186051',
-            'firstname'=>'Andy',
-            'lastname'=>'Rowatt',
+            'email' => 'user1@example.com',
+            'username' => '98186011',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
         ]);
 
         $user2 = $this->getDataGenerator()->create_user([
-            'email'=>'user1@example.com',
-            'username'=>'98186053',
-            'firstname'=>'Betty',
-            'lastname'=>'Rowatt',
+            'email' => 'user1@example.com',
+            'username' => '98186013',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
         ]);
 
         $user3 = $this->getDataGenerator()->create_user([
-            'email'=>'user1@example.com',
-            'username'=>'98186052',
-            'firstname'=>'Carol',
-            'lastname'=>'Rowatt',
+            'email' => 'user1@example.com',
+            'username' => '98186012',
+            'firstname' => 'Carol',
+            'lastname' => 'Rowatt',
         ]);
 
         $user4 = $this->getDataGenerator()->create_user([
-            'email'=>'user1@example.com',
-            'username'=>'98186054',
-            'firstname'=>'David',
-            'lastname'=>'Rowatt',
+            'email' => 'user1@example.com',
+            'username' => '98186014',
+            'firstname' => 'David',
+            'lastname' => 'Rowatt',
         ]);
 
         $course1 = $this->getDataGenerator()->create_course();
@@ -81,34 +81,226 @@ final class dashboard_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($user3->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user4->id, $course1->id);
 
-        $dataset = dashboard::get_user_dataset($course1->id);
-        $this->assertEquals(4, count($dataset));
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(4, count($userdataset));
+
+        // Basic assessment test
 
         $assessment1 = $this->getDataGenerator()->create_module('assign', [
             'course' => $course1->id,
             'name' => 'Assignment 1',
-            'duedate' => $now + 86400,]
+            'duedate' => $now + 86400, ]
         );
 
         $assessment2 = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course1->id,
             'name' => 'Assignment 2',
-            'timeclose' => $now + 86400,]
+            'timeclose' => $now + 86400, ]
         );
 
         $assessment3 = $this->getDataGenerator()->create_module('assign', [
             'course' => $course1->id,
             'name' => 'Test 1',
-            'duedate' => $now + 86400,]
+            'duedate' => $now + 86400, ]
         );
 
-        $dataset =  dashboard::get_assessments($course1->id);
-        $this->assertEquals(3, count($dataset));
+        $assessmentdataset = dashboard::get_assessments($course1->id);
+        $this->assertEquals(3, count($assessmentdataset));
 
-        $dataset = dashboard::get_user_assessments($course1->id, []);
-        $this->assertEquals(4 * 3, count($dataset));
+        // User assessment test
 
-        // TO-DO: Add the remainder of get_XXX
+        $userassessmentdataset = dashboard::get_user_assessments($course1->id, []);
+        $this->assertEquals(4 * 3, count($userassessmentdataset));
 
+        // Advanced user test - groups
+
+        $group1 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group1',
+        ]);
+
+        $group2 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group2',
+        ]);
+
+        // This is an unused group so it should be excluded from the dataset.
+        $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group3',
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user1->id,
+            'groupid' => $group1->id,
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user2->id,
+            'groupid' => $group1->id,
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user2->id,
+            'groupid' => $group2->id,
+        ]);
+
+        $groupsdataset = dashboard::get_groups($course1->id);
+
+        // Groups with NO members are not included in the dataset.
+        $this->assertEquals(2, count($groupsdataset));
+
+        $this->assertEquals(2, $groupsdataset[$group1->id]->membercount);
+        $this->assertEquals(1, $groupsdataset[$group2->id]->membercount);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(4, count($userdataset));
+
+        // Note: The groups field is a comma separated list of group row_indexes NOT group IDs.
+        $this->assertEquals('1', $userdataset[$user1->id]->groups);
+        $this->assertEquals('1, 2', $userdataset[$user2->id]->groups);
     }
+
+    /**
+     * Tests targetted dataset operations in a multiple offering course.
+     *
+     * @covers ::dashboard
+     */
+    public function test_metalink_course(): void {
+        global $DB, $USER;
+
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+
+        $now = time();
+
+        // Basic user test
+
+        $user1 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186021',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186023',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user3 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186022',
+            'firstname' => 'Carol',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user4 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186024',
+            'firstname' => 'David',
+            'lastname' => 'Rowatt',
+        ]);
+
+        // Create master course and cohort groups
+        $course1 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse']);
+        $cohortgroup1 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'cohortgroup1',
+        ]);
+        $cohortgroup2 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'cohortgroup2',
+        ]);
+
+        // Create offering courses
+        $course2 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse-child1']);
+        $course3 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse-child2']);
+
+        $this->getDataGenerator()->enrol_user($user1->id, $course2->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course2->id);
+        $this->getDataGenerator()->enrol_user($user3->id, $course2->id);
+        $this->getDataGenerator()->enrol_user($user4->id, $course3->id);
+
+        // Meta enrolment plugin is not enabled by default.
+        set_config('enrol_plugins_enabled', 'self,manual,meta');
+
+        // Meta-link the offering courses to the master course.
+        $metaplugin = enrol_get_plugin('meta');
+        $metaplugin->add_instance($course1, [
+            'customint1' => $course2->id,
+            'customint2' => $cohortgroup1->id,
+        ]);
+
+        $metaplugin->add_instance($course1, [
+            'customint1' => $course3->id,
+            'customint2' => $cohortgroup2->id,
+        ]);
+
+        // Start duplication from the single offering course test
+        // Advanced user test - groups
+
+        $group1 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group1',
+        ]);
+
+        $group2 = $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group2',
+        ]);
+
+        // This is an unused group so it should be excluded from the dataset.
+        $this->getDataGenerator()->create_group([
+            'courseid' => $course1->id,
+            'name' => 'group3',
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user1->id,
+            'groupid' => $group1->id,
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user2->id,
+            'groupid' => $group1->id,
+        ]);
+
+        $this->getDataGenerator()->create_group_member([
+            'userid' => $user2->id,
+            'groupid' => $group2->id,
+        ]);
+
+        $groupsdataset = dashboard::get_groups($course1->id);
+
+        // Groups with NO members are not included in the dataset.
+        $this->assertEquals(2, count($groupsdataset));
+
+        $this->assertEquals(2, $groupsdataset[$group1->id]->membercount);
+        $this->assertEquals(1, $groupsdataset[$group2->id]->membercount);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(4, count($userdataset));
+
+        // Note: The groups field is a comma separated list of group row_indexes NOT group IDs.
+        $this->assertEquals('1', $userdataset[$user1->id]->groups);
+        $this->assertEquals('1, 2', $userdataset[$user2->id]->groups);
+
+        // End duplication from the single offering course test
+
+        // Check cohort groups and membership
+        $cohortgroupsdataset = dashboard::get_cohort_groups($course1->id);
+
+        $this->assertEquals(2, count($cohortgroupsdataset));
+
+        $this->assertEquals('1', $userdataset[$user1->id]->cohortgroups);
+        $this->assertEquals('1', $userdataset[$user2->id]->cohortgroups);
+        $this->assertEquals('1', $userdataset[$user3->id]->cohortgroups);
+        $this->assertEquals('2', $userdataset[$user4->id]->cohortgroups);
+    }
+
 }
