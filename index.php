@@ -88,8 +88,8 @@ $actualhiddenassessmentcmids = []; // ... savehiddenassessmentcmids may contain 
 $visibleassessments = [];
 $hiddenassessments = [];
 
-foreach($assessments as $assessment_object) {
-    $assessment = (array)$assessment_object;
+foreach($assessments as $assessmentobject) {
+    $assessment = (array)$assessmentobject;
     if(in_array($assessment['id'], $savedhiddenassessmentcmids)) {
         $hiddenassessments[] = $assessment;
         $actualhiddenassessmentcmids[] = $assessment['id'];
@@ -127,8 +127,8 @@ if (($usercount * $assessmentcount) != $userassessmentscount) {
     throw new moodle_exception('User assessments count does not match user count * assessment count');
 }
 
-foreach($userdataset as $user_object) {
-    $row = (array)$user_object;
+foreach($userdataset as $userobject) {
+    $row = (array)$userobject;
     $currentuserid = $row['id'];
 
     /*
@@ -177,16 +177,20 @@ foreach($userdataset as $user_object) {
 
     $groups = [];
 
-    foreach(explode(', ',$row['groups']) as $groupid) {
-        $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
-        $groups[] = $groupdetails + ['class' => 'tag-course-group'];
+    if($row['groups']) {
+        foreach(explode(', ', $row['groups']) as $groupid) {
+            $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
+            $groups[] = $groupdetails + ['class' => 'tag-course-group'];
+        }
     }
 
     $cohortgroups = [];
 
-    foreach(explode(', ',$row['cohortgroups']) as $groupid) {
-        $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
-        $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
+    if($row['cohortgroups']) {
+        foreach(explode(', ', $row['cohortgroups']) as $groupid) {
+            $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
+            $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
+        }
     }
 
     $assessments = [];
@@ -227,7 +231,5 @@ foreach($userdataset as $user_object) {
 // iterate over $dataset using render_from_template OR html_writer??
 
 echo $OUTPUT->render_from_template('report_dashboard/footer', []);
-
-// var_dump($dataset);
 
 echo $OUTPUT->footer();

@@ -306,8 +306,8 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('1', $userdataset[3]->cohortgroups);
         $this->assertEquals('2', $userdataset[4]->cohortgroups);
 
-        foreach($userdataset as $user_object) {
-            $row = (array)$user_object;
+        foreach($userdataset as $userobject) {
+            $row = (array)$userobject;
             var_dump($row['id']);
         }
         var_dump((array)$userdataset[1]);
