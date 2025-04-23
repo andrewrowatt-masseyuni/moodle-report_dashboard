@@ -49,10 +49,10 @@ $savedhiddenassessmentcmids = unserialize(get_user_preferences('report_dashboard
 $action = optional_param('action', '', PARAM_ALPHA);
 switch ($action) {
     case 'hideassessment':
-        $savedhiddenassessmentcmids[] = required_param('assessmentcmid', PARAM_INT);
+        $savedhiddenassessmentcmids[] = required_param('assessmentid', PARAM_INT);
         break;
     case 'showassessment':
-        $assessmentcmid = required_param('assessmentcmid', PARAM_INT);
+        $assessmentcmid = required_param('assessmentid', PARAM_INT);
         $savedhiddenassessmentcmids = array_diff($savedhiddenassessmentcmids, [$assessmentcmid]);
         break;
     default:
@@ -60,7 +60,6 @@ switch ($action) {
 }
 
 // ... DataTables requirements
-// $PAGE->requires->js('/report/dashboard/datatables/datatables.min.js', false);
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
 $PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 
@@ -68,11 +67,6 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
 echo get_config('report_dashboard', 'instructions');
-
-// ... Need to output global instructions - or - include that in the header template?
-echo "<p>[TODO: Need to output global instructions (setting report_dashboard/instructions)- or - include that in the header template v3]</p>";
-
-// echo $OUTPUT->render_from_template('report_dashboard/static_test', $data);
 
 $data = [];
 
@@ -100,9 +94,9 @@ $hiddenassessments = [];
 
 foreach($assessments as $assessmentobject) {
     $assessment = (array)$assessmentobject;
-    if(in_array($assessment['id'], $savedhiddenassessmentcmids)) {
+    if(in_array($assessment['assessmentid'], $savedhiddenassessmentcmids)) {
         $hiddenassessments[] = $assessment;
-        $actualhiddenassessmentcmids[] = $assessment['id'];
+        $actualhiddenassessmentcmids[] = $assessment['assessmentid'];
     } else {
         $visibleassessments[] = $assessment;
     }
@@ -112,7 +106,7 @@ set_user_preference('report_dashboard_hidden_assessments', serialize($actualhidd
 
 $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
 
-$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, $actualhiddenassessmentcmids);
+$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ',$actualhiddenassessmentcmids));
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 

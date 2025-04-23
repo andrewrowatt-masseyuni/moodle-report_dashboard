@@ -76,7 +76,6 @@ export const init = () => {
                 Groups filter
             */
             let groupmatch = false; // By default we assume that no groups are matching
-
             let groups = document.querySelectorAll("input[name='groups']");
             let groupschecked = document.querySelectorAll("input[name='groups']:checked").length;
             let anygroupunchecked = groups.length != groupschecked;

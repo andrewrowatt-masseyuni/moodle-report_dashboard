@@ -25,9 +25,11 @@
 }}
 <hr />
 <div class="dashboard_container">
+<div class="d-flex flex-row justify-content-end mb-1" style="gap: 0.5em;">
 {{#hiddenassessments}}
-<form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="action" value="showassessment" /><input type="hidden" name="assessmentcmid" value="{{assessmentcmid}}" /><button type="submit" class="btn btn-outline-secondary"><i class="fa fa-eye" aria-hidden="true"></i> Show {{name}}</button></form>
+<form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="action" value="showassessment" /><input type="hidden" name="assessmentid" value="{{assessmentid}}" /><button type="submit" class="btn btn-outline-primary"><i class="fa fa-eye" aria-hidden="true"></i> Show {{name}}</button></form>
 {{/hiddenassessments}}
+</div>
     <table id="report_dashboard_dashboard" class="table table-striped table-bordered display" width="100%">
         <thead>
             <tr><th></th><th>Student ID / Firstname / Lastname</th><th>Last<br />accessed</th><th>Groups</th><th>Late<br />assessments</th>
