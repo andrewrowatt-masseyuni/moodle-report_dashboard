@@ -88,10 +88,11 @@ $actualhiddenassessmentcmids = []; // ... savehiddenassessmentcmids may contain 
 $visibleassessments = [];
 $hiddenassessments = [];
 
-foreach($assessments as $assessment) {
-    if(in_array($assessment['assessmentcmid'], $savedhiddenassessmentcmids)) {
+foreach($assessments as $assessment_object) {
+    $assessment = (array)$assessment_object;
+    if(in_array($assessment['id'], $savedhiddenassessmentcmids)) {
         $hiddenassessments[] = $assessment;
-        $actualhiddenassessmentcmids[] = $assessment['assessmentcmid'];
+        $actualhiddenassessmentcmids[] = $assessment['id'];
     } else {
         $visibleassessments[] = $assessment;
     }
@@ -112,6 +113,8 @@ echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments',
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
+
+
 $usercount = count($userdataset);
 $assessmentcount = count($visibleassessments);
 $userassessmentscount = count($userassessments);
@@ -124,8 +127,8 @@ if (($usercount * $assessmentcount) != $userassessmentscount) {
     throw new moodle_exception('User assessments count does not match user count * assessment count');
 }
 
-for($userindex = 0; $userindex < $usercount; $userindex++) {
-    $row = $userdataset[$userindex];
+foreach($userdataset as $user_object) {
+    $row = (array)$user_object;
     $currentuserid = $row['id'];
 
     /*
@@ -174,14 +177,14 @@ for($userindex = 0; $userindex < $usercount; $userindex++) {
 
     $groups = [];
 
-    foreach($row['groups'] as $groupid) {
+    foreach(explode(', ',$row['groups']) as $groupid) {
         $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
         $groups[] = $groupdetails + ['class' => 'tag-course-group'];
     }
 
     $cohortgroups = [];
 
-    foreach($row['cohortgroups'] as $groupid) {
+    foreach(explode(', ',$row['cohortgroups']) as $groupid) {
         $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
         $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
     }
@@ -190,7 +193,12 @@ for($userindex = 0; $userindex < $usercount; $userindex++) {
     $lateassessments = false;
 
     for($assessmentindex = 0; $assessmentindex < $assessmentcount; $assessmentindex++) {
-        $assessment = $userassessments[$userassessmentindex];
+        if($userassessmentindex == 0) {
+            $assessment = (array)current($userassessments); // [$userassessmentindex];
+        } else {
+            $assessment = (array)next($userassessments); // [$userassessmentindex];
+        }
+        // $assessment = next($userassessments); // [$userassessmentindex];
 
         // ... Because we are using carefully sorted but separate arrays we need to do additional checking
         if ($assessment['userid'] != $currentuserid) {

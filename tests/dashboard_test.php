@@ -150,15 +150,17 @@ final class dashboard_test extends \advanced_testcase {
         // Groups with NO members are not included in the dataset.
         $this->assertEquals(2, count($groupsdataset));
 
-        $this->assertEquals(2, $groupsdataset[$group1->id]->membercount);
-        $this->assertEquals(1, $groupsdataset[$group2->id]->membercount);
+        $this->assertEquals(2, $groupsdataset[1]->membercount);
+        $this->assertEquals(1, $groupsdataset[2]->membercount);
 
         $userdataset = dashboard::get_user_dataset($course1->id);
         $this->assertEquals(4, count($userdataset));
 
         // Note: The groups field is a comma separated list of group row_indexes NOT group IDs.
-        $this->assertEquals('1', $userdataset[$user1->id]->groups);
-        $this->assertEquals('1, 2', $userdataset[$user2->id]->groups);
+        $this->assertEquals('1', $userdataset[1]->groups);
+
+        // Note: User #3 as users were (intentionally) created in a different order.
+        $this->assertEquals('1, 2', $userdataset[3]->groups);
     }
 
     /**
@@ -280,15 +282,17 @@ final class dashboard_test extends \advanced_testcase {
         // Groups with NO members are not included in the dataset.
         $this->assertEquals(2, count($groupsdataset));
 
-        $this->assertEquals(2, $groupsdataset[$group1->id]->membercount);
-        $this->assertEquals(1, $groupsdataset[$group2->id]->membercount);
+        $this->assertEquals(2, $groupsdataset[1]->membercount);
+        $this->assertEquals(1, $groupsdataset[2]->membercount);
 
         $userdataset = dashboard::get_user_dataset($course1->id);
         $this->assertEquals(4, count($userdataset));
 
         // Note: The groups field is a comma separated list of group row_indexes NOT group IDs.
-        $this->assertEquals('1', $userdataset[$user1->id]->groups);
-        $this->assertEquals('1, 2', $userdataset[$user2->id]->groups);
+        $this->assertEquals('1', $userdataset[1]->groups);
+
+        // Note: User #3 as users were (intentionally) created in a different order.
+        $this->assertEquals('1, 2', $userdataset[3]->groups);
 
         // End duplication from the single offering course test
 
@@ -297,10 +301,16 @@ final class dashboard_test extends \advanced_testcase {
 
         $this->assertEquals(2, count($cohortgroupsdataset));
 
-        $this->assertEquals('1', $userdataset[$user1->id]->cohortgroups);
-        $this->assertEquals('1', $userdataset[$user2->id]->cohortgroups);
-        $this->assertEquals('1', $userdataset[$user3->id]->cohortgroups);
-        $this->assertEquals('2', $userdataset[$user4->id]->cohortgroups);
+        $this->assertEquals('1', $userdataset[1]->cohortgroups);
+        $this->assertEquals('1', $userdataset[2]->cohortgroups);
+        $this->assertEquals('1', $userdataset[3]->cohortgroups);
+        $this->assertEquals('2', $userdataset[4]->cohortgroups);
+
+        foreach($userdataset as $user_object) {
+            $row = (array)$user_object;
+            var_dump($row['id']);
+        }
+        var_dump((array)$userdataset[1]);
     }
 
 }
