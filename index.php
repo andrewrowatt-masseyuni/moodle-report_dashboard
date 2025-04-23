@@ -60,8 +60,8 @@ switch ($action) {
 }
 
 // ... DataTables requirements
-$PAGE->requires->css('/report/dashboard/libs/datatables.min.css');
-
+// $PAGE->requires->js('/report/dashboard/datatables/datatables.min.js', false);
+$PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
 $PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 
 echo $OUTPUT->header();
@@ -77,7 +77,17 @@ echo "<p>[TODO: Need to output global instructions (setting report_dashboard/ins
 $data = [];
 
 $coursegroups = \report_dashboard\dashboard::get_groups($courseid);
+$coursegroupsarray = [];
+foreach($coursegroups as $coursegroup) {
+    $coursegroupsarray[] = (array)$coursegroup;
+}
+
 $coursecohortgroups = \report_dashboard\dashboard::get_cohort_groups($courseid);
+$coursecohortgroupsarray = [];
+foreach($coursecohortgroups as $coursecohortgroup) {
+    $coursecohortgroupsarray[] = (array)$coursecohortgroup;
+}
+
 
 $assessments = \report_dashboard\dashboard::get_assessments($courseid);
 
@@ -108,7 +118,7 @@ $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
 echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $visibleassessments, 'hiddenassessments' => $hiddenassessments, 'courseid' => $courseid]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroups, 'groups' => $coursegroups]);
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid]); // ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
@@ -197,12 +207,7 @@ foreach($userdataset as $userobject) {
     $lateassessments = false;
 
     for($assessmentindex = 0; $assessmentindex < $assessmentcount; $assessmentindex++) {
-        if($userassessmentindex == 0) {
-            $assessment = (array)current($userassessments); // [$userassessmentindex];
-        } else {
-            $assessment = (array)next($userassessments); // [$userassessmentindex];
-        }
-        // $assessment = next($userassessments); // [$userassessmentindex];
+        $assessment = (array)$userassessments[$userassessmentindex + 1];
 
         // ... Because we are using carefully sorted but separate arrays we need to do additional checking
         if ($assessment['userid'] != $currentuserid) {

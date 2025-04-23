@@ -8,7 +8,7 @@
         <licenseversion>1.0</licenseversion>
     </library>
     <library>
-        <location>amd/src/dataTables.bootstrap.js</location>
+        <location>amd/src/dataTables.bootstrap4.js</location>
         <name>DataTables</name>
         <version>4</version>
         <license>MIT License</license>

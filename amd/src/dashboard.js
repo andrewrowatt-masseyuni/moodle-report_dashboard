@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,7 +23,7 @@
  */
 import $ from 'jquery';
 import DataTable from 'report_dashboard/dataTables';
-import 'report_dashboard/dataTables.bootstrap';
+import 'report_dashboard/dataTables.bootstrap4';
 import 'report_dashboard/dataTables.select';
 
 export const init = () => {
@@ -55,7 +56,7 @@ export const init = () => {
 
         /* eslint complexity: ["error", {"max": 25 }] */
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            console.log("Filtering data");
+            window.console.log("Filtering data");
 
             let row = $(table.row(dataIndex).node());
 
@@ -184,7 +185,7 @@ export const init = () => {
         $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
             let id = e.currentTarget.dataset.assessmentid;
 
-            console.log("event1");
+            window.console.log("event1");
             switch (e.target.id) {
                 case `assessment${id}_select_all`:
                     document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
@@ -203,7 +204,7 @@ export const init = () => {
             /*
                 Special handling cases for filters
             */
-                console.log("event2");
+                window.console.log("event2");
 
             switch (e.target.id) {
                 case "group_select_all":

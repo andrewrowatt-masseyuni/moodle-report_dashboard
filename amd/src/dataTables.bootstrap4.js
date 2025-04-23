@@ -5,7 +5,7 @@
 (function( factory ){
 	if ( typeof define === 'function' && define.amd ) {
 		// AMD
-		define( ['jquery', 'report_dashboard/dataTables'], function ( $ ) {
+		define( ['jquery', 'report_dashboard/datatables'], function ( $ ) {
 			return factory( $, window, document );
 		} );
 	}
@@ -14,7 +14,7 @@
 		var jq = require('jquery');
 		var cjsRequires = function (root, $) {
 			if ( ! $.fn.dataTable ) {
-				require('datatables.net')(root, $);
+				require('report_dashboard/datatables')(root, $);
 			}
 		};
 
