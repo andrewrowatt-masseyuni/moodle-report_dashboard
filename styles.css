@@ -27,7 +27,7 @@
         }
     }
 
-    span.tag {
+    span.rdbtag {
         border-radius: 12px;
         padding: 2px 8px;
         display: inline-block;
@@ -38,7 +38,7 @@
         background-color: #fff7;
     }
 
-    label.form-check-label:has(span:empty.tag) {
+    label.form-check-label:has(span:empty.rdbtag) {
         /* To ensure the circle is on the right-margin */
         width: 100%;
 
@@ -46,8 +46,8 @@
         margin-right: 2em;
     }
 
-    /* If empty, tag is rendered as an empty coloured circle */
-    span:empty.tag {
+    /* If empty, rdbtag is rendered as an empty coloured circle */
+    span:empty.rdbtag {
         display: block;
         min-width: 1.5em;
         width: 1.5em;
@@ -56,7 +56,7 @@
         float: right;
     }
 
-    div.tag-group {
+    div.rdbtag-group {
         display: flex;
         justify-content: flex-start;
         gap: 0.5em;
@@ -104,7 +104,7 @@
 
     tr.filters,
     .tc_lastaccessed {
-        span.tag {
+        span.rdbtag {
             &[data-filter-category="never"],
             &[data-filter-category="over4week"] {
                 background-color: var(--negative);
@@ -126,20 +126,20 @@
 
     tr.filters,
     .tc_groups {
-        span.tag {
+        span.rdbtag {
             max-width: 10em;
             text-overflow: ellipsis;
             overflow: hidden;
 
-            &.tag-course-group {
+            &.rdbtag-course-group {
                 background-color: var(--note2);
             }
 
-            &.tag-cohort-group {
+            &.rdbtag-cohort-group {
                 background-color: var(--note3);
             }
 
-            &.tag-priority-group {
+            &.rdbtag-priority-group {
                 background-color: var(--note);
             }
         }
@@ -147,7 +147,7 @@
 
     tr.filters,
     .tc_lateassessments {
-        span.tag {
+        span.rdbtag {
             &[data-filter-category="yes"] {
                 background-color: var(--negative);
             }
@@ -160,7 +160,7 @@
 
     tr.filters,
     .tc_assessment {
-        span.tag {
+        span.rdbtag {
             &[data-filter-category="notdue"] {
                 background-color: var(--neutral);
             }
@@ -188,7 +188,7 @@
     }
 
     .tc_assessment {
-        span.tag:where([data-filter-category="passed"], [data-filter-category="failed"]) {
+        span.rdbtag:where([data-filter-category="passed"], [data-filter-category="failed"]) {
             &::after {
                 content: "%";
                 font-size: 0.8rem;

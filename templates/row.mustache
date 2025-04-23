@@ -29,44 +29,49 @@
     <div><span class="username">{{row.username}}</span><span class="firstname">{{row.firstname}}</span><span class="lastname">{{row.lastname}}</span></div>
 </td>
 <td class="tc_lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
-    <span class="tag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
+    <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
 </td>
 <td class="tc_groups">
-<div class="tag-group">
+<div class="rdbtag-group">
 {{#groups}}
-<span class="tag {{class}}" data-filter-category="group-{{id}}">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="group-{{id}}">{{groupname}}</span>
+{{/groups}}
+{{^groups}}
+{{^cohort_groups}}
+<span class="rdbtag rdbtag-course-group" data-filter-category="group-nogroups">None</span>
+{{/cohort_groups}}
 {{/groups}}
 {{#cohort_groups}}
-<span class="tag {{class}}" data-filter-category="cohortgroup-{{id}}">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="cohortgroup-{{id}}">{{groupname}}</span>
 {{/cohort_groups}}
 {{#row.international}}
-<span class="tag tag-priority-group" data-filter-category="priority-international">International</span>
+<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-international">International</span>
 {{/row.international}}
 {{#row.maori}}
-<span class="tag tag-priority-group" data-filter-category="priority-maori">Māori</span>
+<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-maori">Māori</span>
 {{/row.maori}}
 {{#row.pacific}}
-<span class="tag tag-priority-group" data-filter-category="priority-pacific">Pacific</span>
+<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-pacific">Pacific</span>
 {{/row.pacific}}
 {{#row.new}}
-<span class="tag tag-priority-group" data-filter-category="priority-new" title="New to Massey">New</span>
+<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-new" title="New to Massey">New</span>
 {{/row.new}}
 </div>
 </td>
 <td class="tc_lateassessments">
 {{#lateassessments}}
-<span class="tag" data-filter-category="yes">Yes</span>
+<span class="rdbtag" data-filter-category="yes">Yes</span>
 {{/lateassessments}}
 {{^lateassessments}}
-<span class="tag" data-filter-category="no">No</span>
+<span class="rdbtag" data-filter-category="no">No</span>
 {{/lateassessments}}
 </td>
 {{#assessments}}
 <td class="tc_assessment assessment{{assessmentid}}">
-    <div class="tag-group">
-        <span class="tag" data-filter-category="{{status}}">{{label}}</span>
+    <div class="rdbtag-group">
+        <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
         {{#extension_date}}
-        <span class="tag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
+        <span class="rdbtag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
             {{#str}} assessmentstatus_extension, report_dashboard {{/str}}
         </span>
         {{/extension_date}}
