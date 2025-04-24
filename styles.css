@@ -1,3 +1,31 @@
+#page-report-dashboard-index {
+    .gap-1 {
+        gap: 0.25em;
+    }
+
+    .gap-2 {
+        gap: 0.5em;
+    }
+
+    .gap-3 {
+        gap: 1em;
+    }
+}
+
+.dashboard_header {
+    .markdown {
+        p {
+            margin-bottom: 0;
+        }
+
+        ul {
+            margin-bottom: 0;
+            padding-inline-start: 1.2em;
+        }
+    }
+}
+
+
 .dashboard_container {
     position: relative;
 }
@@ -141,6 +169,10 @@
 
             &.rdbtag-priority-group {
                 background-color: var(--note);
+            }
+
+            &.rdbtag-previousenrolments {
+                background-color: var(--warning);
             }
         }
     }

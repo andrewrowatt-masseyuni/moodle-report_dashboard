@@ -23,11 +23,46 @@
     {
     }
 }}
-<hr />
+<div class="dashboard_header">
+    {{{description}}}
+    <hr />
+    <div class="instructions_buttons mb-2 d-flex align-items-center markdown gap-2">
+        {{#instructions}}
+        <a class="btn btn-outline-info btn-sm" data-toggle="collapse" href="#collapseInstructions" role="button" aria-expanded="false" aria-controls="collapseInstructions">
+            {{#str}} instructions, report_dashboard {{/str}}
+        </a>
+        {{/instructions}}
+        {{#limitations}}
+        <a class="btn btn-outline-info btn-sm" data-toggle="collapse" href="#collapseLimitations" role="button" aria-expanded="false" aria-controls="collapseLimitations">
+            {{#str}} limitations, report_dashboard {{/str}}
+        </a>
+        {{/limitations}}
+        <a class="btn btn-{{^knownissues}}success{{/knownissues}}{{#knownissues}}info{{/knownissues}} btn-sm" data-toggle="collapse" href="#collapseKnownissues" role="button" aria-expanded="false" aria-controls="collapseKnownissues">
+        {{#knownissues}}<i class="fa fa-info-circle disabled" aria-hidden="true"></i>{{/knownissues}} {{#str}} knownissues, report_dashboard {{/str}}
+        </a>
+        {{{supportcontact}}}
+    </div>
+    <div class="collapse" id="collapseInstructions">
+    <div class="card card-body markdown">
+        {{{instructions}}}
+    </div>
+    </div>
+    <div class="collapse" id="collapseLimitations">
+    <div class="card card-body markdown">
+        {{{limitations}}}
+    </div>
+    </div>
+    <div class="collapse" id="collapseKnownissues">
+    <div class="card card-body markdown">
+        {{^knownissues}}{{#str}} noknownissues, report_dashboard {{/str}}{{/knownissues}}{{#knownissues}}{{{knownissues}}}{{/knownissues}}
+    </div>
+    </div>
+    <hr />
+</div>
 <div class="dashboard_container">
-<div class="d-flex flex-row justify-content-end mb-1" style="gap: 0.5em;">
+<div class="d-flex flex-row justify-content-end mb-1 gap-2">
 {{#hiddenassessments}}
-<form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="action" value="showassessment" /><input type="hidden" name="assessmentid" value="{{assessmentid}}" /><button type="submit" class="btn btn-outline-primary"><i class="fa fa-eye" aria-hidden="true"></i> Show {{name}}</button></form>
+<form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="sesskey" value="{{sesskey}}" /><input type="hidden" name="action" value="showassessment" /><input type="hidden" name="assessmentid" value="{{assessmentid}}" /><button type="submit" class="btn btn-outline-primary"><i class="fa fa-eye" aria-hidden="true"></i> Show {{name}}</button></form>
 {{/hiddenassessments}}
 </div>
     <table id="report_dashboard_dashboard" class="table table-striped table-bordered display" width="100%">

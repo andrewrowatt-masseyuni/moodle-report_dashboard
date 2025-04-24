@@ -26,14 +26,14 @@
 <th>
     <div class="dropdown" id="group">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-            <span>All</span>
+            <span>{{#str}} all, core {{/str}}</span>
         </button>
         <div class="dropdown-menu">
-            <button class="dropdown-item all" id="group_select_all" disabled="disabled">Select all</button>
-            <button class="dropdown-item all" id="group_select_none">Clear all</button>
+            <button class="dropdown-item all" id="group_select_all" disabled="disabled">{{#str}} selectall, core {{/str}}</button>
+            <button class="dropdown-item all" id="group_select_none">{{#str}} clearall, core {{/str}}</button>
 
             <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header" title="help text here">Cohort groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
+            <h6 class="dropdown-header" title="{{#str}} cohortgroupshelptext, report_dashboard {{/str}}">Cohort groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
             {{^cohort_groups}}
             <div class="dropdown-item disabled">None</div>
             {{/cohort_groups}}
@@ -61,7 +61,7 @@
             {{/groups}}
 
             <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header" title="Priority groups help text here">Priority groups <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
+            <h6 class="dropdown-header" title="Refer to {{#str}} instructions, report_dashboard {{/str}} above">{{#str}} prioritygroups, report_dashboard {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
             <!-- <div class="dropdown-item disabled">None</div> -->
 
 <div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked" data-label="International">International<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
@@ -74,8 +74,19 @@
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked" data-label="No groups">
-                        No groups
+                        <input type="checkbox" class="form-check-input" name="groups" value="previousenrolments" checked="checked" data-label="Previous enrolment(s)">
+                        Previous enrolment(s) <i class="fa fa-info-circle" aria-hidden="true" title="{{#str}} previousenrolmenthelptext, report_dashboard {{/str}}"></i><span class="rdbtag rdbtag-previousenrolments"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-item form-group mb-0">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked" data-label="{{#str}} nogroups, report_dashboard {{/str}}">
+                        {{#str}} nogroups, report_dashboard {{/str}}
                     </label>
                 </div>
             </div>

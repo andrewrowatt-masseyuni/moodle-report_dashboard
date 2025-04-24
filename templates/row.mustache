@@ -34,7 +34,7 @@
 <td class="tc_groups">
 <div class="rdbtag-group">
 {{#groups}}
-<span class="rdbtag {{class}}" data-filter-category="group-{{id}}">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="group-{{id}}" title="Course group '{{groupname}}'">{{groupname}}</span>
 {{/groups}}
 {{^groups}}
 {{^cohort_groups}}
@@ -42,7 +42,7 @@
 {{/cohort_groups}}
 {{/groups}}
 {{#cohort_groups}}
-<span class="rdbtag {{class}}" data-filter-category="cohortgroup-{{id}}">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="cohortgroup-{{id}}" title="Cohort (via meta-link) group '{{groupname}}'>{{groupname}}</span>
 {{/cohort_groups}}
 {{#row.international}}
 <span class="rdbtag rdbtag-priority-group" data-filter-category="priority-international">International</span>
@@ -56,6 +56,9 @@
 {{#row.new}}
 <span class="rdbtag rdbtag-priority-group" data-filter-category="priority-new" title="New to Massey">New</span>
 {{/row.new}}
+{{#row.previous_enrolments}}
+<span class="rdbtag rdbtag-previousenrolments" data-filter-category="previousenrolments" title="Previous enrolment(s) in {{row.previous_enrolments}}">{{row.previous_enrolments}}</span>
+{{/row.previous_enrolments}}
 </div>
 </td>
 <td class="tc_lateassessments">

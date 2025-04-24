@@ -35,7 +35,7 @@ final class dashboard_test extends \advanced_testcase {
      * @covers ::dashboard
      */
     public function test_single_offering_course(): void {
-        global $DB, $USER;
+        global $DB;
 
         $this->resetAfterTest(false);
         $this->setAdminUser();
@@ -109,7 +109,7 @@ final class dashboard_test extends \advanced_testcase {
 
         // User assessment test
 
-        $userassessmentdataset = dashboard::get_user_assessments($course1->id, []);
+        $userassessmentdataset = dashboard::get_user_assessments($course1->id, '');
         $this->assertEquals(4 * 3, count($userassessmentdataset));
 
         // Advanced user test - groups
@@ -169,14 +169,10 @@ final class dashboard_test extends \advanced_testcase {
      * @covers ::dashboard
      */
     public function test_metalink_course(): void {
-        global $DB, $USER;
-
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
         set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
-
-        $now = time();
 
         // Basic user test
 
@@ -305,12 +301,102 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('1', $userdataset[2]->cohortgroups);
         $this->assertEquals('1', $userdataset[3]->cohortgroups);
         $this->assertEquals('2', $userdataset[4]->cohortgroups);
+    }
 
-        foreach($userdataset as $userobject) {
-            $row = (array)$userobject;
-            var_dump($row['id']);
-        }
-        var_dump((array)$userdataset[1]);
+    public function test_previous_enrolments(): void {
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+
+        // Basic user test
+
+        $user1 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186031',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186032',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user3 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186033',
+            'firstname' => 'Carol',
+            'lastname' => 'Rowatt',
+        ]);
+
+        // Create master course and cohort groups
+        $course1 = $this->getDataGenerator()->create_course(['shortname' => '100101_2025_S1FS']);
+
+        // Create offering courses
+        $course1cc1 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2025_S1FS_MTUI']);
+        $course1cc2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2025_S1FS_DISD']);
+
+        $this->getDataGenerator()->enrol_user($user1->id, $course1cc1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course1cc1->id);
+        $this->getDataGenerator()->enrol_user($user3->id, $course1cc1->id);
+
+        // Meta enrolment plugin is not enabled by default.
+        set_config('enrol_plugins_enabled', 'self,manual,meta');
+
+        // Meta-link the offering courses to the master course.
+        $metaplugin = enrol_get_plugin('meta');
+        $metaplugin->add_instance($course1, [
+            'customint1' => $course1cc1->id,
+        ]);
+
+        $metaplugin->add_instance($course1, [
+            'customint1' => $course1cc2->id,
+        ]);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(3, count($userdataset));
+
+        $this->assertEquals('', $userdataset[1]->previous_enrolments);
+        $this->assertEquals('', $userdataset[2]->previous_enrolments);
+        $this->assertEquals('', $userdataset[3]->previous_enrolments);
+
+        // Simulate a previous enrolment by creating a new course with older offering(s)
+        $course2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2024_S2FS_MTUI']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course2->id);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(3, count($userdataset));
+
+        $this->assertEquals('2024 S2', $userdataset[1]->previous_enrolments);
+        $this->assertEquals('', $userdataset[2]->previous_enrolments);
+        $this->assertEquals('', $userdataset[3]->previous_enrolments);
+
+        // Simulate a previous enrolment by creating a new course with older offering(s)
+        $course3 = $this->getDataGenerator()->create_course(['shortname' => '100101_2023_S1FS']);
+        $course3cc1 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2023_S1FS_MTUI']);
+        $course3cc2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2023_S1FS_DISD']);
+
+        $metaplugin->add_instance($course3, [
+            'customint1' => $course3cc1->id,
+        ]);
+
+        $metaplugin->add_instance($course3, [
+            'customint1' => $course3cc2->id,
+        ]);
+
+        $this->getDataGenerator()->enrol_user($user1->id, $course3cc1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course3cc2->id);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(3, count($userdataset));
+
+        $this->assertEquals('2024 S2, 2023 S1', $userdataset[1]->previous_enrolments);
+        $this->assertEquals('2023 S1', $userdataset[2]->previous_enrolments);
+        $this->assertEquals('', $userdataset[3]->previous_enrolments);
+
     }
 
 }

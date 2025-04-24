@@ -47,17 +47,26 @@ $PAGE->set_title(
 $savedhiddenassessmentcmids = unserialize(get_user_preferences('report_dashboard_hidden_assessments',  serialize([])));
 
 $action = optional_param('action', '', PARAM_ALPHA);
-switch ($action) {
-    case 'hideassessment':
-        $savedhiddenassessmentcmids[] = required_param('assessmentid', PARAM_INT);
-        break;
-    case 'showassessment':
-        $assessmentcmid = required_param('assessmentid', PARAM_INT);
-        $savedhiddenassessmentcmids = array_diff($savedhiddenassessmentcmids, [$assessmentcmid]);
-        break;
-    default:
-        // ... Display the report
+if($action) {
+    require_sesskey();
+
+    switch ($action) {
+        case 'hideassessment':
+            $savedhiddenassessmentcmids[] = required_param('assessmentid', PARAM_INT);
+            break;
+        case 'showassessment':
+            $assessmentcmid = required_param('assessmentid', PARAM_INT);
+            $savedhiddenassessmentcmids = array_diff($savedhiddenassessmentcmids, [$assessmentcmid]);
+            break;
+        default:
+            // ... Display the report
+    }
+
+    set_user_preference('report_dashboard_hidden_assessments', serialize($savedhiddenassessmentcmids));
+
+    redirect($url);
 }
+
 
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
@@ -66,7 +75,11 @@ $PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
-echo get_config('report_dashboard', 'instructions');
+$description = markdown_to_html(trim(get_config('report_dashboard', 'description')));
+$instructions = markdown_to_html(trim(get_config('report_dashboard', 'instructions')));
+$limitations = markdown_to_html(trim(get_config('report_dashboard', 'limitations'))); // If blank, the template will hide or otherwise handle this condition.
+$knownissues = markdown_to_html(trim(get_config('report_dashboard', 'knownissues'))); // If blank, the template will hide or otherwise handle this condition.
+$supportcontact = markdown_to_html(trim(get_config('report_dashboard', 'supportcontact')));  // If blank, the template will hide or otherwise handle this condition.
 
 $data = [];
 
@@ -82,10 +95,7 @@ foreach($coursecohortgroups as $coursecohortgroup) {
     $coursecohortgroupsarray[] = (array)$coursecohortgroup;
 }
 
-
 $assessments = \report_dashboard\dashboard::get_assessments($courseid);
-
-
 
 $actualhiddenassessmentcmids = []; // ... savehiddenassessmentcmids may contain cmids that no longer exist
 
@@ -110,10 +120,19 @@ $userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, 
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
-echo $OUTPUT->render_from_template('report_dashboard/header_headings', ['assessments' => $visibleassessments, 'hiddenassessments' => $hiddenassessments, 'courseid' => $courseid]);
+echo $OUTPUT->render_from_template('report_dashboard/header_headings', [
+    'description' => $description,
+    'instructions' => $instructions, 
+    'limitations' => $limitations,
+    'knownissues' => $knownissues,
+    'supportcontact' => $supportcontact,
+    'assessments' => $visibleassessments, 
+    'hiddenassessments' => $hiddenassessments, 
+    'courseid' => $courseid, 
+    'sesskey' => sesskey()]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid]); // ... include Late Assessments here? Yes as it is Yes or No only.
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid, 'sesskey' => sesskey()]); // ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
@@ -184,7 +203,7 @@ foreach($userdataset as $userobject) {
     if($row['groups']) {
         foreach(explode(', ', $row['groups']) as $groupid) {
             $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
-            $groups[] = $groupdetails + ['class' => 'tag-course-group'];
+            $groups[] = $groupdetails + ['class' => 'rdbtag-course-group'];
         }
     }
 
@@ -230,5 +249,13 @@ foreach($userdataset as $userobject) {
 // iterate over $dataset using render_from_template OR html_writer??
 
 echo $OUTPUT->render_from_template('report_dashboard/footer', []);
+
+$earlyengagement = \report_dashboard\dashboard::get_early_engagement($courseid);
+
+$modinfo = get_fast_modinfo($course);
+$cmid = $earlyengagement[2]->cmid;
+$cm = $modinfo->get_cm($cmid);
+
+var_dump($cm->modname,$cm->name);
 
 echo $OUTPUT->footer();
