@@ -23,6 +23,7 @@
  */
 
 require('../../config.php');
+use report_dashboard\modinfohelper;
 
 /*
  * Setup page, check permissions
@@ -44,29 +45,39 @@ $PAGE->set_title(
     get_string('pluginname', 'report_dashboard')
 );
 
-$savedhiddenassessmentcmids = unserialize(get_user_preferences('report_dashboard_hidden_assessments',  serialize([])));
+$savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids',  serialize([])));
 
 $action = optional_param('action', '', PARAM_ALPHA);
 if($action) {
     require_sesskey();
 
     switch ($action) {
-        case 'hideassessment':
-            $savedhiddenassessmentcmids[] = required_param('assessmentid', PARAM_INT);
+        case 'hideitem':
+            $savedhiddencmids[] = required_param('cmid', PARAM_INT);
             break;
-        case 'showassessment':
-            $assessmentcmid = required_param('assessmentid', PARAM_INT);
-            $savedhiddenassessmentcmids = array_diff($savedhiddenassessmentcmids, [$assessmentcmid]);
+        case 'showitem':
+            $assessmentcmid = required_param('cmid', PARAM_INT);
+            $savedhiddencmids = array_diff($savedhiddencmids, [$assessmentcmid]);
             break;
         default:
             // ... Display the report
     }
 
-    set_user_preference('report_dashboard_hidden_assessments', serialize($savedhiddenassessmentcmids));
+    set_user_preference('report_dashboard_hidden_cmids', serialize($savedhiddencmids));
 
     redirect($url);
 }
 
+$modinfohelper = new modinfohelper(get_fast_modinfo($course));
+// Clean up report_dashboard_hidden_cmids as it may contain cmids that no longer exist
+
+// $modinfo-> get_cm(11);
+/*
+$cmid = $earlyengagement[2]->cmid;
+$cm = $modinfo->get_cm($cmid);
+
+Use modinfo to clean up the report_dashboard_hidden_cmids
+*/
 
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
@@ -95,28 +106,39 @@ foreach($coursecohortgroups as $coursecohortgroup) {
     $coursecohortgroupsarray[] = (array)$coursecohortgroup;
 }
 
+$earlyengagements = \report_dashboard\dashboard::get_early_engagements($courseid);
 $assessments = \report_dashboard\dashboard::get_assessments($courseid);
-
-$actualhiddenassessmentcmids = []; // ... savehiddenassessmentcmids may contain cmids that no longer exist
 
 $visibleassessments = [];
 $hiddenassessments = [];
 
+$visibleearlyengagements = [];
+$hiddenearlyengagements = [];
+
 foreach($assessments as $assessmentobject) {
     $assessment = (array)$assessmentobject;
-    if(in_array($assessment['assessmentid'], $savedhiddenassessmentcmids)) {
+    if(in_array($assessment['assessmentid'], $savedhiddencmids)) {
         $hiddenassessments[] = $assessment;
-        $actualhiddenassessmentcmids[] = $assessment['assessmentid'];
     } else {
         $visibleassessments[] = $assessment;
     }
 }
 
-set_user_preference('report_dashboard_hidden_assessments', serialize($actualhiddenassessmentcmids));
+foreach($earlyengagements as $earlyengagementobject) {
+    $earlyengagement = (array)$earlyengagementobject;
+    $earlyengagement += ['name' => $modinfohelper->get_cm_name($earlyengagement['cmid'])];
+    if(in_array($earlyengagement['cmid'], $savedhiddencmids)) {
+        $hiddenearlyengagements[] = $earlyengagement;
+    } else {
+        $visibleearlyengagements[] = $earlyengagement;
+    }
+}
+
+$earlyengagementstatuses = \report_dashboard\dashboard::get_earlyengagement_statuses();
+$userearlyengagements = \report_dashboard\dashboard::get_user_early_engagements($courseid, join(' ',$savedhiddencmids));
 
 $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
-
-$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ',$actualhiddenassessmentcmids));
+$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ',$savedhiddencmids));
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
@@ -126,12 +148,15 @@ echo $OUTPUT->render_from_template('report_dashboard/header_headings', [
     'limitations' => $limitations,
     'knownissues' => $knownissues,
     'supportcontact' => $supportcontact,
+    'earlyengagements' => $visibleearlyengagements, 
+    'hiddenearlyengagements' => $hiddenearlyengagements, 
     'assessments' => $visibleassessments, 
     'hiddenassessments' => $hiddenassessments, 
     'courseid' => $courseid, 
     'sesskey' => sesskey()]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_earlyengagements', ['earlyengagements' => $visibleearlyengagements, 'courseid' => $courseid, 'sesskey' => sesskey()]); // ... include Late Assessments here? Yes as it is Yes or No only.
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid, 'sesskey' => sesskey()]); // ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
@@ -140,9 +165,13 @@ echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
 $usercount = count($userdataset);
 $assessmentcount = count($visibleassessments);
+$earlyengagementcount = count($visibleearlyengagements);
+
 $userassessmentscount = count($userassessments);
+$userearlyengagementscount = count($userearlyengagements);
 
 $userindex = 0;
+$userearlyengagementindex = 0;
 $userassessmentindex = 0;
 
 // ... Because we are using carefully sorted but separate arrays we need to do additional checking
@@ -216,6 +245,21 @@ foreach($userdataset as $userobject) {
         }
     }
 
+    $earlyengagements = [];
+
+    for($earlyengagementindex = 0; $earlyengagementindex < $earlyengagementcount; $earlyengagementindex++) {
+        $earlyengagement = (array)$userearlyengagements[$userearlyengagementindex + 1];
+
+        // ... Because we are using carefully sorted but separate arrays we need to do additional checking
+        if ($earlyengagement['userid'] != $currentuserid) {
+            throw new moodle_exception("Early engagement user id: $earlyengagement[userid] does not match current user id: $currentuserid where user earlyengagement index = $userearlyengagementindex");
+        }
+
+        $label = $earlyengagementstatuses[$earlyengagement['status']];
+        $earlyengagements[] = $earlyengagement + ['label' => $label];
+        $userearlyengagementindex += 1;
+    }
+
     $assessments = [];
     $lateassessments = false;
 
@@ -243,19 +287,11 @@ foreach($userdataset as $userobject) {
     }
 
     echo $OUTPUT->render_from_template('report_dashboard/row',
-        ['row' => $row, 'groups' => $groups, 'cohort_groups' => $cohortgroups, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
+        ['row' => $row, 'groups' => $groups, 'cohort_groups' => $cohortgroups, 'earlyengagements' => $earlyengagements, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
 }
 
 // iterate over $dataset using render_from_template OR html_writer??
 
 echo $OUTPUT->render_from_template('report_dashboard/footer', []);
-
-$earlyengagement = \report_dashboard\dashboard::get_early_engagement($courseid);
-
-$modinfo = get_fast_modinfo($course);
-$cmid = $earlyengagement[2]->cmid;
-$cm = $modinfo->get_cm($cmid);
-
-var_dump($cm->modname,$cm->name);
 
 echo $OUTPUT->footer();

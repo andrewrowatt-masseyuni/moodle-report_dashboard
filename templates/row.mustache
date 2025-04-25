@@ -61,6 +61,13 @@
 {{/row.previous_enrolments}}
 </div>
 </td>
+{{#earlyengagements}}
+<td class="tc_earlyengagement earlyengagement{{earlyengagementid}}">
+    <div class="rdbtag-group">
+        <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
+    </div>
+</td>
+{{/earlyengagements}}
 <td class="tc_lateassessments">
 {{#lateassessments}}
 <span class="rdbtag" data-filter-category="yes">Yes</span>

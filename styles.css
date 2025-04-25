@@ -191,6 +191,7 @@
     }
 
     tr.filters,
+    .tc_earlyengagement,
     .tc_assessment {
         span.rdbtag {
             &[data-filter-category="notdue"] {
@@ -198,6 +199,10 @@
             }
 
             &[data-filter-category="submitted"] {
+                background-color: var(--positive);
+            }
+
+            &[data-filter-category="completed"] {
                 background-color: var(--positive);
             }
 
@@ -214,6 +219,10 @@
             }
 
             &[data-filter-category="extension"] {
+                background-color: var(--note);
+            }
+
+            &[data-filter-category="notcompleted"] {
                 background-color: var(--note);
             }
         }

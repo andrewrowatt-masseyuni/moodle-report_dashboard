@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_dashboard/header_filter_earlyengagements
+
+    TODO describe template header_filter_earlyengagements
+
+    Example context (json):
+    {
+    }
+}}
+{{#earlyengagements}}
+<th class="dt-left">
+    <div class="d-flex" style="gap: 0.5em;">
+        <div class="dropdown earlyengagement_filter" id="earlyengagement{{id}}" data-earlyengagementid="{{id}}">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                <span>All</span>
+            </button>
+            <div class="dropdown-menu" data-earlyengagementid="{{id}}">
+                <button class="dropdown-item all" id="earlyengagement{{id}}_select_all" disabled="disabled">Select all</button>
+                <button class="dropdown-item all" id="earlyengagement{{id}}_select_none">Clear all</button>
+
+                <div class="dropdown-divider"></div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="earlyengagement{{id}}_filter" value="notdue" checked="checked" data-label="{{#str}} earlyengagementstatus_notdue, report_dashboard {{/str}}">
+                            {{#str}} earlyengagementstatus_notdue, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="notdue"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="earlyengagement{{id}}_filter" value="completed" checked="checked" data-label="{{#str}} earlyengagementstatus_completed, report_dashboard {{/str}}">
+                            {{#str}} earlyengagementstatus_completed, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="completed"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="earlyengagement{{id}}_filter" value="notcompleted" checked="checked" data-label="{{#str}} earlyengagementstatus_notcompleted, report_dashboard {{/str}}">
+                            {{#str}} earlyengagementstatus_notcompleted, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="notcompleted"></span>
+                        </label>
+                    </div>
+                </div>
+
+                
+                <div class="dropdown-divider"></div>
+                
+                 <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" name="earlyengagement{{id}}_filter" value="overdue" checked="checked" data-label="{{#str}} earlyengagementstatus_overdue, report_dashboard {{/str}}">
+                            {{#str}} earlyengagementstatus_overdue, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="overdue"></span>
+                        </label>
+                    </div>
+                </div>               
+                
+
+            </div>
+        </div>
+        <form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="sesskey" value="{{sesskey}}" /><input type="hidden" name="action" value="hideitem" /><input type="hidden" name="cmid" value="{{cmid}}" /><button title="Hide this early engagement actiivty" type="submit" class="btn btn-outline-secondary"><i class="fa fa-eye-slash" aria-hidden="true"></i> Hide</button></form>
+    </div>
+</th>
+{{/earlyengagements}}

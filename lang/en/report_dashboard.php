@@ -36,6 +36,10 @@ $string['cohortgroupshelptext'] = 'Cohort in this context is a course group base
 $string['dashboard:view'] = 'View Course coordinator dashboard';
 $string['description'] = 'Description';
 $string['description_desc'] = 'Short description and introduction to the report.';
+$string['earlyengagementstatus_completed'] = 'Completed';
+$string['earlyengagementstatus_notcompleted'] = 'Not completed';
+$string['earlyengagementstatus_notdue'] = 'Not due';
+$string['earlyengagementstatus_overdue'] = 'Overdue';
 $string['instructions'] = 'General notes and instructions';
 $string['instructions_desc'] = 'Site-wide instructions for the dashboard. Include usage notes, limitations etc. You can (and should) use <a target="_blank" href="https://docs.moodle.org/en/Markdown">markdown</a> to format the text.';
 $string['nogroups'] = 'No groups';

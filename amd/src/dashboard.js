@@ -54,10 +54,8 @@ export const init = () => {
             }
         );
 
-        /* eslint complexity: ["error", {"max": 25 }] */
+        /* eslint complexity: ["error", {"max": 30 }] */
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            window.console.log("Filtering data");
-
             let row = $(table.row(dataIndex).node());
 
             /*
@@ -126,6 +124,54 @@ export const init = () => {
             }
 
             /*
+                Early engagements filter
+            */
+
+            let earlyengagementFilters = document.querySelectorAll(".earlyengagement_filter");
+
+            for (const earlyengagementFilter of earlyengagementFilters) {
+                let id = earlyengagementFilter.dataset.earlyengagementid;
+                let itemMatch = false;
+                let items = document.querySelectorAll(`input[name='earlyengagement${id}_filter']`);
+                let itemsChecked = document.querySelectorAll(`input[name='earlyengagement${id}_filter']:checked`).length;
+                let anyUnchecked = items.length != itemsChecked;
+
+                let dropdownlabel = "Unknown"; // Default label for the dropdown
+
+                for (const item of items) {
+                    if (item.checked) {
+                        dropdownlabel = item.dataset.label;
+
+                        // eslint-disable-next-line max-len
+                        if (row.find(`td.tc_earlyengagement.earlyengagement${id} span[data-filter-category="${item.value}"]`).length > 0) {
+                            itemMatch = true;
+                            break;
+                        }
+                    }
+                }
+
+                document.getElementById(`earlyengagement${id}_select_all`).disabled = !anyUnchecked;
+                document.getElementById(`earlyengagement${id}_select_none`).disabled = itemsChecked == 0;
+
+                if (itemsChecked == 0) {
+                    dropdownlabel = "None";
+                } else if (itemsChecked == 1) {
+                    // dropdownlabel = "1 Group";
+                    console.log("1 item checked!");
+                } else if (anyUnchecked) {
+                    dropdownlabel = "Multiple criteria";
+                } else {
+                    dropdownlabel = "All";
+                }
+
+                document.querySelector(`#earlyengagement${id} > button > span`).textContent = dropdownlabel;
+
+                if (!itemMatch) {
+                    return false;
+                }
+            }
+
+            /*
                 Assessments filter
             */
 
@@ -181,10 +227,26 @@ export const init = () => {
             table.columns(1).search(this.value).draw();
         });
 
+        $("tr.filters .earlyengagement_filter .dropdown-menu").on("click", (e) => {
+            let id = e.currentTarget.dataset.earlyengagementid;
+
+            switch (e.target.id) {
+                case `earlyengagement${id}_select_all`:
+                    document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
+                        item.checked = true;
+                    });
+                    break;
+                case `earlyengagement${id}_select_none`:
+                    document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
+                        item.checked = false;
+                    });
+                    break;
+            }
+        });
+
         $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
             let id = e.currentTarget.dataset.assessmentid;
 
-            window.console.log("event1");
             switch (e.target.id) {
                 case `assessment${id}_select_all`:
                     document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
@@ -203,7 +265,6 @@ export const init = () => {
             /*
                 Special handling cases for filters
             */
-                window.console.log("event2");
 
             switch (e.target.id) {
                 case "group_select_all":
