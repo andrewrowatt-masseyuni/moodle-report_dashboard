@@ -112,6 +112,10 @@ final class dashboard_test extends \advanced_testcase {
         $userassessmentdataset = dashboard::get_user_assessments($course1->id, '');
         $this->assertEquals(4 * 3, count($userassessmentdataset));
 
+        // Test hiding assessments
+        $userassessmentdataset = dashboard::get_user_assessments($course1->id, "$assessment1->cmid $assessment2->cmid");
+        $this->assertEquals(4 * 1, count($userassessmentdataset));
+
         // Advanced user test - groups
 
         $group1 = $this->getDataGenerator()->create_group([
@@ -396,6 +400,74 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('2024 S2, 2023 S1', $userdataset[1]->previous_enrolments);
         $this->assertEquals('2023 S1', $userdataset[2]->previous_enrolments);
         $this->assertEquals('', $userdataset[3]->previous_enrolments);
+
+    }
+
+    public function test_early_engagement(): void {
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+
+        // Basic user test
+
+        $user1 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186031',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186032',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user3 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186033',
+            'firstname' => 'Carol',
+            'lastname' => 'Rowatt',
+        ]);
+
+        
+
+        // Create master course and cohort groups
+        $course1 = $this->getDataGenerator()->create_course(['shortname' => '100101_2025_S1FS']);
+        $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user3->id, $course1->id);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(3, count($userdataset));
+
+        $ee1 = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'name' => 'Page 1',
+            'idnumber' => 'EE1',
+            ]
+        );
+
+        $ee2 = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'name' => 'Page 2',
+            'idnumber' => 'EE2',
+            ]
+        );
+
+        $earlyengagements = dashboard::get_early_engagements($course1->id);
+        $this->assertEquals(2, count($earlyengagements));
+
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id,'');
+        $this->assertEquals(3 * 2, count($userearlyengagements));
+
+
+        // Test hiding an early engagement
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id,$ee1->cmid);
+        $this->assertEquals(3 * 1, count($userearlyengagements));
+
 
     }
 
