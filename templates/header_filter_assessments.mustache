@@ -41,18 +41,12 @@
             <div class="dropdown-divider"></div>
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_yes" value="yes" data-label="Yes">
-                    <label class="form-check-label" for="lateassessments_yes">
-                        Yes<span class="rdbtag" data-filter-category="yes"></span>
-                    </label>
+                    <label class="form-check-label" for="lateassessments_yes" data-filter-count="-"><input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_yes" value="yes" data-label="Yes">Yes<span class="rdbtag" data-filter-category="yes"></span></label>
                 </div>
             </div>
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_no" value="no" data-label="No">
-                    <label class="form-check-label" for="lateassessments_no">
-                        No<span class="rdbtag" data-filter-category="no"></span>
-                    </label>
+                    <label class="form-check-label" for="lateassessments_no" data-filter-count="-"><input class="form-check-input" type="radio" name="lateassessments" id="lateassessments_no" value="no" data-label="No">No<span class="rdbtag" data-filter-category="no"></span></label>
                 </div>
             </div>
         </div>
@@ -60,7 +54,7 @@
 </th>
 {{#assessments}}
 <th class="dt-left">
-    <div class="d-flex" style="gap: 0.5em;">
+    <div class="d-flex gap-2">
         <div class="dropdown assessment_filter" id="assessment{{id}}" data-assessmentid="{{id}}">
             <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                 <span>All</span>
@@ -73,7 +67,7 @@
 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="notdue" checked="checked" data-label="{{#str}} assessmentstatus_notdue, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_notdue, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="notdue"></span>
                         </label>
@@ -82,7 +76,7 @@
 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="submitted" checked="checked" data-label="{{#str}} assessmentstatus_submitted, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_submitted, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="submitted"></span>
                         </label>
@@ -91,7 +85,7 @@
 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="overdue" checked="checked" data-label="{{#str}} assessmentstatus_overdue, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_overdue, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="overdue"></span>
                         </label>
@@ -103,7 +97,7 @@
                 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="passed" checked="checked" data-label="{{#str}} assessmentstatus_passed, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_passed, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="passed"></span>
                         </label>
@@ -112,7 +106,7 @@
                 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="failed" checked="checked" data-label="{{#str}} assessmentstatus_failed, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_failed, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="failed"></span>
                         </label>
@@ -123,7 +117,7 @@
                 
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="extension" checked="checked" data-label="{{#str}} assessmentstatus_notdue, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_extension, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="extension"></span>
                         </label>

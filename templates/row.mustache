@@ -31,7 +31,7 @@
 <td class="tc_lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
     <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
 </td>
-<td class="tc_groups">
+<td class="tc_groups groups">
 <div class="rdbtag-group">
 {{#groups}}
 <span class="rdbtag {{class}}" data-filter-category="group-{{id}}" title="Course group '{{groupname}}'">{{groupname}}</span>
@@ -68,7 +68,7 @@
     </div>
 </td>
 {{/earlyengagements}}
-<td class="tc_lateassessments">
+<td class="tc_lateassessments lateassessments">
 {{#lateassessments}}
 <span class="rdbtag" data-filter-category="yes">Yes</span>
 {{/lateassessments}}

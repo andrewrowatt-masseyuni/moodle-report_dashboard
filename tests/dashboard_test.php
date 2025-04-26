@@ -413,21 +413,21 @@ final class dashboard_test extends \advanced_testcase {
 
         $user1 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
-            'username' => '98186031',
+            'username' => '98186041',
             'firstname' => 'Andy',
             'lastname' => 'Rowatt',
         ]);
 
         $user2 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
-            'username' => '98186032',
+            'username' => '98186042',
             'firstname' => 'Betty',
             'lastname' => 'Rowatt',
         ]);
 
         $user3 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
-            'username' => '98186033',
+            'username' => '98186043',
             'firstname' => 'Carol',
             'lastname' => 'Rowatt',
         ]);
@@ -435,7 +435,7 @@ final class dashboard_test extends \advanced_testcase {
         
 
         // Create master course and cohort groups
-        $course1 = $this->getDataGenerator()->create_course(['shortname' => '100101_2025_S1FS']);
+        $course1 = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user3->id, $course1->id);

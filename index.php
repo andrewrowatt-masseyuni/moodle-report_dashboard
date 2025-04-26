@@ -117,7 +117,8 @@ $hiddenearlyengagements = [];
 
 foreach($assessments as $assessmentobject) {
     $assessment = (array)$assessmentobject;
-    if(in_array($assessment['assessmentid'], $savedhiddencmids)) {
+    $assessment += ['name' => $modinfohelper->get_cm_name($assessment['cmid'])];
+    if(in_array($assessment['cmid'], $savedhiddencmids)) {
         $hiddenassessments[] = $assessment;
     } else {
         $visibleassessments[] = $assessment;

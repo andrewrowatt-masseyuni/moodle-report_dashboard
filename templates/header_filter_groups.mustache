@@ -40,8 +40,7 @@
             {{#cohort_groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="cohortgroup-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
-                        <span class="rdbtag rdbtag-cohort-group"></span>
+                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="cohortgroup-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="rdbtag rdbtag-cohort-group"></span>
                         </label>
                     </div>
                 </div>
@@ -54,8 +53,7 @@
             {{#groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
-                        <label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="group-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="membercount" title="{{membercount}} student/s are in this group">{{membercount}}</span>
-                        <span class="rdbtag rdbtag-course-group"></span></label>
+                        <label class="form-check-label" data-filter-count="-"><input type="checkbox" class="form-check-input" name="groups" value="group-{{id}}" checked="checked" data-label="{{groupname}}">{{groupname}}<span class="rdbtag rdbtag-course-group"></span></label>
                     </div>
                 </div>
             {{/groups}}
@@ -64,19 +62,16 @@
             <h6 class="dropdown-header" title="Refer to {{#str}} instructions, report_dashboard {{/str}} above">{{#str}} prioritygroups, report_dashboard {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></h6>
             <!-- <div class="dropdown-item disabled">None</div> -->
 
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked" data-label="International">International<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-new" checked="checked" data-label="New">New<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-maori" checked="checked" data-label="Māori">Māori<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
-<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input" name="groups" value="priority-pacific" checked="checked" data-label="Pacific">Pacific<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label" data-filter-count="-"><input type="checkbox" class="form-check-input" name="groups" value="priority-international" checked="checked" data-label="International">International<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label" data-filter-count="-"><input type="checkbox" class="form-check-input" name="groups" value="priority-new" checked="checked" data-label="New">New<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label" data-filter-count="-"><input type="checkbox" class="form-check-input" name="groups" value="priority-maori" checked="checked" data-label="Māori">Māori<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
+<div class="dropdown-item form-group mb-0"><div class="form-check"><label class="form-check-label" data-filter-count="-"><input type="checkbox" class="form-check-input" name="groups" value="priority-pacific" checked="checked" data-label="Pacific">Pacific<span class="rdbtag rdbtag-priority-group"></span></label></div></div>
 
             <div class="dropdown-divider"></div>
 
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
-                    <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="groups" value="previousenrolments" checked="checked" data-label="Previous enrolment(s)">
-                        Previous enrolment(s) <i class="fa fa-info-circle" aria-hidden="true" title="{{#str}} previousenrolmenthelptext, report_dashboard {{/str}}"></i><span class="rdbtag rdbtag-previousenrolments"></span>
-                    </label>
+                    <label class="form-check-label" data-filter-count="1"><input type="checkbox" class="form-check-input" name="groups" value="previousenrolments" checked="checked" data-label="Previous enrolment(s)">Previous enrolment(s) <i class="fa fa-info-circle text-muted" aria-hidden="true" title="{{#str}} previousenrolmenthelptext, report_dashboard {{/str}}"></i><span class="rdbtag rdbtag-previousenrolments"></span></label>
                 </div>
             </div>
 
@@ -84,10 +79,7 @@
 
             <div class="dropdown-item form-group mb-0">
                 <div class="form-check">
-                    <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked" data-label="{{#str}} nogroups, report_dashboard {{/str}}">
-                        {{#str}} nogroups, report_dashboard {{/str}}
-                    </label>
+                    <label class="form-check-label" data-filter-count="1"><input type="checkbox" class="form-check-input" name="groups" value="nogroups" checked="checked" data-label="{{#str}} nogroups, report_dashboard {{/str}}">{{#str}} nogroups, report_dashboard {{/str}}</label>
                 </div>
             </div>
 

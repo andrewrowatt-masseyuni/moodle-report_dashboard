@@ -33,11 +33,10 @@ export const init = () => {
                 orderCellsTop: true,
                 responsive: false,
                 autoWidth: true,
+                paging: false,
                 layout: {
                     topStart: 'info',
                     topEnd: null,
-                    bottomStart: 'pageLength',
-                    bottonEnd: 'paging',
                 },
                 columnDefs: [
                     {
@@ -53,6 +52,12 @@ export const init = () => {
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
             }
         );
+
+        updateFilterCounts(true);
+
+        table.on('draw', function() {
+            updateFilterCounts(false);
+        });
 
         /* eslint complexity: ["error", {"max": 30 }] */
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
@@ -218,7 +223,6 @@ export const init = () => {
                 }
             }
 
-
             return true;
         });
 
@@ -282,6 +286,28 @@ export const init = () => {
 
             table.draw();
         });
+
+        /**
+         * Update counts for filters
+         *
+         * @param {boolean} firstTime
+         */
+        function updateFilterCounts(firstTime) {
+            $('[data-filter-count] > input').each(function (i, e) {
+                filter = e.value;
+                scope = e.name.replace("_filter", "");
+
+                count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
+                e.parentElement.dataset.filterCount = count;
+                if (firstTime) {
+                    e.parentElement.dataset.filterTotal = count;
+                    e.disabled = !count;
+                    e.parentElement.classList.toggle("text-muted", !count);
+                }
+            });
+
+            window.console.log(table.data().length);
+        }
 
     });
 };

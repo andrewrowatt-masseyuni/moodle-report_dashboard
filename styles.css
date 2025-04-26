@@ -1,4 +1,8 @@
 #page-report-dashboard-index {
+    #region-main {
+        max-width: 100%;
+    }
+
     .gap-1 {
         gap: 0.25em;
     }
@@ -9,6 +13,10 @@
 
     .gap-3 {
         gap: 1em;
+    }
+
+    label {
+        font-weight: 400;
     }
 }
 
@@ -239,18 +247,14 @@
         }
     }
 
-    #group label span.membercount {
-        /* membercount */
+    [data-filter-count]::after {
+        content: "(showing " attr(data-filter-count) " of " attr(data-filter-total) ")";
         font-size: smaller;
-        color: #6a737b; /* same as dropdown-header */
-        margin-left: 0.25em;
+        color: #6a737b;
+        margin-left: .25em;
+    }
 
-        &::before {
-            content: "(";
-        }
-
-        &::after {
-            content: ")";
-        }
+    [data-filter-total="0"][data-filter-count="0"]::after {
+        content: "(none)";
     }
 }
