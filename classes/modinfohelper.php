@@ -39,7 +39,7 @@ class modinfohelper {
     }
 
     public function is_cm_valid($cmid) {
-        return array_key_exists($cmid,$this->modinfo->cms);
+        return array_key_exists($cmid, $this->modinfo->cms);
     }
 
     public function get_cm_name($cmid) {

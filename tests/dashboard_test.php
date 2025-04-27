@@ -432,8 +432,6 @@ final class dashboard_test extends \advanced_testcase {
             'lastname' => 'Rowatt',
         ]);
 
-        
-
         // Create master course and cohort groups
         $course1 = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
@@ -460,14 +458,12 @@ final class dashboard_test extends \advanced_testcase {
         $earlyengagements = dashboard::get_early_engagements($course1->id);
         $this->assertEquals(2, count($earlyengagements));
 
-        $userearlyengagements = dashboard::get_user_early_engagements($course1->id,'');
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
         $this->assertEquals(3 * 2, count($userearlyengagements));
 
-
         // Test hiding an early engagement
-        $userearlyengagements = dashboard::get_user_early_engagements($course1->id,$ee1->cmid);
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, $ee1->cmid);
         $this->assertEquals(3 * 1, count($userearlyengagements));
-
 
     }
 

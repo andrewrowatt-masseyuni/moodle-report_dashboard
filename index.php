@@ -136,24 +136,24 @@ foreach($earlyengagements as $earlyengagementobject) {
 }
 
 $earlyengagementstatuses = \report_dashboard\dashboard::get_earlyengagement_statuses();
-$userearlyengagements = \report_dashboard\dashboard::get_user_early_engagements($courseid, join(' ',$savedhiddencmids));
+$userearlyengagements = \report_dashboard\dashboard::get_user_early_engagements($courseid, join(' ', $savedhiddencmids));
 
 $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
-$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ',$savedhiddencmids));
+$userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ', $savedhiddencmids));
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
 echo $OUTPUT->render_from_template('report_dashboard/header_headings', [
     'description' => $description,
-    'instructions' => $instructions, 
+    'instructions' => $instructions,
     'limitations' => $limitations,
     'knownissues' => $knownissues,
     'supportcontact' => $supportcontact,
-    'earlyengagements' => $visibleearlyengagements, 
-    'hiddenearlyengagements' => $hiddenearlyengagements, 
-    'assessments' => $visibleassessments, 
-    'hiddenassessments' => $hiddenassessments, 
-    'courseid' => $courseid, 
+    'earlyengagements' => $visibleearlyengagements,
+    'hiddenearlyengagements' => $hiddenearlyengagements,
+    'assessments' => $visibleassessments,
+    'hiddenassessments' => $hiddenassessments,
+    'courseid' => $courseid,
     'sesskey' => sesskey()]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
