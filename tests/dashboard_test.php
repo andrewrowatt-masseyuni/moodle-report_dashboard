@@ -44,7 +44,7 @@ final class dashboard_test extends \advanced_testcase {
 
         $now = time();
 
-        // Basic user test
+        // Basic user test.
 
         $user1 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
@@ -84,7 +84,7 @@ final class dashboard_test extends \advanced_testcase {
         $userdataset = dashboard::get_user_dataset($course1->id);
         $this->assertEquals(4, count($userdataset));
 
-        // Basic assessment test
+        // Basic assessment test.
 
         $assessment1 = $this->getDataGenerator()->create_module('assign', [
             'course' => $course1->id,
@@ -107,16 +107,16 @@ final class dashboard_test extends \advanced_testcase {
         $assessmentdataset = dashboard::get_assessments($course1->id);
         $this->assertEquals(3, count($assessmentdataset));
 
-        // User assessment test
+        // User assessment test.
 
         $userassessmentdataset = dashboard::get_user_assessments($course1->id, '');
         $this->assertEquals(4 * 3, count($userassessmentdataset));
 
-        // Test hiding assessments
+        // Test hiding assessments.
         $userassessmentdataset = dashboard::get_user_assessments($course1->id, "$assessment1->cmid $assessment2->cmid");
         $this->assertEquals(4 * 1, count($userassessmentdataset));
 
-        // Advanced user test - groups
+        // Advanced user test - groups.
 
         $group1 = $this->getDataGenerator()->create_group([
             'courseid' => $course1->id,
@@ -178,7 +178,7 @@ final class dashboard_test extends \advanced_testcase {
 
         set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
-        // Basic user test
+        // Basic user test.
 
         $user1 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
@@ -208,7 +208,7 @@ final class dashboard_test extends \advanced_testcase {
             'lastname' => 'Rowatt',
         ]);
 
-        // Create master course and cohort groups
+        // Create master course and cohort groups.
         $course1 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse']);
         $cohortgroup1 = $this->getDataGenerator()->create_group([
             'courseid' => $course1->id,
@@ -219,7 +219,7 @@ final class dashboard_test extends \advanced_testcase {
             'name' => 'cohortgroup2',
         ]);
 
-        // Create offering courses
+        // Create offering courses.
         $course2 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse-child1']);
         $course3 = $this->getDataGenerator()->create_course(['shortname' => 'mastercourse-child2']);
 
@@ -243,8 +243,8 @@ final class dashboard_test extends \advanced_testcase {
             'customint2' => $cohortgroup2->id,
         ]);
 
-        // Start duplication from the single offering course test
-        // Advanced user test - groups
+        // Start duplication from the single offering course test.
+        // Advanced user test - groups.
 
         $group1 = $this->getDataGenerator()->create_group([
             'courseid' => $course1->id,
@@ -294,9 +294,9 @@ final class dashboard_test extends \advanced_testcase {
         // Note: User #3 as users were (intentionally) created in a different order.
         $this->assertEquals('1, 2', $userdataset[3]->groups);
 
-        // End duplication from the single offering course test
+        // End duplication from the single offering course test.
 
-        // Check cohort groups and membership
+        // Check cohort groups and membership.
         $cohortgroupsdataset = dashboard::get_cohort_groups($course1->id);
 
         $this->assertEquals(2, count($cohortgroupsdataset));
@@ -307,13 +307,18 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('2', $userdataset[4]->cohortgroups);
     }
 
+    /**
+     * Tests previous enrolments logic.
+     *
+     * @covers ::dashboard
+     */
     public function test_previous_enrolments(): void {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
         set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
-        // Basic user test
+        // Basic user test.
 
         $user1 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
@@ -336,10 +341,10 @@ final class dashboard_test extends \advanced_testcase {
             'lastname' => 'Rowatt',
         ]);
 
-        // Create master course and cohort groups
+        // Create master course and cohort groups.
         $course1 = $this->getDataGenerator()->create_course(['shortname' => '100101_2025_S1FS']);
 
-        // Create offering courses
+        // Create offering courses.
         $course1cc1 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2025_S1FS_MTUI']);
         $course1cc2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2025_S1FS_DISD']);
 
@@ -367,7 +372,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('', $userdataset[2]->previous_enrolments);
         $this->assertEquals('', $userdataset[3]->previous_enrolments);
 
-        // Simulate a previous enrolment by creating a new course with older offering(s)
+        // Simulate a previous enrolment by creating a new course with older offering(s).
         $course2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2024_S2FS_MTUI']);
         $this->getDataGenerator()->enrol_user($user1->id, $course2->id);
 
@@ -378,7 +383,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('', $userdataset[2]->previous_enrolments);
         $this->assertEquals('', $userdataset[3]->previous_enrolments);
 
-        // Simulate a previous enrolment by creating a new course with older offering(s)
+        // Simulate a previous enrolment by creating a new course with older offering(s).
         $course3 = $this->getDataGenerator()->create_course(['shortname' => '100101_2023_S1FS']);
         $course3cc1 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2023_S1FS_MTUI']);
         $course3cc2 = $this->getDataGenerator()->create_course(['idnumber' => '100101_2023_S1FS_DISD']);
@@ -403,13 +408,18 @@ final class dashboard_test extends \advanced_testcase {
 
     }
 
+    /**
+     * Tests early engagement logic.
+     *
+     * @covers ::dashboard
+     */
     public function test_early_engagement(): void {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
         set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
-        // Basic user test
+        // Basic user test.
 
         $user1 = $this->getDataGenerator()->create_user([
             'email' => 'user1@example.com',
@@ -432,7 +442,7 @@ final class dashboard_test extends \advanced_testcase {
             'lastname' => 'Rowatt',
         ]);
 
-        // Create master course and cohort groups
+        // Create master course and cohort groups.
         $course1 = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
@@ -461,7 +471,7 @@ final class dashboard_test extends \advanced_testcase {
         $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
         $this->assertEquals(3 * 2, count($userearlyengagements));
 
-        // Test hiding an early engagement
+        // Test hiding an early engagement.
         $userearlyengagements = dashboard::get_user_early_engagements($course1->id, $ee1->cmid);
         $this->assertEquals(3 * 1, count($userearlyengagements));
 

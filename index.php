@@ -48,7 +48,7 @@ $PAGE->set_title(
 $savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids',  serialize([])));
 
 $action = optional_param('action', '', PARAM_ALPHA);
-if($action) {
+if ($action) {
     require_sesskey();
 
     switch ($action) {
@@ -69,15 +69,7 @@ if($action) {
 }
 
 $modinfohelper = new modinfohelper(get_fast_modinfo($course));
-// Clean up report_dashboard_hidden_cmids as it may contain cmids that no longer exist
-
-// $modinfo-> get_cm(11);
-/*
-$cmid = $earlyengagement[2]->cmid;
-$cm = $modinfo->get_cm($cmid);
-
-Use modinfo to clean up the report_dashboard_hidden_cmids
-*/
+// Clean up report_dashboard_hidden_cmids as it may contain cmids that no longer exist.
 
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
@@ -88,21 +80,26 @@ echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
 $description = markdown_to_html(trim(get_config('report_dashboard', 'description')));
 $instructions = markdown_to_html(trim(get_config('report_dashboard', 'instructions')));
-$limitations = markdown_to_html(trim(get_config('report_dashboard', 'limitations'))); // If blank, the template will hide or otherwise handle this condition.
-$knownissues = markdown_to_html(trim(get_config('report_dashboard', 'knownissues'))); // If blank, the template will hide or otherwise handle this condition.
-$supportcontact = markdown_to_html(trim(get_config('report_dashboard', 'supportcontact')));  // If blank, the template will hide or otherwise handle this condition.
+$limitations = markdown_to_html(trim(get_config('report_dashboard', 'limitations')));
+// If blank, the template will hide or otherwise handle this condition.
+
+$knownissues = markdown_to_html(trim(get_config('report_dashboard', 'knownissues')));
+// If blank, the template will hide or otherwise handle this condition.
+
+$supportcontact = markdown_to_html(trim(get_config('report_dashboard', 'supportcontact')));
+// If blank, the template will hide or otherwise handle this condition.
 
 $data = [];
 
 $coursegroups = \report_dashboard\dashboard::get_groups($courseid);
 $coursegroupsarray = [];
-foreach($coursegroups as $coursegroup) {
+foreach ($coursegroups as $coursegroup) {
     $coursegroupsarray[] = (array)$coursegroup;
 }
 
 $coursecohortgroups = \report_dashboard\dashboard::get_cohort_groups($courseid);
 $coursecohortgroupsarray = [];
-foreach($coursecohortgroups as $coursecohortgroup) {
+foreach ($coursecohortgroups as $coursecohortgroup) {
     $coursecohortgroupsarray[] = (array)$coursecohortgroup;
 }
 
@@ -115,20 +112,20 @@ $hiddenassessments = [];
 $visibleearlyengagements = [];
 $hiddenearlyengagements = [];
 
-foreach($assessments as $assessmentobject) {
+foreach ($assessments as $assessmentobject) {
     $assessment = (array)$assessmentobject;
     $assessment += ['name' => $modinfohelper->get_cm_name($assessment['cmid'])];
-    if(in_array($assessment['cmid'], $savedhiddencmids)) {
+    if (in_array($assessment['cmid'], $savedhiddencmids)) {
         $hiddenassessments[] = $assessment;
     } else {
         $visibleassessments[] = $assessment;
     }
 }
 
-foreach($earlyengagements as $earlyengagementobject) {
+foreach ($earlyengagements as $earlyengagementobject) {
     $earlyengagement = (array)$earlyengagementobject;
     $earlyengagement += ['name' => $modinfohelper->get_cm_name($earlyengagement['cmid'])];
-    if(in_array($earlyengagement['cmid'], $savedhiddencmids)) {
+    if (in_array($earlyengagement['cmid'], $savedhiddencmids)) {
         $hiddenearlyengagements[] = $earlyengagement;
     } else {
         $visibleearlyengagements[] = $earlyengagement;
@@ -156,9 +153,16 @@ echo $OUTPUT->render_from_template('report_dashboard/header_headings', [
     'courseid' => $courseid,
     'sesskey' => sesskey()]);
 echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups', ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_earlyengagements', ['earlyengagements' => $visibleearlyengagements, 'courseid' => $courseid, 'sesskey' => sesskey()]); // ... include Late Assessments here? Yes as it is Yes or No only.
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments', ['assessments' => $visibleassessments, 'courseid' => $courseid, 'sesskey' => sesskey()]); // ... include Late Assessments here? Yes as it is Yes or No only.
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups',
+    ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
+
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_earlyengagements',
+['earlyengagements' => $visibleearlyengagements, 'courseid' => $courseid, 'sesskey' => sesskey()]);
+// ... include Late Assessments here? Yes as it is Yes or No only.
+
+echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments',
+['assessments' => $visibleassessments, 'courseid' => $courseid, 'sesskey' => sesskey()]);
+// ... include Late Assessments here? Yes as it is Yes or No only.
 
 echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
 
@@ -180,31 +184,24 @@ if (($usercount * $assessmentcount) != $userassessmentscount) {
     throw new moodle_exception('User assessments count does not match user count * assessment count');
 }
 
-foreach($userdataset as $userobject) {
+foreach ($userdataset as $userobject) {
     $row = (array)$userobject;
     $currentuserid = $row['id'];
 
-    /*
-        Last accessed timestamp is 10000000000 if never accessed. This was done so when sorted by last accessed, the nevers are at the end. This is hardcoded in the SQL query as well.
-    */
-
-    if($row['lastaccessed_timestamp'] == -1) {
+    if ($row['lastaccessed_timestamp'] == -1) {
         $row['lastaccessed_filter_category'] = 'never';
         $row['lastaccessed_label'] = get_string('never', 'report_dashboard');
-
-        // $row['lastaccessed_timestamp'] = -1;
-
     } else {
         $deltadays = floor((time() - $row['lastaccessed_timestamp']) / 86400);
 
         switch ($deltadays) {
             case 0:
                 $row['lastaccessed_filter_category'] = 'today';
-                $row['lastaccessed_label'] = 'Last 24 hrs'; // get_string('over_5_days', 'report_dashboard');
+                $row['lastaccessed_label'] = get_string('1_day', 'report_dashboard');
                 break;
             case 1:
                 $row['lastaccessed_filter_category'] = 'yesterday';
-                $row['lastaccessed_label'] = '~ 1 day ago'; // get_string('over_1_days', 'report_dashboard');
+                $row['lastaccessed_label'] = get_string('over_1_days', 'report_dashboard');
                 break;
             case $deltadays < 7:
                 $row['lastaccessed_filter_category'] = '1week';
@@ -230,8 +227,8 @@ foreach($userdataset as $userobject) {
 
     $groups = [];
 
-    if($row['groups']) {
-        foreach(explode(', ', $row['groups']) as $groupid) {
+    if ($row['groups']) {
+        foreach (explode(', ', $row['groups']) as $groupid) {
             $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursegroups, $groupid);
             $groups[] = $groupdetails + ['class' => 'rdbtag-course-group'];
         }
@@ -239,8 +236,8 @@ foreach($userdataset as $userobject) {
 
     $cohortgroups = [];
 
-    if($row['cohortgroups']) {
-        foreach(explode(', ', $row['cohortgroups']) as $groupid) {
+    if ($row['cohortgroups']) {
+        foreach (explode(', ', $row['cohortgroups']) as $groupid) {
             $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
             $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
         }
@@ -248,12 +245,13 @@ foreach($userdataset as $userobject) {
 
     $earlyengagements = [];
 
-    for($earlyengagementindex = 0; $earlyengagementindex < $earlyengagementcount; $earlyengagementindex++) {
+    for ($earlyengagementindex = 0; $earlyengagementindex < $earlyengagementcount; $earlyengagementindex++) {
         $earlyengagement = (array)$userearlyengagements[$userearlyengagementindex + 1];
 
         // ... Because we are using carefully sorted but separate arrays we need to do additional checking
         if ($earlyengagement['userid'] != $currentuserid) {
-            throw new moodle_exception("Early engagement user id: $earlyengagement[userid] does not match current user id: $currentuserid where user earlyengagement index = $userearlyengagementindex");
+            throw new moodle_exception("Early engagement user id: $earlyengagement[userid] " .
+                "does not match current user id: $currentuserid where user earlyengagement index = $userearlyengagementindex");
         }
 
         $label = $earlyengagementstatuses[$earlyengagement['status']];
@@ -264,12 +262,13 @@ foreach($userdataset as $userobject) {
     $assessments = [];
     $lateassessments = false;
 
-    for($assessmentindex = 0; $assessmentindex < $assessmentcount; $assessmentindex++) {
+    for ($assessmentindex = 0; $assessmentindex < $assessmentcount; $assessmentindex++) {
         $assessment = (array)$userassessments[$userassessmentindex + 1];
 
         // ... Because we are using carefully sorted but separate arrays we need to do additional checking
         if ($assessment['userid'] != $currentuserid) {
-            throw new moodle_exception("Assessment user id: $assessment[userid] does not match current user id: $currentuserid where user assessment index = $userassessmentindex");
+            throw new moodle_exception("Assessment user id: $assessment[userid] " .
+                " does not match current user id: $currentuserid where user assessment index = $userassessmentindex");
         }
 
         $label = $assessmentstatuses[$assessment['status']];
@@ -280,7 +279,7 @@ foreach($userdataset as $userobject) {
 
         $assessments[] = $assessment + ['label' => $label];
 
-        if($assessment['status'] == 'overdue') {
+        if ($assessment['status'] == 'overdue') {
             $lateassessments = true;
         }
 
@@ -288,10 +287,11 @@ foreach($userdataset as $userobject) {
     }
 
     echo $OUTPUT->render_from_template('report_dashboard/row',
-        ['row' => $row, 'groups' => $groups, 'cohort_groups' => $cohortgroups, 'earlyengagements' => $earlyengagements, 'assessments' => $assessments, 'lateassessments' => $lateassessments]);
+        ['row' => $row,
+            'groups' => $groups, 'cohort_groups' => $cohortgroups,
+            'earlyengagements' => $earlyengagements,
+            'assessments' => $assessments, 'lateassessments' => $lateassessments]);
 }
-
-// iterate over $dataset using render_from_template OR html_writer??
 
 echo $OUTPUT->render_from_template('report_dashboard/footer', []);
 

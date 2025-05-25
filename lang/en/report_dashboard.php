@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['1_day'] = 'Last 24 hrs';
 $string['assessmentstatus_extension'] = 'Extension';
 $string['assessmentstatus_failed'] = 'Failed';
 $string['assessmentstatus_graded'] = 'Graded';
@@ -56,6 +57,7 @@ $string['mastersql_desc'] = 'Contains the master SQL statement for all aspects o
 $string['never'] = 'Never';
 $string['nogroups'] = 'No groups';
 $string['noknownissues'] = 'There are currently no known issues.';
+$string['over_1_days'] = '~ 1 day ago';
 $string['pluginname'] = 'Course Dashboard';
 $string['previousenrolmenthelptext'] = 'Refer to Limitations above.';
 $string['prioritygroups'] = 'Priority groups';

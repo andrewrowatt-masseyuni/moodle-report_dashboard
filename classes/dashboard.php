@@ -65,41 +65,85 @@ class dashboard {
      */
     public static function get_groups(int $courseid): array {
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_groups'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+        $data = $DB->get_records_sql(
+        self::get_master_sql('get_groups'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
         return $data;
     }
 
+    /**
+     * Get course cohort groups with count of members
+     *
+     * @param int $courseid
+     * @return array
+     */
     public static function get_cohort_groups(int $courseid): array {
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_cohort_groups'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_cohort_groups'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
         return $data;
     }
 
+    /**
+     * Gets all assessment status for all students in a course.
+     *
+     * @param int $courseid
+     * @param string $hiddencmids
+     * @return array
+     */
     public static function get_user_assessments(int $courseid, string $hiddencmids): array {
         // ... Hidden assessments are excluded!
 
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_user_assessments'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_user_assessments'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
         return $data;
     }
 
+    /**
+     * Gets all eligble assessments
+     *
+     * @param int $courseid
+     * @return array
+     */
     public static function get_assessments(int $courseid): array {
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_assessments'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_assessments'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
         return $data;
     }
 
+    /**
+     * Gets the status for all eligble early engagement activities for all users for a course.
+     *
+     * @param int $courseid
+     * @param string $hiddencmids
+     * @return array
+     */
     public static function get_user_early_engagements(int $courseid, string $hiddencmids): array {
         // ... Hidden early engagement activites are excluded!
 
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_user_early_engagements'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_user_early_engagements'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
         return $data;
     }
 
+    /**
+     * Gets all eligble early engagement activities for a course.
+     *
+     * @param int $courseid
+     * @return array
+     */
     public static function get_early_engagements(int $courseid): array {
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_early_engagements'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_early_engagements'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
         return $data;
     }
 
@@ -134,12 +178,19 @@ class dashboard {
         ];
     }
 
+    /**
+     * Gets all users for a course.
+     *
+     * @param int $courseid
+     * @return array
+     */
     public static function get_user_dataset(int $courseid): array {
         global $DB, $USER;
-        $data = $DB->get_records_sql(self::get_master_sql('get_user_dataset'), ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+        $data = $DB->get_records_sql(
+            self::get_master_sql('get_user_dataset'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
         return $data;
     }
-
 
     /**
      * Returns the default get_default_mastersql
@@ -156,8 +207,10 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	with contexts as (
 		select ctx.id as context_id from mdl_context ctx
 		cross join vars v
-		where ctx.id::text in 
-		(select unnest(string_to_array(mdl_context.path,'/')) from mdl_context where mdl_context.contextlevel = 50 and mdl_context.instanceid = v.course_id)
+		where ctx.id::text in
+		(select unnest(string_to_array(mdl_context.path,'/'))
+			from mdl_context where mdl_context.contextlevel = 50 and
+			mdl_context.instanceid = v.course_id)
 	)
 	--select * from contexts
 	,user_roles as (
@@ -195,7 +248,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 		case when ula.id is null then -1 else ula.timeaccess end as lastaccessed_timestamp
 		from mdl_user u
 		cross join vars v
-		join mdl_role_assignments ra on ra.userid = u.id and ra.roleid = 5 
+		join mdl_role_assignments ra on ra.userid = u.id and ra.roleid = 5
 		join mdl_context ctx on ctx.id = ra.contextid and ctx.contextlevel = 50 and ctx.instanceid = v.course_id
 		left join mdl_user_lastaccess ula on ula.courseid = v.course_id and ula.userid = u.id
 		where u.username ~ '^\d{8}'
@@ -203,7 +256,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 
 	select ROW_NUMBER() OVER(order by username, firstname, lastname) as id,
 	q1.*
-	
+
 	from q1
 
 	order by username, firstname, lastname
@@ -217,7 +270,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	g.name as groupname,
 	g.description as groupdescription,
 	count(distinct gm.id) as membercount
-	
+
 	from vars v
 	join mdl_groups g on g.courseid = v.course_id
 	join mdl_enrol e on e.courseid = v.course_id and e.enrol = 'meta' and e.customint2 = g.id
@@ -240,7 +293,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	g.name as groupname,
 	g.description as groupdescription,
 	count(distinct gm.id) as membercount
-	
+
 	from vars v
 	join mdl_groups g on g.courseid = v.course_id
 	left join mdl_groups_members gm on gm.groupid = g.id
@@ -276,7 +329,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 			from vars v
 			join mdl_course c on c.id = v.course_id
 			where c.idnumber != ''
-	
+
 			union
 			select c.id as course_id, c.idnumber
 			from vars v
@@ -297,7 +350,6 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 		cc.course_id is null /* exclude current courses */
 		and
 		c.idnumber ~ concat('^',m.module,'_\d{4}_.{4}_....*$')
-		
 	)
 	,previous_offering_students as (
 		select distinct u.username, c.year, c.semester
@@ -308,11 +360,11 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	)
 	,previous_offering_student_summary as (
 		select distinct
-		c.username, 
+		c.username,
 		string_agg(concat(c.year,' ', c.semester), ', ' order by c.year desc, c.semester desc) as previous_enrolments,
 		count(*) as previous_enrolment_count
 		from previous_offering_students c
-	
+
 		group by 1
 	)
 	--select * from previous_offerings
@@ -333,19 +385,26 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	case
 		when r.role is not null then
 		case
-			when id_ethicity.data ~ 'Pacific' or id_ethicity.data ~ 'Niuean' or id_ethicity.data ~ 'Samoan' or id_ethicity.data ~ 'Fijian' or id_ethicity.data ~ 'Tongan' or id_ethicity.data ~ 'Cook Island'
+			when
+				id_ethicity.data ~ 'Pacific' or id_ethicity.data ~ 'Niuean' or
+				id_ethicity.data ~ 'Samoan' or id_ethicity.data ~ 'Fijian' or
+				id_ethicity.data ~ 'Tongan' or id_ethicity.data ~ 'Cook Island'
 				then 1
 			else 0
 		end
 	else 0 end	as pacific,
 	case when id_international is not null then 1 else 0 end as international,
-	case when (id_totalcreditsearned.data='' or id_totalcreditsearned.data::decimal = 0) then 1 else 0 end as new /* Inferred as New to Massey */,
+	case when (id_totalcreditsearned.data='' or id_totalcreditsearned.data::decimal = 0) then 1 else 0 end as new,
+		/* Inferred as New to Massey */
 	case when pe.previous_enrolments is null then '' else pe.previous_enrolments end as previous_enrolments
 	from students2 s2
 	cross join vars v
-	left join mdl_user_info_data id_ethicity on id_ethicity.userid=s2.userid and id_ethicity.fieldid = 18
-	left join mdl_user_info_data id_totalcreditsearned on id_totalcreditsearned.userid=s2.userid and id_totalcreditsearned.fieldid = 12
-	left join mdl_user_info_data id_international on id_international.userid=s2.userid and id_international.fieldid = 19 and id_international.data = 'Y'
+	left join mdl_user_info_data id_ethicity on
+		id_ethicity.userid=s2.userid and id_ethicity.fieldid = 18
+	left join mdl_user_info_data id_totalcreditsearned on
+		id_totalcreditsearned.userid=s2.userid and id_totalcreditsearned.fieldid = 12
+	left join mdl_user_info_data id_international on
+		id_international.userid=s2.userid and id_international.fieldid = 19 and id_international.data = 'Y'
 	left join roles r on r.role = 'priority_group_support'
 	left join previous_enrolments pe on pe.username = s2.username
 )
@@ -364,7 +423,9 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 
 ,activity as (
 with q1 as (
-	select cm.id as cmid, cm.instance as iteminstance, m.name as itemmodule,coalesce(a1.name,a2.name,'[Unknown]') as name,coalesce(a1.duedate,a2.timeclose,null) as activity_duedate_epoch,
+	select cm.id as cmid, cm.instance as iteminstance, m.name as itemmodule,
+		coalesce(a1.name,a2.name,'[Unknown]') as name,
+		coalesce(a1.duedate,a2.timeclose,null) as activity_duedate_epoch,
 	gi.id as grade_item_id, gi.iteminfo, gi.idnumber as activity_idnumber,gi.gradepass
 	from mdl_course_modules cm
 	left join excluded_cmids xcm on xcm.id = cm.id
@@ -372,7 +433,9 @@ with q1 as (
 	join mdl_modules m on m.id = cm.module
 	left join mdl_assign a1 on a1.id = cm.instance and m.name='assign'
 	left join mdl_quiz   a2 on a2.id = cm.instance and m.name='quiz'
-	left join mdl_grade_items gi on gi.courseid = v.course_id and ((gi.itemmodule = 'assign' and gi.iteminstance = a1.id) or (gi.itemmodule = 'quiz' and gi.iteminstance = a2.id))
+	left join mdl_grade_items gi on gi.courseid = v.course_id and
+		((gi.itemmodule = 'assign' and gi.iteminstance = a1.id) or
+		(gi.itemmodule = 'quiz' and gi.iteminstance = a2.id))
 	where
 	cm.course = v.course_id
 	and
@@ -406,7 +469,7 @@ with q1 as (
 			from students1 s
 			cross join activity a
 		)
-		
+
 		select * from q1
 	)
 	--select * from student_activity
@@ -434,7 +497,7 @@ with q1 as (
 				when uf.extensionduedate is not null and uf.extensionduedate <> 0 then 'Yes'
 				else 'No'
 			end as student_duedate_extension
-			
+
 			from q1
 			left join mdl_assign_user_flags uf on uf.assignment = q1.iteminstance and uf.userid = q1.userid
 			/*
@@ -506,7 +569,6 @@ with q1 as (
 							when q4.finalgrade_percent <= 59 then 'failed'
 							else 'justpassed'
 						end
-					
 					else '[Error - missing iteminfo - student_activity_grade_duedate_status]'
 				end
 				when q4.status_raw in ('submitted','draft','finished') then 'submitted'
@@ -592,7 +654,7 @@ with q1 as (
 	order by user_row_index, activity_row_index
 )
 ,early_engagement_activities as (
-	select 
+	select
 	ROW_NUMBER() OVER(order by cm.completionexpected, cm.idnumber) as id,
 	cm.id as cmid,
 	cm.completionexpected
@@ -629,8 +691,6 @@ with q1 as (
 		where xcm.id is null
 
 		order by q1.student_id, q1.id
-)
-
-        ";
+)";
     }
 }

@@ -38,10 +38,22 @@ class modinfohelper {
         $this->modinfo = $modinfo;
     }
 
+    /**
+     * Returns true if the given cmid is valid for this course.
+     *
+     * @param mixed $cmid
+     * @return bool
+     */
     public function is_cm_valid($cmid) {
         return array_key_exists($cmid, $this->modinfo->cms);
     }
 
+    /**
+     * Returns the name of the course module with the given cmid.
+     *
+     * @param mixed $cmid
+     * @return string
+     */
     public function get_cm_name($cmid) {
         return $this->modinfo->cms[$cmid]->name;
     }
