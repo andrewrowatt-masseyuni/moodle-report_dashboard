@@ -40,7 +40,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
-        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+        set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
         $now = time();
 
@@ -176,7 +176,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
-        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+        set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
         // Basic user test
 
@@ -311,7 +311,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
-        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+        set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
         // Basic user test
 
@@ -407,7 +407,7 @@ final class dashboard_test extends \advanced_testcase {
         $this->resetAfterTest(false);
         $this->setAdminUser();
 
-        set_config('mastersql', str_replace('mdl_', 'phpu_', dashboard::get_default_mastersql()), 'report_dashboard');
+        set_config('mastersql', str_replace('mdl_', 't_', dashboard::get_default_mastersql()), 'report_dashboard');
 
         // Basic user test
 
