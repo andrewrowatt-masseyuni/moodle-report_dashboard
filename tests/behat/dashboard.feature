@@ -1,0 +1,278 @@
+# This file is part of Moodle - http://moodle.org/
+#
+# Moodle is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Moodle is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+# Tests for report_dashboard plugin.
+#
+# @package    report_dashboard
+# @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+# @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+@report @report_dashboard @javascript
+Feature: Course Dashboard Report
+  In order to monitor student progress and engagement
+  As a teacher
+  I need to view and interact with the course dashboard
+
+  Background:
+    Given the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 1 | C1        | 0        |
+    And the following "users" exist:
+      | username | firstname | lastname | email               |
+      | teacher1 | Teacher   | One      | teacher1@example.com |
+      | 12345601 | 12345601  | Student  | 12345601@example.com |
+      | 12345602 | 12345602  | Student  | 12345602@example.com |
+      | 12345603 | 12345603  | Student  | 12345603@example.com |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | 12345601 | C1     | student        |
+      | 12345602 | C1     | student        |
+      | 12345603 | C1     | student        |
+    And the following "groups" exist:
+      | name    | course | idnumber |
+      | Group A | C1     | GA       |
+      | Group B | C1     | GB       |
+    And the following "group members" exist:
+      | user     | group |
+      | 12345601 | GA    |
+      | 12345602 | GB    |
+    And the following "activities" exist:
+      | activity | name              | course | idnumber | duedate        |
+      | assign   | Test Assignment 1 | C1     |          | ##tomorrow##   |
+      | assign   | Test Assignment 2 | C1     |          | ##yesterday##  |
+      | forum    | Early Forum       | C1     | EE1      |                |
+      | page     | Early Page        | C1     | EE2      |                |
+
+  @javascript
+  Scenario: Teacher can access the course dashboard
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    And I should see "Student ID / Firstname / Lastname"
+    And I should see "accessed"
+    And I should see "Groups"
+
+  @javascript
+  Scenario: Dashboard displays student information correctly
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then I should see "12345601"
+    And I should see "12345602" 
+    And I should see "12345603"
+    And I should see "Student"
+    And I should see "Group A"
+    And I should see "Group B"
+
+  @javascript
+  Scenario: Dashboard shows assignment columns
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then I should see "Test Assignment 1"
+    And I should see "Test Assignment 2"
+    And I should see "Late\nassessments"
+
+  @javascript
+  Scenario: Dashboard shows early engagement activities
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then I should see "Early Forum"
+    And I should see "Early Page"
+
+  @javascript
+  Scenario: Teacher can hide an assessment
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    And I should see "Test Assignment 1"
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+
+  @javascript  
+  Scenario: Teacher can show a hidden assessment
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    And I should see "Show assessment Test Assignment 1"
+    When I click on "Show assessment Test Assignment 1" "button"
+    Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should not see "Show assessment Test Assignment 1"
+
+  @javascript
+  Scenario: Teacher can hide an early engagement activity
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    And I should see "Early Forum"
+    When I click on "button[title=\"Hide Early Forum\"]" "css_element"
+    Then I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
+    And I should see "Show early engagement activity Early Forum"
+
+  @javascript
+  Scenario: Teacher can show a hidden early engagement activity  
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "button[title=\"Hide Early Forum\"]" "css_element"
+    And I should see "Show early engagement activity Early Forum"
+    When I click on "Show early engagement activity Early Forum" "button"
+    Then I should see "Early Forum" in the "report_dashboard_dashboard" "table"
+    And I should not see "Show early engagement activity Early Forum"
+
+  @javascript
+  Scenario: Name filter works correctly
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I set the field "Start typing to filter by name or ID" to "12345601"
+    Then I should see "12345601"
+    And I should not see "12345602"
+    And I should not see "12345603"
+
+  @javascript
+  Scenario: Last accessed filter is available
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "#lastaccessed > button.dropdown-toggle" "css_element"
+    Then I should see "Never"
+    And I should see "In the last 24hrs"
+    And I should see "Over 1 day ago"
+    And I should see "In the last 7 days"
+    And I should see "Over a week ago"
+
+  @javascript
+  Scenario: Groups filter is available
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "#group > button.dropdown-toggle" "css_element"
+    Then I should see "Select all"
+    And I should see "Deselect all"
+    And I should see "Course groups"
+    And I should see "Group A"
+    And I should see "Group B"
+    And I should see "Priority groups"
+
+  @javascript
+  Scenario: Assessment filters are available
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "#assessment1 > button.dropdown-toggle" "css_element"
+    Then I should see "Select all"
+    And I should see "Clear all"
+    And I should see "Not due"
+    And I should see "Submitted"
+    And I should see "Overdue"
+    And I should see "Passed"
+    And I should see "Failed"
+    And I should see "Extension"
+
+  @javascript
+  Scenario: Early engagement filters are available
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "#earlyengagement1 > button.dropdown-toggle" "css_element"
+    Then I should see "Select all"
+    And I should see "Clear all"
+    And I should see "Not due"
+    And I should see "Completed"
+    And I should see "Not completed"
+    And I should see "Overdue"
+
+  @javascript
+  Scenario: Late assessments filter is available
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    When I click on "#lateassessments > button.dropdown-toggle" "css_element"
+    Then I should see "Yes"
+    And I should see "No"
+
+  Scenario: Student gets access denied when trying direct URL access
+    When I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
+    Then I should see "Sorry, but you do not currently have permissions to do that"
+
+  @javascript
+  Scenario: Dashboard shows collapsible information sections
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then I should see "Instructions"
+    And I should see "Limitations" 
+    And I should see "Known issues"
+    When I click on "Instructions" "button"
+    Then I should see "Test instructions for using the dashboard"
+
+  @javascript
+  Scenario: Teacher can select students using checkboxes
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then I should see "Copy email addresses of selected students"
+    And I should see "Create email to selected students..."
+    # Note: The actual email functionality would require additional setup
+
+  @javascript
+  Scenario: Dashboard table has proper responsive behavior
+    Given I am on the "Course 1" "Course" page logged in as "teacher1"
+    When I navigate to "Reports" in current page administration
+    Then I should see "Course Dashboard"
+    When I click on "Course Dashboard" "link"
+    Then I should see "Course Dashboard"
+    Then "report_dashboard_dashboard" "table" should exist
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Test Assignment 2" in the "report_dashboard_dashboard" "table"
+    And I should see "Early Forum" in the "report_dashboard_dashboard" "table"
+    And I should see "Early Page" in the "report_dashboard_dashboard" "table"
