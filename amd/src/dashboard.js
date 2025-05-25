@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -13,6 +12,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/* eslint-disable no-undef */
 
 /**
  * TODO describe module dashboard
@@ -103,7 +104,7 @@ export const init = () => {
             if (groupschecked == 0) {
                 dropdownlabel = "None";
             } else if (groupschecked == 1) {
-                // dropdownlabel = "1 Group";
+                // The dropdownlabel will be set by code above.
             } else if (anygroupunchecked) {
                 dropdownlabel = "Multiple Groups";
             } else {
@@ -161,8 +162,8 @@ export const init = () => {
                 if (itemsChecked == 0) {
                     dropdownlabel = "None";
                 } else if (itemsChecked == 1) {
-                    // dropdownlabel = "1 Group";
-                    console.log("1 item checked!");
+                    // The dropdownlabel will be set by code above.
+                    window.console.log("1 item checked!");
                 } else if (anyUnchecked) {
                     dropdownlabel = "Multiple criteria";
                 } else {
@@ -208,8 +209,8 @@ export const init = () => {
                 if (itemsChecked == 0) {
                     dropdownlabel = "None";
                 } else if (itemsChecked == 1) {
-                    // dropdownlabel = "1 Group";
-                    console.log("1 item checked!");
+                    // The dropdownlabel will be set by code above.
+                    window.console.log("1 item checked!");
                 } else if (anyUnchecked) {
                     dropdownlabel = "Multiple criteria";
                 } else {
@@ -293,7 +294,7 @@ export const init = () => {
          * @param {boolean} firstTime
          */
         function updateFilterCounts(firstTime) {
-            $('[data-filter-count] > input').each(function (i, e) {
+            $('[data-filter-count] > input').each(function(i, e) {
                 filter = e.value;
                 scope = e.name.replace("_filter", "");
 
