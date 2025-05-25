@@ -45,7 +45,7 @@ class dashboard {
      * @param int $id
      * @return array
      */
-    public static function get_item_by_id(array $dataset, int|string $id): array {
+    public static function get_item_by_id(array $dataset, int $id): array {
         $retval = [];
 
         foreach ($dataset as $item) {
