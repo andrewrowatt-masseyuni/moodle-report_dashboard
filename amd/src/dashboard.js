@@ -13,8 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/* eslint-disable no-undef */
-
 /**
  * TODO describe module dashboard
  *
@@ -295,10 +293,10 @@ export const init = () => {
          */
         function updateFilterCounts(firstTime) {
             $('[data-filter-count] > input').each(function(i, e) {
-                filter = e.value;
-                scope = e.name.replace("_filter", "");
+                let filter = e.value;
+                let scope = e.name.replace("_filter", "");
 
-                count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
+                let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
                 e.parentElement.dataset.filterCount = count;
                 if (firstTime) {
                     e.parentElement.dataset.filterTotal = count;
