@@ -55,7 +55,7 @@ Feature: Course Dashboard Report
       | assign   | Test Assignment 2 | C1     |          | ##yesterday##  |
       | forum    | Early Forum       | C1     | EE1      |                |
       | page     | Early Page        | C1     | EE2      |                |
-    
+
     And I log in as "admin"
     And the following config values are set as admin:
       | description    | text_description | report_dashboard |
@@ -79,7 +79,7 @@ Feature: Course Dashboard Report
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Course Dashboard"
     Then I should see "12345601"
-    And I should see "12345602" 
+    And I should see "12345602"
     And I should see "12345603"
     And I should see "Student"
     And I should see "Group A"
@@ -118,7 +118,7 @@ Feature: Course Dashboard Report
     Then I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
     And I should see "Show early engagement activity Early Forum"
 
-  Scenario: Teacher can show a hidden early engagement activity  
+  Scenario: Teacher can show a hidden early engagement activity
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
     And I should see "Show early engagement activity Early Forum"
@@ -184,7 +184,7 @@ Feature: Course Dashboard Report
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And I should see "text_description"
     Then I should see "General notes and instructions"
-    And I should see "Limitations" 
+    And I should see "Limitations"
     And I should see "Known issues"
     And I should see "text_supportcontact"
     Then I should not see "text_instructions"
