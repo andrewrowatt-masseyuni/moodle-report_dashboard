@@ -35,7 +35,12 @@ $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $context = context_course::instance($course->id);
 
 require_login($course);
-require_capability('report/dashboard:view', $context);
+if (!has_capability('report/dashboard:view', $context)) {
+    redirect(new moodle_url('/my'),
+        get_string('nopermissions', 'error', get_string('dashboard:view', 'report_dashboard')),
+        \core\output\notification::NOTIFY_ERROR);
+}
+
 
 $url = new moodle_url('/report/dashboard/index.php', ['id' => $course->id]);
 $PAGE->set_url($url);

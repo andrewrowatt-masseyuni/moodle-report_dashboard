@@ -27,24 +27,27 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_report_dashboard extends behat_base {
-
     /**
-     * Get the URL for the dashboard page.
+     * Convert page names to URLs for steps like 'When I am on the "[identifier]" "[page type]" page'.
      *
-     * @param string $courseshortname The course short name
-     * @return moodle_url
+     * Recognised page names are:
+     * | pagetype          | name meaning | description                    |
+     * | Dashboard         | Course full  | The dashboard page (index.php) |
+     *
+     * @param string $type identifies which type of page this is, e.g. 'Dashboard'.
+     * @param string $name course short name
+     * @return moodle_url the corresponding URL.
+     * @throws Exception with a meaningful error message if the specified page cannot be found.
      */
-    protected function get_dashboard_url($courseshortname) {
+    protected function resolve_page_instance_url(string $type, string $name): moodle_url {
         global $DB;
 
-        $course = $DB->get_record('course', ['shortname' => $courseshortname], '*', MUST_EXIST);
-        return new moodle_url('/report/dashboard/index.php', ['id' => $course->id]);
+        switch (strtolower($type)) {
+            case 'dashboard':
+                $course = $DB->get_record('course', ['fullname' => $name], '*', MUST_EXIST);
+                return new moodle_url('/report/dashboard/index.php', ['id' => $course->id]);
+            default:
+                throw new Exception('Unrecognised dashboard page type "' . $type . '."');
+        }
     }
-
-
-    // https://github.com/moodle/moodle/blob/a0fc902eb184cd4097c8ab453ddc57964cd2dbd4/lib/behat/behat_base.php#L1093
-
-    // protected function resolve_page_url
-
-    // protected function resolve_page_instance_url
 }

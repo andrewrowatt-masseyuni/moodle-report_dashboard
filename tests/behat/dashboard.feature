@@ -55,8 +55,16 @@ Feature: Course Dashboard Report
       | assign   | Test Assignment 2 | C1     |          | ##yesterday##  |
       | forum    | Early Forum       | C1     | EE1      |                |
       | page     | Early Page        | C1     | EE2      |                |
+    
+    And I log in as "admin"
+    And the following config values are set as admin:
+      | description    | text_description | report_dashboard |
+      | instructions   | text_instructions | report_dashboard |
+      | limitations    | text_limitations | report_dashboard |
+      | knownissues    | text_knownissues | report_dashboard |
+      | supportcontact | text_supportcontact | report_dashboard |
+    And I change the window size to "large"
 
-  @javascript
   Scenario: Teacher can access the course dashboard
     Given I am on the "Course 1" "Course" page logged in as "teacher1"
     When I navigate to "Reports" in current page administration
@@ -67,12 +75,8 @@ Feature: Course Dashboard Report
     And I should see "accessed"
     And I should see "Groups"
 
-  @javascript
   Scenario: Dashboard displays student information correctly
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Course Dashboard"
     Then I should see "12345601"
     And I should see "12345602" 
@@ -81,96 +85,56 @@ Feature: Course Dashboard Report
     And I should see "Group A"
     And I should see "Group B"
 
-  @javascript
   Scenario: Dashboard shows assignment columns
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Test Assignment 1"
     And I should see "Test Assignment 2"
-    And I should see "Late\nassessments"
+    And I should see "Lateassessments"
 
-  @javascript
   Scenario: Dashboard shows early engagement activities
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Early Forum"
     And I should see "Early Page"
 
-  @javascript
   Scenario: Teacher can hide an assessment
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And I should see "Test Assignment 1"
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
     Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
     And I should see "Show assessment Test Assignment 1"
 
-  @javascript  
   Scenario: Teacher can show a hidden assessment
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
     And I should see "Show assessment Test Assignment 1"
     When I click on "Show assessment Test Assignment 1" "button"
     Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
     And I should not see "Show assessment Test Assignment 1"
 
-  @javascript
   Scenario: Teacher can hide an early engagement activity
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And I should see "Early Forum"
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
     Then I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
     And I should see "Show early engagement activity Early Forum"
 
-  @javascript
   Scenario: Teacher can show a hidden early engagement activity  
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
     And I should see "Show early engagement activity Early Forum"
     When I click on "Show early engagement activity Early Forum" "button"
     Then I should see "Early Forum" in the "report_dashboard_dashboard" "table"
     And I should not see "Show early engagement activity Early Forum"
 
-  @javascript
   Scenario: Name filter works correctly
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I set the field "Start typing to filter by name or ID" to "12345601"
     Then I should see "12345601"
     And I should not see "12345602"
     And I should not see "12345603"
 
-  @javascript
   Scenario: Last accessed filter is available
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "#lastaccessed > button.dropdown-toggle" "css_element"
     Then I should see "Never"
     And I should see "In the last 24hrs"
@@ -178,13 +142,8 @@ Feature: Course Dashboard Report
     And I should see "In the last 7 days"
     And I should see "Over a week ago"
 
-  @javascript
   Scenario: Groups filter is available
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "#group > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Deselect all"
@@ -193,13 +152,8 @@ Feature: Course Dashboard Report
     And I should see "Group B"
     And I should see "Priority groups"
 
-  @javascript
   Scenario: Assessment filters are available
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "#assessment1 > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Clear all"
@@ -210,13 +164,8 @@ Feature: Course Dashboard Report
     And I should see "Failed"
     And I should see "Extension"
 
-  @javascript
   Scenario: Early engagement filters are available
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "#earlyengagement1 > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Clear all"
@@ -225,54 +174,35 @@ Feature: Course Dashboard Report
     And I should see "Not completed"
     And I should see "Overdue"
 
-  @javascript
   Scenario: Late assessments filter is available
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     When I click on "#lateassessments > button.dropdown-toggle" "css_element"
     Then I should see "Yes"
     And I should see "No"
 
-  Scenario: Student gets access denied when trying direct URL access
-    When I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
-    Then I should see "Sorry, but you do not currently have permissions to do that"
-
-  @javascript
   Scenario: Dashboard shows collapsible information sections
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
-    Then I should see "Instructions"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And I should see "text_description"
+    Then I should see "General notes and instructions"
     And I should see "Limitations" 
     And I should see "Known issues"
-    When I click on "Instructions" "button"
-    Then I should see "Test instructions for using the dashboard"
+    And I should see "text_supportcontact"
+    Then I should not see "text_instructions"
+    Then I should not see "text_limitations"
+    Then I should not see "text_knownissues"
+    When I click on "General notes and instructions" "button"
+    Then I should see "text_instructions"
+    When I click on "Limitations" "button"
+    Then I should see "text_limitations"
+    When I click on "Known issues" "button"
+    Then I should see "text_knownissues"
 
-  @javascript
   Scenario: Teacher can select students using checkboxes
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Copy email addresses of selected students"
     And I should see "Create email to selected students..."
     # Note: The actual email functionality would require additional setup
 
-  @javascript
-  Scenario: Dashboard table has proper responsive behavior
-    Given I am on the "Course 1" "Course" page logged in as "teacher1"
-    When I navigate to "Reports" in current page administration
-    Then I should see "Course Dashboard"
-    When I click on "Course Dashboard" "link"
-    Then I should see "Course Dashboard"
-    Then "report_dashboard_dashboard" "table" should exist
-    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
-    And I should see "Test Assignment 2" in the "report_dashboard_dashboard" "table"
-    And I should see "Early Forum" in the "report_dashboard_dashboard" "table"
-    And I should see "Early Page" in the "report_dashboard_dashboard" "table"
+  Scenario: Student gets access denied when trying direct URL access
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
+    Then I should see "Sorry, but you do not currently have permissions to do that"

@@ -48,7 +48,7 @@ if ($hassiteconfig) {
                 'report_dashboard/limitations',
                 new lang_string('limitations', 'report_dashboard'),
                 new lang_string('limitations_desc', 'report_dashboard'),
-                'The dashboard cannot be easily tailored for a particular course', PARAM_RAW, 80, 4));
+                '', PARAM_RAW, 80, 4));
 
         $settings->add(
             new admin_setting_configtextarea(
@@ -223,9 +223,9 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	,previous_offering_students as (
 		select distinct u.username, c.year, c.semester
 		from previous_offerings c
-		JOIN {context} AS ctx ON c.course_id = ctx.instanceid and ctx.contextlevel = 50
-		JOIN {role_assignments} AS ra ON ra.contextid = ctx.id and ra.roleid = 5 /* student */
-		JOIN {user} AS u ON u.id = ra.userid and u.username ~ '^\d{8}$'
+		JOIN {context} ctx ON c.course_id = ctx.instanceid and ctx.contextlevel = 50
+		JOIN {role_assignments} ra ON ra.contextid = ctx.id and ra.roleid = 5 /* student */
+		JOIN {user} u ON u.id = ra.userid and u.username ~ '^\d{8}$'
 	)
 	,previous_offering_student_summary as (
 		select distinct
