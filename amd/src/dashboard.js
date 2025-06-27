@@ -161,7 +161,6 @@ export const init = () => {
                     dropdownlabel = "None";
                 } else if (itemsChecked == 1) {
                     // The dropdownlabel will be set by code above.
-                    window.console.log("1 item checked!");
                 } else if (anyUnchecked) {
                     dropdownlabel = "Multiple criteria";
                 } else {
@@ -208,7 +207,6 @@ export const init = () => {
                     dropdownlabel = "None";
                 } else if (itemsChecked == 1) {
                     // The dropdownlabel will be set by code above.
-                    window.console.log("1 item checked!");
                 } else if (anyUnchecked) {
                     dropdownlabel = "Multiple criteria";
                 } else {
@@ -301,12 +299,12 @@ export const init = () => {
                 if (firstTime) {
                     e.parentElement.dataset.filterTotal = count;
                     e.disabled = !count;
+                    if (!count) {
+                        e.checked = false;
+                    }
                     e.parentElement.classList.toggle("text-muted", !count);
                 }
             });
-
-            window.console.log(table.data().length);
         }
-
     });
 };
