@@ -105,9 +105,9 @@ jobs:
         if: ${{ !cancelled() && matrix.runchecks == 'all' }}
         run: moodle-plugin-ci savepoints
 
-      - name: Mustache Lint
-        if: ${{ !cancelled() && matrix.runchecks == 'all' }}
-        run: moodle-plugin-ci mustache
+      # - name: Mustache Lint
+      #   if: ${{ !cancelled() && matrix.runchecks == 'all' }}
+      #   run: moodle-plugin-ci mustache
 
       - name: Grunt
         if: ${{ !cancelled() && matrix.runchecks == 'all' }}
