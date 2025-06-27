@@ -1,8 +1,7 @@
-# Course Dashboard #
+[![Moodle Plugin CI](https://github.com/andrewrowatt-masseyuni/moodle-report_dashboard/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/andrewrowatt-masseyuni/moodle-report_dashboard/actions/workflows/moodle-ci.yml)
+# Course engagement dashboard #
 
-TODO Describe the plugin shortly here.
-
-TODO Provide more detailed description here.
+Provides a report ("dashboard") to support Course Coordinators to monitor student engagement during the semester.
 
 ## Installing via uploaded ZIP file ##
 
