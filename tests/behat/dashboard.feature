@@ -26,21 +26,38 @@ Feature: Course Dashboard Report
   I need to view and interact with the course dashboard
 
   Background:
-    Given the following "courses" exist:
+    Given the following "custom profile fields" exist:
+      | datatype | shortname           | name                |
+      | text     | InternationalStatus | InternationalStatus |
+      | text     | Ethnicity           | Ethnicity           |
+      | text     | TotalCreditsEarned  | TotalCreditsEarned  |
+    And the following "roles" exist:
+      | shortname              |
+      | priority_group_support |
+    And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
     And the following "users" exist:
-      | username | firstname | lastname | email               |
-      | teacher1 | Teacher   | One      | teacher1@example.com |
-      | 12345601 | 12345601  | Student  | 12345601@example.com |
-      | 12345602 | 12345602  | Student  | 12345602@example.com |
-      | 12345603 | 12345603  | Student  | 12345603@example.com |
+      | username | firstname | lastname | email                | profile_field_InternationalStatus | profile_field_Ethnicity | profile_field_TotalCreditsEarned |
+      | teacher1 | Teacher   | One      | teacher1@example.com |                                   |                         |                                  |
+      | support1 | Support   | One      | support1@example.com |                                   |                         |                                  |
+      | 12345601 | 12345601  | Student  | 12345601@example.com |                                   | Māori                   |                                  |
+      | 12345602 | 12345602  | Student  | 12345602@example.com |                                   |                         |                                  |
+      | 12345603 | 12345603  | Student  | 12345603@example.com | Y                                 | Māori/Samoan            |                                  |
+      | 12345604 | 12345604  | Student  | 12345604@example.com | N                                 | Tongan                  |                                  |
+      | 12345605 | 12345605  | Student  | 12345605@example.com |                                   |                         |                                  |
+      | 12345606 | 12345606  | Student  | 12345606@example.com |                                   |                         |                                  |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+      | support1 | C1     | priority_group_support |
+      | support1 | C1     | teacher |
       | 12345601 | C1     | student        |
       | 12345602 | C1     | student        |
       | 12345603 | C1     | student        |
+      | 12345604 | C1     | student        |
+      | 12345605 | C1     | student        |
+      | 12345606 | C1     | student        |
     And the following "groups" exist:
       | name    | course | idnumber |
       | Group A | C1     | GA       |
@@ -49,21 +66,41 @@ Feature: Course Dashboard Report
       | user     | group |
       | 12345601 | GA    |
       | 12345602 | GB    |
+      | 12345605 | GB    |
+      | 12345606 | GB    |
     And the following "activities" exist:
       | activity | name              | course | idnumber | duedate        |
-      | assign   | Test Assignment 1 | C1     |          | ##tomorrow##   |
-      | assign   | Test Assignment 2 | C1     |          | ##yesterday##  |
+      | assign   | Test Assignment 1 | C1     | A1       | ##yesterday##  |
+      | assign   | Test Assignment 2 | C1     | A2       | ##tomorrow##   |
       | forum    | Early Forum       | C1     | EE1      |                |
       | page     | Early Page        | C1     | EE2      |                |
+    And the following "last access times" exist:
+      | user     | course | lastaccess      |
+      | 12345601 | C1     | ##today##       |
+      | 12345602 | C1     | ##yesterday##   |
+      | 12345604 | C1     | ##8 days ago##  |
+      | 12345605 | C1     | ##15 days ago## |
+      | 12345606 | C1     | ##22 days ago## |
 
-    And I log in as "admin"
+    # And I log in as "admin"
     And the following config values are set as admin:
-      | description    | text_description | report_dashboard |
-      | instructions   | text_instructions | report_dashboard |
-      | limitations    | text_limitations | report_dashboard |
-      | knownissues    | text_knownissues | report_dashboard |
+      | description    | text_description    | report_dashboard |
+      | instructions   | text_instructions   | report_dashboard |
+      | limitations    | text_limitations    | report_dashboard |
+      | knownissues    | text_knownissues    | report_dashboard |
       | supportcontact | text_supportcontact | report_dashboard |
+
     And I change the window size to "large"
+
+    And I am on the "A1" Activity page logged in as teacher1
+    When I follow "View all submissions"
+    And I open the action menu in "12345601" "table_row"
+    And I follow "Grant extension"
+    And I should see "12345601"
+    And I set the field "Enable" to "1"
+    And I set the following fields to these values:
+      | extensionduedate[year] | 2026 |
+    And I press "Save changes"
 
   Scenario: Teacher can access the course dashboard
     Given I am on the "Course 1" "Course" page logged in as "teacher1"
@@ -74,16 +111,31 @@ Feature: Course Dashboard Report
     And I should see "Student ID / Firstname / Lastname"
     And I should see "accessed"
     And I should see "Groups"
-
-  Scenario: Dashboard displays student information correctly
-    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
-    Then I should see "Course Dashboard"
-    Then I should see "12345601"
+    # Basic individual student information
+    And I should see "12345601"
     And I should see "12345602"
     And I should see "12345603"
+    And I should see "12345604"
+    And I should see "12345605"
+    And I should see "12345606"
     And I should see "Student"
     And I should see "Group A"
     And I should see "Group B"
+    And I should see "Never"
+    And I should see "Last 24 hrs"
+    And I should see "~ 1 day ago"
+    And I should see "> 1 week ago"
+    And I should see "> 2 weeks ago"
+    And I should see "> 3 weeks ago"
+
+    Then I should not see "Māori" in the "12345601" "table_row"
+    Then I should see "International" in the "12345603" "table_row"
+
+    Then I should not see "Māori" in the "12345603" "table_row"
+    Then I should not see "Pacific" in the "12345603" "table_row"
+    
+    Then I should see "Group B" in the "12345605" "table_row"
+    Then I should see "Group B" in the "12345606" "table_row"
 
   Scenario: Dashboard shows assignment columns
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
@@ -91,10 +143,19 @@ Feature: Course Dashboard Report
     And I should see "Test Assignment 2"
     And I should see "Lateassessments"
 
+    Then I should see "Extension" in the "12345601" "table_row"
+    Then I should not see "Extension" in the "12345602" "table_row"
+
   Scenario: Dashboard shows early engagement activities
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Early Forum"
     And I should see "Early Page"
+  
+  Scenario: Dashboard shows ethnicity data for those with priority group role
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "support1"
+    Then I should see "Māori" in the "12345601" "table_row"
+    Then I should see "Māori" in the "12345603" "table_row"
+    Then I should see "Pacific" in the "12345603" "table_row"
 
   Scenario: Teacher can hide an assessment
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"

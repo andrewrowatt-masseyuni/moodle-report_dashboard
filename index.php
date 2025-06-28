@@ -202,7 +202,7 @@ foreach ($userdataset as $userobject) {
         switch ($deltadays) {
             case 0:
                 $row['lastaccessed_filter_category'] = 'today';
-                $row['lastaccessed_label'] = get_string('1_day', 'report_dashboard');
+                $row['lastaccessed_label'] = get_string('lastday', 'report_dashboard');
                 break;
             case 1:
                 $row['lastaccessed_filter_category'] = 'yesterday';

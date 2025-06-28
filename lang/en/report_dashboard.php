@@ -25,7 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['1_day'] = 'Last 24 hrs';
 $string['assessmentstatus_extension'] = 'Extension';
 $string['assessmentstatus_failed'] = 'Failed';
 $string['assessmentstatus_graded'] = 'Graded';
@@ -45,11 +44,12 @@ $string['instructions'] = 'General notes and instructions';
 $string['instructions_desc'] = 'Site-wide instructions for the dashboard. Include usage notes, limitations etc. You can (and should) use <a target="_blank" href="https://docs.moodle.org/en/Markdown">markdown</a> to format the text.';
 $string['knownissues'] = 'Known issues';
 $string['knownissues_desc'] = 'Current list of known issues with the dashboard. Leave blank if there are no current issues, as this will automatically deemphasize the related UI element. You can (and should) use <a target="_blank" href="https://docs.moodle.org/en/Markdown">markdown</a> to format the text.';
-$string['lastaccessed_over_1_week'] = '>1 week ago';
+$string['lastaccessed_over_1_week'] = '> 1 week ago';
 $string['lastaccessed_over_28_days'] = 'Over 4 weeks ago';
 $string['lastaccessed_over_2_week'] = '> 2 weeks ago';
 $string['lastaccessed_over_3_week'] = '> 3 weeks ago';
 $string['lastaccessed_over_n_days'] = 'Over {$a} days ago';
+$string['lastday'] = 'Last 24 hrs';
 $string['limitations'] = 'Limitations';
 $string['limitations_desc'] = 'To outline any limitations of the current dashboard e.g., The dashboard cannot be easily tailored for a particular course. You can (and should) use <a target="_blank" href="https://docs.moodle.org/en/Markdown">markdown</a> to format the text.';
 $string['mastersql'] = 'Master SQL statement';
