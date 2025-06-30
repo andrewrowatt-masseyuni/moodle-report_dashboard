@@ -48,6 +48,7 @@
     --neutral: #00000007;
 
     table-layout: auto;
+    width: 100%;
 
     thead {
         position: sticky;
