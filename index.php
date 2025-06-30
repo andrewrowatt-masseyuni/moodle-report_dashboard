@@ -94,8 +94,6 @@ $knownissues = markdown_to_html(trim(get_config('report_dashboard', 'knownissues
 $supportcontact = markdown_to_html(trim(get_config('report_dashboard', 'supportcontact')));
 // If blank, the template will hide or otherwise handle this condition.
 
-$data = [];
-
 $coursegroups = \report_dashboard\dashboard::get_groups($courseid);
 $coursegroupsarray = [];
 foreach ($coursegroups as $coursegroup) {
@@ -145,31 +143,8 @@ $userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, 
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
 
-echo $OUTPUT->render_from_template('report_dashboard/header_headings', [
-    'description' => $description,
-    'instructions' => $instructions,
-    'limitations' => $limitations,
-    'knownissues' => $knownissues,
-    'supportcontact' => $supportcontact,
-    'earlyengagements' => $visibleearlyengagements,
-    'hiddenearlyengagements' => $hiddenearlyengagements,
-    'assessments' => $visibleassessments,
-    'hiddenassessments' => $hiddenassessments,
-    'courseid' => $courseid,
-    'sesskey' => sesskey()]);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_name', $data);
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_groups',
-    ['cohort_groups' => $coursecohortgroupsarray, 'groups' => $coursegroupsarray]);
-
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_earlyengagements',
-['earlyengagements' => $visibleearlyengagements, 'courseid' => $courseid, 'sesskey' => sesskey()]);
-// ... include Late Assessments here? Yes as it is Yes or No only.
-
-echo $OUTPUT->render_from_template('report_dashboard/header_filter_assessments',
-['assessments' => $visibleassessments, 'courseid' => $courseid, 'sesskey' => sesskey()]);
-// ... include Late Assessments here? Yes as it is Yes or No only.
-
-echo $OUTPUT->render_from_template('report_dashboard/header_end', []);
+// Collect all row data first.
+$rows = [];
 
 
 
@@ -291,13 +266,33 @@ foreach ($userdataset as $userobject) {
         $userassessmentindex += 1;
     }
 
-    echo $OUTPUT->render_from_template('report_dashboard/row',
-        ['row' => $row,
-            'groups' => $groups, 'cohort_groups' => $cohortgroups,
-            'earlyengagements' => $earlyengagements,
-            'assessments' => $assessments, 'lateassessments' => $lateassessments]);
+    // Collect row data instead of rendering immediately.
+    $rows[] = [
+        'row' => $row,
+        'groups' => $groups,
+        'cohort_groups' => $cohortgroups,
+        'earlyengagements' => $earlyengagements,
+        'assessments' => $assessments,
+        'lateassessments' => $lateassessments,
+    ];
 }
 
-echo $OUTPUT->render_from_template('report_dashboard/footer', []);
+// Render the complete dashboard using the master template.
+echo $OUTPUT->render_from_template('report_dashboard/dashboard', [
+    'description' => $description,
+    'instructions' => $instructions,
+    'limitations' => $limitations,
+    'knownissues' => $knownissues,
+    'supportcontact' => $supportcontact,
+    'earlyengagements' => $visibleearlyengagements,
+    'hiddenearlyengagements' => $hiddenearlyengagements,
+    'assessments' => $visibleassessments,
+    'hiddenassessments' => $hiddenassessments,
+    'courseid' => $courseid,
+    'sesskey' => sesskey(),
+    'cohort_groups' => $coursecohortgroupsarray,
+    'groups' => $coursegroupsarray,
+    'rows' => $rows,
+]);
 
 echo $OUTPUT->footer();

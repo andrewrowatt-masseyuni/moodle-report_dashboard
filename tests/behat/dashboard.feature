@@ -133,7 +133,7 @@ Feature: Course Dashboard Report
 
     Then I should not see "Māori" in the "12345603" "table_row"
     Then I should not see "Pacific" in the "12345603" "table_row"
-    
+
     Then I should see "Group B" in the "12345605" "table_row"
     Then I should see "Group B" in the "12345606" "table_row"
 
@@ -150,7 +150,7 @@ Feature: Course Dashboard Report
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     Then I should see "Early Forum"
     And I should see "Early Page"
-  
+
   Scenario: Dashboard shows ethnicity data for those with priority group role
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "support1"
     Then I should see "Māori" in the "12345601" "table_row"
