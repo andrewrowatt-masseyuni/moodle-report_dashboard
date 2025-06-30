@@ -268,7 +268,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	case when pe.previous_enrolments is null then '' else pe.previous_enrolments end as previous_enrolments
 	from students2 s2
 	cross join vars v
-	
+
 	left join {user_info_field} id_ethicity_field on id_ethicity_field.shortname = 'Ethnicity'
 	left join {user_info_data} id_ethicity on
 		id_ethicity.userid=s2.userid and id_ethicity.fieldid = id_ethicity_field.id
@@ -276,11 +276,11 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 	left join {user_info_field} id_totalcreditsearned_field on id_totalcreditsearned_field.shortname = 'TotalCreditsEarned'
 	left join {user_info_data} id_totalcreditsearned on
 		id_totalcreditsearned.userid=s2.userid and id_totalcreditsearned.fieldid = id_totalcreditsearned_field.id
-		
+
 	left join {user_info_field} id_international_field on id_international_field.shortname = 'InternationalStatus'
 	left join {user_info_data} id_international on
 		id_international.userid=s2.userid and id_international.fieldid = id_international_field.id and id_international.data = 'Y'
-	
+
 	left join roles r on r.role = 'priority_group_support'
 	left join previous_enrolments pe on pe.username = s2.username
 )
