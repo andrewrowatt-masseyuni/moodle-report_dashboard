@@ -93,7 +93,7 @@ Feature: Course Dashboard Report
     And I change the window size to "large"
 
     And I am on the "A1" Activity page logged in as teacher1
-    When I follow "View all submissions"
+    When I follow "Submissions"
     And I open the action menu in "12345601" "table_row"
     And I follow "Grant extension"
     And I should see "12345601"
