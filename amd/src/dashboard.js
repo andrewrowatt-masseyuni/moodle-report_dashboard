@@ -234,7 +234,9 @@ export const init = () => {
             switch (e.target.id) {
                 case `earlyengagement${id}_select_all`:
                     document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
-                        item.checked = true;
+                        if (!item.disabled) {
+                            item.checked = true;
+                        }
                     });
                     break;
                 case `earlyengagement${id}_select_none`:
@@ -251,7 +253,9 @@ export const init = () => {
             switch (e.target.id) {
                 case `assessment${id}_select_all`:
                     document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
-                        item.checked = true;
+                        if (!item.disabled) {
+                            item.checked = true;
+                        }
                     });
                     break;
                 case `assessment${id}_select_none`:
@@ -270,7 +274,9 @@ export const init = () => {
             switch (e.target.id) {
                 case "group_select_all":
                     document.querySelectorAll("input[name='groups']").forEach((group) => {
-                        group.checked = true;
+                        if (!group.disabled) {
+                            group.checked = true;
+                        }
                     });
 
                     break;
