@@ -24,7 +24,6 @@ namespace report_dashboard;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dashboard {
-
     /**
      * Gets the Master SQL statement and appended the specific dataset required
      *
@@ -66,8 +65,9 @@ class dashboard {
     public static function get_groups(int $courseid): array {
         global $DB, $USER;
         $data = $DB->get_records_sql(
-        self::get_master_sql('get_groups'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+            self::get_master_sql('get_groups'),
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']
+        );
         return $data;
     }
 
@@ -81,7 +81,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_cohort_groups'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']
+        );
         return $data;
     }
 
@@ -98,7 +99,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_user_assessments'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]
+        );
         return $data;
     }
 
@@ -112,7 +114,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_assessments'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']
+        );
         return $data;
     }
 
@@ -129,7 +132,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_user_early_engagements'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => $hiddencmids]
+        );
         return $data;
     }
 
@@ -143,7 +147,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_early_engagements'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']
+        );
         return $data;
     }
 
@@ -188,7 +193,8 @@ class dashboard {
         global $DB, $USER;
         $data = $DB->get_records_sql(
             self::get_master_sql('get_user_dataset'),
-            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']);
+            ['course_id' => $courseid, 'user_id' => $USER->id, 'exclude_cmids' => '']
+        );
         return $data;
     }
 }

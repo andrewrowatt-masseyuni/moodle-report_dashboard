@@ -35,34 +35,59 @@ if ($hassiteconfig) {
                 'report_dashboard/description',
                 new lang_string('description', 'report_dashboard'),
                 new lang_string('description_desc', 'report_dashboard'),
-                '', PARAM_RAW, 80, 3));
+                '',
+                PARAM_RAW,
+                80,
+                3
+            )
+        );
         $settings->add(
             new admin_setting_configtextarea(
                 'report_dashboard/instructions',
                 new lang_string('instructions', 'report_dashboard'),
                 new lang_string('instructions_desc', 'report_dashboard'),
-                '', PARAM_RAW, 80, 10));
+                '',
+                PARAM_RAW,
+                80,
+                10
+            )
+        );
 
         $settings->add(
             new admin_setting_configtextarea(
                 'report_dashboard/limitations',
                 new lang_string('limitations', 'report_dashboard'),
                 new lang_string('limitations_desc', 'report_dashboard'),
-                '', PARAM_RAW, 80, 4));
+                '',
+                PARAM_RAW,
+                80,
+                4
+            )
+        );
 
         $settings->add(
             new admin_setting_configtextarea(
                 'report_dashboard/knownissues',
                 new lang_string('knownissues', 'report_dashboard'),
                 new lang_string('knownissues_desc', 'report_dashboard'),
-                '', PARAM_RAW, 80, 4));
+                '',
+                PARAM_RAW,
+                80,
+                4
+            )
+        );
 
         $settings->add(
             new admin_setting_configtextarea(
                 'report_dashboard/supportcontact',
                 new lang_string('supportcontact', 'report_dashboard'),
                 new lang_string('supportcontact_desc', 'report_dashboard'),
-                '', PARAM_RAW, 80, 3));
+                '',
+                PARAM_RAW,
+                80,
+                3
+            )
+        );
 
         $settings->add(
             new admin_setting_configtextarea(
@@ -567,6 +592,11 @@ with q1 as (
 		where xcm.id is null
 
 		order by q1.student_id, q1.id
-)", PARAM_RAW, 80, 20));
+)",
+                PARAM_RAW,
+                80,
+                20
+            )
+        );
     }
 }

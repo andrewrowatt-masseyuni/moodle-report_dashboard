@@ -38,6 +38,9 @@ function report_dashboard_extend_navigation_course($navigation, $course, $contex
             get_string('pluginname', 'report_dashboard'),
             $url,
             navigation_node::TYPE_SETTING,
-            null, null, new pix_icon('i/report', ''));
+            null,
+            null,
+            new pix_icon('i/report', '')
+        );
     }
 }

@@ -25,7 +25,6 @@ namespace report_dashboard;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class dashboard_test extends \advanced_testcase {
-
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
 
@@ -87,20 +86,17 @@ final class dashboard_test extends \advanced_testcase {
         $assessment1 = $this->getDataGenerator()->create_module('assign', [
             'course' => $course1->id,
             'name' => 'Assignment 1',
-            'duedate' => $now + 86400, ]
-        );
+            'duedate' => $now + 86400, ]);
 
         $assessment2 = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course1->id,
             'name' => 'Assignment 2',
-            'timeclose' => $now + 86400, ]
-        );
+            'timeclose' => $now + 86400, ]);
 
         $assessment3 = $this->getDataGenerator()->create_module('assign', [
             'course' => $course1->id,
             'name' => 'Test 1',
-            'duedate' => $now + 86400, ]
-        );
+            'duedate' => $now + 86400, ]);
 
         $assessmentdataset = dashboard::get_assessments($course1->id);
         $this->assertEquals(3, count($assessmentdataset));
@@ -399,7 +395,6 @@ final class dashboard_test extends \advanced_testcase {
         $this->assertEquals('2024 S2, 2023 S1', $userdataset[1]->previous_enrolments);
         $this->assertEquals('2023 S1', $userdataset[2]->previous_enrolments);
         $this->assertEquals('', $userdataset[3]->previous_enrolments);
-
     }
 
     /**
@@ -447,15 +442,13 @@ final class dashboard_test extends \advanced_testcase {
             'course' => $course1->id,
             'name' => 'Page 1',
             'idnumber' => 'EE1',
-            ]
-        );
+            ]);
 
         $ee2 = $this->getDataGenerator()->create_module('page', [
             'course' => $course1->id,
             'name' => 'Page 2',
             'idnumber' => 'EE2',
-            ]
-        );
+            ]);
 
         $earlyengagements = dashboard::get_early_engagements($course1->id);
         $this->assertEquals(2, count($earlyengagements));
@@ -466,7 +459,5 @@ final class dashboard_test extends \advanced_testcase {
         // Test hiding an early engagement.
         $userearlyengagements = dashboard::get_user_early_engagements($course1->id, $ee1->cmid);
         $this->assertEquals(3 * 1, count($userearlyengagements));
-
     }
-
 }

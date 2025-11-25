@@ -57,5 +57,4 @@ class modinfohelper {
     public function get_cm_name($cmid) {
         return $this->modinfo->cms[$cmid]->name;
     }
-
 }

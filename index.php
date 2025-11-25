@@ -36,9 +36,11 @@ $context = context_course::instance($course->id);
 
 require_login($course);
 if (!has_capability('report/dashboard:view', $context)) {
-    redirect(new moodle_url('/my'),
+    redirect(
+        new moodle_url('/my'),
         get_string('nopermissions', 'error', get_string('dashboard:view', 'report_dashboard')),
-        \core\output\notification::NOTIFY_ERROR);
+        \core\output\notification::NOTIFY_ERROR
+    );
 }
 
 
@@ -50,7 +52,7 @@ $PAGE->set_title(
     get_string('pluginname', 'report_dashboard')
 );
 
-$savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids',  serialize([])));
+$savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids', serialize([])));
 
 $action = optional_param('action', '', PARAM_ALPHA);
 if ($action) {
