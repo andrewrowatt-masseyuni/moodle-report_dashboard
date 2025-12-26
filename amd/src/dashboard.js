@@ -183,8 +183,9 @@ export const init = () => {
             for (const assessmentFilter of assessmentFilters) {
                 let id = assessmentFilter.dataset.assessmentid;
                 let itemMatch = false;
-                let items = document.querySelectorAll(`input[name='assessment${id}_filter']`);
-                let itemsChecked = document.querySelectorAll(`input[name='assessment${id}_filter']:checked`).length;
+                let items = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']`);
+                // eslint-disable-next-line max-len
+                let itemsChecked = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']:checked`).length;
                 let anyUnchecked = items.length != itemsChecked;
 
                 let dropdownlabel = "Unknown"; // Default label for the dropdown
@@ -307,7 +308,7 @@ export const init = () => {
                     e.parentElement.dataset.filterTotal = count;
                     e.disabled = !count;
                     if (!count) {
-                        // e.checked = false;
+                        e.checked = false;
                     }
                     e.parentElement.classList.toggle("text-muted", !count);
                 }
