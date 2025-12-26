@@ -26,7 +26,7 @@
 <!-- Late assessments filter -->
 <th>
     <div class="dropdown" id="lateassessments">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
             <span>All</span>
         </button>
         <div class="dropdown-menu">
@@ -56,7 +56,7 @@
 <th class="dt-left">
     <div class="d-flex gap-2">
         <div class="dropdown assessment_filter" id="assessment{{id}}" data-assessmentid="{{id}}">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                 <span>All</span>
             </button>
             <div class="dropdown-menu" data-assessmentid="{{id}}">
@@ -125,7 +125,7 @@
                 </div>
             </div>
         </div>
-        <form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="sesskey" value="{{sesskey}}" /><input type="hidden" name="action" value="hideitem" /><input type="hidden" name="cmid" value="{{cmid}}" /><button title="Hide {{name}}" type="submit" class="btn btn-outline-secondary"><i class="fa fa-eye-slash" aria-hidden="true"></i> Hide</button></form>
+        <form><input type="hidden" name="id" value="{{courseid}}" /><input type="hidden" name="sesskey" value="{{sesskey}}" /><input type="hidden" name="action" value="hideitem" /><input type="hidden" name="cmid" value="{{cmid}}" /><button title="Hide {{name}}" type="submit" class="btn btn-outline-secondary btn-sm"><i class="fa fa-eye-slash" aria-hidden="true"></i> Hide</button></form>
     </div>
 </th>
 {{/assessments}}
