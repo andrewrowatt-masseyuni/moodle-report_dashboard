@@ -24,6 +24,9 @@ import $ from 'jquery';
 import DataTable from 'report_dashboard/dataTables';
 import 'report_dashboard/dataTables.bootstrap4';
 import 'report_dashboard/dataTables.select';
+import 'report_dashboard/dataTables.buttons';
+import 'report_dashboard/buttons.bootstrap4';
+import 'report_dashboard/buttons.html5';
 
 export const init = () => {
     $(function() {
@@ -36,6 +39,45 @@ export const init = () => {
                 layout: {
                     topStart: 'info',
                     topEnd: null,
+                    bottomStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: 'Export to Excel',
+                            },
+                            {
+                                text: 'Copy email addresses of selected students',
+                                className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
+                                action: function(e, dt) {
+                                    var r = dt.rows({selected: true}).data();
+                                    var s = '';
+                                    for (var i = 0; i < r.length; i++) {
+                                        s += r[i][4] + ';';
+                                    }
+                                    navigator.clipboard.writeText(s);
+                                }
+                            },
+                            {
+                                text: 'Create email to selected students...',
+                                className: 'customButton customButtonCreateEmail btn btn-secondary',
+                                action: function(e, dt) {
+                                    var r = dt.rows({selected: true}).data();
+                                    var s = '';
+                                    for (var i = 0; i < r.length; i++) {
+                                        s += `${r[i][2]} ${r[i][3]} <${r[i][4]}>;`;
+                                    }
+                                    location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
+                                }
+                            },
+                            {
+                                text: 'Clear selected rows',
+                                className: 'customButton customButtonClearSelectedRows btn btn-secondary',
+                                action: function(e, dt) {
+                                    dt.rows({selected: true}).deselect();
+                                }
+                            }
+                        ]
+                    }
                 },
                 columnDefs: [
                     {
@@ -302,7 +344,6 @@ export const init = () => {
                 let scope = e.name.replace("_filter", "");
 
                 let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
-                window.console.log(e.name + ' ' + filter + ' count:' + count);
                 e.parentElement.dataset.filterCount = count;
                 if (firstTime) {
                     e.parentElement.dataset.filterTotal = count;

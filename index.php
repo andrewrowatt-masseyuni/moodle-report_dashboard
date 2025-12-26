@@ -82,6 +82,9 @@ $modinfohelper = new modinfohelper(get_fast_modinfo($course));
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
 $PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init');
 
+// ... JSZip requirement for Excel export. Cannot be loaded via Import statement in AMD module.
+$PAGE->requires->js('/report/dashboard/amd/build/jszip.min.js', true);
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_dashboard'));
 
