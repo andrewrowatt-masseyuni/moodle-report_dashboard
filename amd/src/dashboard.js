@@ -301,6 +301,7 @@ export const init = () => {
                 let scope = e.name.replace("_filter", "");
 
                 let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
+                window.console.log(e.name + ' ' + filter + ' count:' + count);
                 e.parentElement.dataset.filterCount = count;
                 if (firstTime) {
                     e.parentElement.dataset.filterTotal = count;
