@@ -327,7 +327,8 @@ with q1 as (
 	select cm.id as cmid, cm.instance as iteminstance, m.name as itemmodule,
 		coalesce(a1.name,a2.name,'[Unknown]') as name,
 		coalesce(a1.duedate,a2.timeclose,null) as activity_duedate_epoch,
-	gi.id as grade_item_id, gi.iteminfo, gi.idnumber as activity_idnumber,gi.gradepass
+	gi.id as grade_item_id, gi.iteminfo, gi.idnumber as activity_idnumber,gi.gradepass,
+	case when xcm.id is null then 0 else 1 end as excluded
 	from {course_modules} cm
 	left join excluded_cmids xcm on xcm.id = cm.id
 	cross join vars v
@@ -341,8 +342,6 @@ with q1 as (
 	cm.course = v.course_id
 	and
 	(m.name in ('assign','quiz'))
-	and
-	xcm.id is null
 )
 	select
 	*,
@@ -369,6 +368,7 @@ with q1 as (
 			a.*
 			from students1 s
 			cross join activity a
+			where a.excluded = 0
 		)
 
 		select * from q1

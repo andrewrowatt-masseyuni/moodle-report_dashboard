@@ -307,7 +307,7 @@ export const init = () => {
                     e.parentElement.dataset.filterTotal = count;
                     e.disabled = !count;
                     if (!count) {
-                        e.checked = false;
+                        // e.checked = false;
                     }
                     e.parentElement.classList.toggle("text-muted", !count);
                 }
