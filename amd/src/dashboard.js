@@ -49,10 +49,10 @@ export const init = () => {
                                 text: 'Copy email addresses of selected students',
                                 className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
                                 action: function(e, dt) {
-                                    var r = dt.rows({selected: true}).data();
+                                    var r = dt.rows({selected: true});
                                     var s = '';
-                                    for (var i = 0; i < r.length; i++) {
-                                        s += r[i][4] + ';';
+                                    for (var i = 0; i < r.count(); i++) {
+                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
                                     }
                                     navigator.clipboard.writeText(s);
                                 }
@@ -61,10 +61,10 @@ export const init = () => {
                                 text: 'Create email to selected students...',
                                 className: 'customButton customButtonCreateEmail btn btn-secondary',
                                 action: function(e, dt) {
-                                    var r = dt.rows({selected: true}).data();
+                                    var r = dt.rows({selected: true});
                                     var s = '';
-                                    for (var i = 0; i < r.length; i++) {
-                                        s += `${r[i][2]} ${r[i][3]} <${r[i][4]}>;`;
+                                    for (var i = 0; i < r.count(); i++) {
+                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
                                     }
                                     location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
                                 }
@@ -91,6 +91,10 @@ export const init = () => {
                     headerCheckbox: 'select-page'
                 },
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
+                initComplete: function() {
+                    // Adjust the columns when the table is initialised.
+                    // this.api().columns([2]).visible(false);
+                }
             }
         );
 

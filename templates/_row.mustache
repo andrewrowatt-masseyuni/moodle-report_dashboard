@@ -28,7 +28,7 @@
 <td class="tc_name" data-search="{{row.username}} {{row.firstname}} {{row.lastname}}">
     <div><span class="username">{{row.username}}</span> <span class="firstname">{{row.firstname}}</span> <span class="lastname">{{row.lastname}}</span><a class="email-link" href="mailto:{{row.firstname}}%20{{row.lastname}}%3C{{row.email}}%3E" title="Email {{row.firstname}}..." onclick="event.stopPropagation();"></a></div>
 </td>
-<td class="tc_email">
+<td class="tc_email" data-formatted-email="{{row.firstname}} {{row.lastname}} <{{row.email}}>">
     <div><span class="email">{{row.email}}</span></div>
 </td>
 <td class="tc_lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
