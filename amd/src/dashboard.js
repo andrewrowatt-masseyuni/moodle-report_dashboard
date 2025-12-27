@@ -49,11 +49,13 @@ export const init = () => {
                                 text: 'Copy email addresses of selected students',
                                 className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
                                 action: function(e, dt) {
-                                    var r = dt.rows({selected: true});
-                                    var s = '';
-                                    for (var i = 0; i < r.count(); i++) {
-                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
-                                    }
+                                    let s = '';
+                                    // eslint-disable-next-line array-callback-return, no-unused-vars
+                                    dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
+                                        const node = this.cell(rowIdx, 2).node();
+                                        s += node.dataset.formattedEmail + ';';
+                                    });
+
                                     navigator.clipboard.writeText(s);
                                 }
                             },
@@ -61,11 +63,12 @@ export const init = () => {
                                 text: 'Create email to selected students...',
                                 className: 'customButton customButtonCreateEmail btn btn-secondary',
                                 action: function(e, dt) {
-                                    var r = dt.rows({selected: true});
                                     var s = '';
-                                    for (var i = 0; i < r.count(); i++) {
-                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
-                                    }
+                                    // eslint-disable-next-line array-callback-return, no-unused-vars
+                                    dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
+                                        const node = this.cell(rowIdx, 2).node();
+                                        s += node.dataset.formattedEmail + ';';
+                                    });
                                     location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
                                 }
                             },
