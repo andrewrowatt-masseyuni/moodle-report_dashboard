@@ -24,6 +24,9 @@ import $ from 'jquery';
 import DataTable from 'report_dashboard/dataTables';
 import 'report_dashboard/dataTables.bootstrap4';
 import 'report_dashboard/dataTables.select';
+import 'report_dashboard/dataTables.buttons';
+import 'report_dashboard/buttons.bootstrap4';
+import 'report_dashboard/buttons.html5';
 
 export const init = () => {
     $(function() {
@@ -36,6 +39,45 @@ export const init = () => {
                 layout: {
                     topStart: 'info',
                     topEnd: null,
+                    bottomStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: 'Export to Excel',
+                            },
+                            {
+                                text: 'Copy email addresses of selected students',
+                                className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
+                                action: function(e, dt) {
+                                    var r = dt.rows({selected: true});
+                                    var s = '';
+                                    for (var i = 0; i < r.count(); i++) {
+                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
+                                    }
+                                    navigator.clipboard.writeText(s);
+                                }
+                            },
+                            {
+                                text: 'Create email to selected students...',
+                                className: 'customButton customButtonCreateEmail btn btn-secondary',
+                                action: function(e, dt) {
+                                    var r = dt.rows({selected: true});
+                                    var s = '';
+                                    for (var i = 0; i < r.count(); i++) {
+                                        s += r.cell(i, 2).node().dataset.formattedEmail + ';';
+                                    }
+                                    location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
+                                }
+                            },
+                            {
+                                text: 'Clear selected rows',
+                                className: 'customButton customButtonClearSelectedRows btn btn-secondary',
+                                action: function(e, dt) {
+                                    dt.rows({selected: true}).deselect();
+                                }
+                            }
+                        ]
+                    }
                 },
                 columnDefs: [
                     {
@@ -49,6 +91,10 @@ export const init = () => {
                     headerCheckbox: 'select-page'
                 },
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
+                initComplete: function() {
+                    // Adjust the columns when the table is initialised.
+                    // this.api().columns([2]).visible(false);
+                }
             }
         );
 
@@ -302,7 +348,6 @@ export const init = () => {
                 let scope = e.name.replace("_filter", "");
 
                 let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
-                window.console.log(e.name + ' ' + filter + ' count:' + count);
                 e.parentElement.dataset.filterCount = count;
                 if (firstTime) {
                     e.parentElement.dataset.filterTotal = count;

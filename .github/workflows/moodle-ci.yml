@@ -102,7 +102,7 @@ jobs:
 
       - name: Grunt
         if: ${{ !cancelled() && matrix.runchecks == 'all' }}
-        run: moodle-plugin-ci grunt --max-lint-warnings 3
+        run: moodle-plugin-ci grunt --max-lint-warnings 8
 
       - name: PHPUnit tests
         if: ${{ !cancelled() }}

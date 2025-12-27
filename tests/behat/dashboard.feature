@@ -264,6 +264,11 @@ Feature: Course Dashboard Report
     And I should see "Create email to selected students..."
     # Note: The actual email functionality would require additional setup
 
+  Scenario: Teacher can see Copy & Excel buttons
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    Then I should see "Export to Excel"
+    # Note: Testing the feature is out of scope
+
   Scenario: Student gets access denied when trying direct URL access
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
     Then I should see "Sorry, but you do not currently have permissions to do that"
