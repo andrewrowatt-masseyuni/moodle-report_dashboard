@@ -92,8 +92,8 @@ export const init = () => {
                 },
                 order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
                 initComplete: function() {
-                    // Adjust the columns when the table is initialised.
-                    // this.api().columns([2]).visible(false);
+                    // Make any adjustments to the columns when the table is initialised.
+                    this.api().columns([2]).visible(false); // Hide email column
                 }
             }
         );
