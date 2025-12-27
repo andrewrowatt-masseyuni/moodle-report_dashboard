@@ -46,6 +46,8 @@
     --note2: rgb(248, 243, 252);
     --note3: rgb(244, 238, 238);
     --neutral: #00000007;
+    --dt-row-selected-text: #000;
+    --dt-row-selected: 220, 220, 220;
 
     table-layout: auto;
     width: 100%;
