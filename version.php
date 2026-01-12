@@ -27,5 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'report_dashboard';
 $plugin->release = '1.0';
 $plugin->version = 2025011900;
-$plugin->requires = 2022112800;
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->requires     = 2024100700;
+$plugin->supported    = [405, 501];
+$plugin->maturity     = MATURITY_STABLE;
