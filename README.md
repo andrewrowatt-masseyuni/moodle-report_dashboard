@@ -1,17 +1,21 @@
-[![Moodle Plugin CI](https://github.com/andrewrowatt-masseyuni/moodle-report_dashboard/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/andrewrowatt-masseyuni/moodle-report_dashboard/actions/workflows/moodle-ci.yml)
+![Moodle Plugin CI](https://github.com/andrewrowatt-masseyuni/moodle-report_dashboard/actions/workflows/moodle-ci.yml/badge.svg)
 
 # Course engagement dashboard
 
 Provides a report ("dashboard") to support Course Coordinators to monitor student engagement during the semester.
 
-Note this is a "hybrid" plugin in that it heavily utilises SQL to directly query the status of Moodle activities. The reason for this is the precursor to the plugin was a report using the fantastic [Ad-hoc database queries](https://moodle.org/plugins/report_customsql) plugin. Over time, more of the plugin will transition to use of native Moodle API calls. Actual timeframe is TBA.
+**Architecture note**
+
+*This plugin uses direct SQL queries to retrieve student engagement data rather than relying solely on Moodle's core APIs. This approach was inherited from the plugin's origins as a report built with the* [*Ad-hoc database queries*](https://moodle.org/plugins/report_customsql) *plugin, but it also reflects a practical trade-off: SQL queries can efficiently aggregate engagement metrics across multiple activities in a single call, whereas achieving the same result through Moodle's APIs would require numerous individual calls with additional processing overhead.*
+
+*The trade-off is reduced portability, as the SQL may require adjustment for different database engines, and a dependency on Moodle's internal database schema, which can change between versions.*
+
+*Over time, we intend to transition toward native Moodle API calls where performance permits.*
 
 ## Installing via uploaded ZIP file
 
 1.  Log in to your Moodle site as an admin and go to *Site administration \> Plugins \> Install plugins*.
-
 2.  Upload the ZIP file with the plugin code. You should only be prompted to add extra details if your plugin type is not automatically detected.
-
 3.  Check the plugin validation report and finish the installation.
 
 ## Installing manually
