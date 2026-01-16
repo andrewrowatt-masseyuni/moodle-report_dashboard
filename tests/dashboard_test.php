@@ -490,7 +490,7 @@ final class dashboard_test extends \advanced_testcase {
         ]);
 
         // Create course.
-        $course1 = $this->getDataGenerator()->create_course();
+        $course1 = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
 
@@ -521,114 +521,60 @@ final class dashboard_test extends \advanced_testcase {
             'completionview' => 1,
         ]);
 
+        $completion = new \completion_info($course1);
+
         // Get user assessments - should include viewed field.
-        $userassessments = dashboard::get_user_assessments($course1->id, '');
-        $this->assertEquals(2 * 2, count($userassessments)); // 2 users * 2 assessments.
+        $items = dashboard::get_user_assessments($course1->id, '');
+        $this->assertEquals(2 * 2, count($items)); // 2 users * 2 assessments.
 
         // Check initial state - no views recorded yet.
-        // Find user1's assessment1 record.
-        $user1assessment1 = null;
-        $user1assessment2 = null;
-        $user2assessment1 = null;
-        foreach ($userassessments as $ua) {
-            if ($ua->userid == 1 && $ua->assessmentid == 1) {
-                $user1assessment1 = $ua;
+        foreach ($items as $ua) {
+            if ($ua->assessmentid == 1) {
+                $this->assertEquals(0, $ua->viewed);
             }
-            if ($ua->userid == 1 && $ua->assessmentid == 2) {
-                $user1assessment2 = $ua;
-            }
-            if ($ua->userid == 2 && $ua->assessmentid == 1) {
-                $user2assessment1 = $ua;
+            if ($ua->assessmentid == 2) {
+                $this->assertEquals(-1, $ua->viewed);
             }
         }
 
-        $this->assertNotNull($user1assessment1);
-        $this->assertObjectHasProperty('viewed', $user1assessment1);
-        $this->assertEquals(0, $user1assessment1->viewed); // User1, Assessment1 - not viewed.
-
-        // Check assessment without completionview - should return -1.
-        $this->assertNotNull($user1assessment2);
-        $this->assertEquals(-1, $user1assessment2->viewed); // User1, Assessment2 - no completion tracking.
-
-        // Simulate user1 viewing assignment1.
-        $DB->insert_record('course_modules_viewed', [
-            'coursemoduleid' => $assessment1->cmid,
-            'userid' => $user1->id,
-            'timecreated' => $now,
-        ]);
+        $cm = get_coursemodule_from_id('assign', $assessment1->cmid);
+        $completion->set_module_viewed($cm, $user1->id);
 
         // Get user assessments again.
-        $userassessments = dashboard::get_user_assessments($course1->id, '');
-
-        // Find records again.
-        $user1assessment1 = null;
-        $user2assessment1 = null;
-        foreach ($userassessments as $ua) {
-            if ($ua->userid == 1 && $ua->assessmentid == 1) {
-                $user1assessment1 = $ua;
+        $items = dashboard::get_user_assessments($course1->id, '');
+        foreach ($items as $ua) {
+            if ($ua->assessmentid == 1) {
+                if ($ua->userid == 1) {
+                    $this->assertTrue($ua->viewed > 0);
+                } else {
+                    $this->assertEquals(0, $ua->viewed);
+                }
             }
-            if ($ua->userid == 2 && $ua->assessmentid == 1) {
-                $user2assessment1 = $ua;
-            }
-        }
-
-        // User1's view of assessment1 should now be recorded.
-        $this->assertNotNull($user1assessment1);
-        $this->assertEquals($now, $user1assessment1->viewed);
-
-        // User2 still hasn't viewed it.
-        $this->assertNotNull($user2assessment1);
-        $this->assertEquals(0, $user2assessment1->viewed); // User2, Assessment1.
-
-        // Test early engagements viewed status.
-        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
-        $this->assertEquals(2 * 1, count($userearlyengagements)); // 2 users * 1 early engagement.
-
-        // Find user1's early engagement record.
-        $user1ee1 = null;
-        $user2ee1 = null;
-        foreach ($userearlyengagements as $uee) {
-            if ($uee->userid == 1 && $uee->earlyengagementid == 1) {
-                $user1ee1 = $uee;
-            }
-            if ($uee->userid == 2 && $uee->earlyengagementid == 1) {
-                $user2ee1 = $uee;
+            if ($ua->assessmentid == 2) {
+                $this->assertEquals(-1, $ua->viewed);
             }
         }
+
+        // Test user early engagements
+        $items = dashboard::get_user_early_engagements($course1->id, '');
+        $this->assertEquals(2 * 1, count($items)); // 2 users * 1 early engagement.
 
         // Check initial state - no views recorded yet.
-        $this->assertNotNull($user1ee1);
-        $this->assertObjectHasProperty('viewed', $user1ee1);
-        $this->assertEquals(0, $user1ee1->viewed); // User1, EE1 - not viewed.
+        foreach ($items as $ua) {
+            $this->assertEquals(0, $ua->viewed);
+        }
 
-        // Simulate user1 viewing early engagement.
-        $DB->insert_record('course_modules_viewed', [
-            'coursemoduleid' => $ee1->cmid,
-            'userid' => $user1->id,
-            'timecreated' => $now + 100,
-        ]);
-
-        // Get user early engagements again.
-        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
-
-        // Find records again.
-        $user1ee1 = null;
-        $user2ee1 = null;
-        foreach ($userearlyengagements as $uee) {
-            if ($uee->userid == 1 && $uee->earlyengagementid == 1) {
-                $user1ee1 = $uee;
-            }
-            if ($uee->userid == 2 && $uee->earlyengagementid == 1) {
-                $user2ee1 = $uee;
+        $cm = get_coursemodule_from_id('page', $ee1->cmid);
+        $completion->set_module_viewed($cm, $user2->id);
+        
+        $items = dashboard::get_user_early_engagements($course1->id, '');
+        foreach ($items as $ua) {
+            if ($ua->userid == 2) {
+                $this->assertTrue($ua->viewed > 0);
+            } else {
+                $this->assertEquals(0, $ua->viewed);
             }
         }
 
-        // User1's view of EE1 should now be recorded.
-        $this->assertNotNull($user1ee1);
-        $this->assertEquals($now + 100, $user1ee1->viewed);
-
-        // User2 still hasn't viewed it.
-        $this->assertNotNull($user2ee1);
-        $this->assertEquals(0, $user2ee1->viewed);
     }
 }
