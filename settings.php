@@ -94,9 +94,9 @@ if ($hassiteconfig) {
                 'report_dashboard/mastersql',
                 new lang_string('mastersql', 'report_dashboard'),
                 new lang_string('mastersql_desc', 'report_dashboard'),
-                "
-        with
+                "with
 vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_cmids::text as exclude_cmids)
+--select v.* from vars v
 ,roles as (
 	with contexts as (
 		select ctx.id as context_id from {context} ctx
@@ -342,10 +342,12 @@ with q1 as (
 	cm.course = v.course_id
 	and
 	(m.name in ('assign','quiz'))
+	--and
+	--xcm.id is null
 )
 	select
 	*,
-	ROW_NUMBER() OVER(order by activity_duedate_epoch,cmid) as activity_row_index
+	ROW_NUMBER() OVER(order by excluded, activity_duedate_epoch,cmid) as activity_row_index
 	from q1
 	where activity_duedate_epoch != 0
 )
@@ -483,69 +485,21 @@ with q1 as (
 			end as status
 			from q4
 		)
-		select * from q5
+		,q6 as (
+			select q5.*,
+			case when cm.id is null then -1 when cmv.id is null then 0 else cmv.timecreated end as viewed
+			from q5
+			left join {course_modules} cm on cm.id = q5.cmid and cm.completionview = 1
+			left join {course_modules_viewed} cmv on cmv.userid = q5.userid and cmv.coursemoduleid = q5.cmid
+		)
+		select * from q6
 	)
 	--select * from student_activity_grade_duedate_status where userid=138996
-	,student_grades_from_gradeitems_with_idnumber as (
-		with q1 as (
-			select s.userid, gi.idnumber,
-			g.finalgrade, ((g.finalgrade / g.rawgrademax) * 100)::int as finalgrade_percent, gi.iteminfo, gi.gradepass
-			from students1 s
-			cross join vars v
-			join {grade_grades} g on g.userid = s.userid
-			join {grade_items} gi on gi.id = g.itemid and coalesce(gi.idnumber,'') != '' and gi.courseid = v.course_id
-		)
-		,q2 as (
-			select q1.*,
-			/* Note this should match the code in student_activity_grade_duedate_status above */
-			case
-				when q1.finalgrade is null then 'Not submitted'
-				when q1.finalgrade is not null then -- q1.finalgrade_percent || ' ' ||
-				case
-					/* Default */
-					when q1.iteminfo is null or q1.iteminfo = '' or q1.iteminfo = 'marking_category0' then
-						case
-							when q1.gradepass = 0.0 and q1.finalgrade_percent >= 50 then 'Passed'
-							when q1.gradepass != 0.0 and q1.finalgrade >= q1.gradepass then 'Passed'
-							else 'Failed'
-						end
-					/* a.	Te Mahi, Maths Readiness Quiz, Quiz 1:
-							Failed = 59% or less / Just passed = 79% or less / Passed = 80% or higher
-					*/
-					when q1.iteminfo = 'marking_category1' then
-						case
-							when q1.finalgrade_percent >= 80 then 'Passed'
-							when q1.finalgrade_percent <= 59 then 'Failed'
-							else 'Just passed'
-						end
-					/*
-						b.	Test 1, Quiz 2:
-						Failed = 49% or less / Just passed = 74% or less / Passed = 75% or higher
-					*/
-					when q1.iteminfo = 'marking_category2' then
-						case
-							when q1.finalgrade_percent >= 75 then 'Passed'
-							when q1.finalgrade_percent <= 49 then 'Failed'
-							else 'Just passed'
-						end
-					when q1.iteminfo = 'marking_category3' then
-						case
-							when q1.finalgrade_percent >= 65 then 'Passed'
-							when q1.finalgrade_percent <= 49 then 'Failed'
-							else 'Just passed'
-						end
-					else '[Error - missing iteminfo]'
-				end
-			end as status
-			from q1
-		)
-		select * from q2
-	)
 	--select * from student_activity
 	--select * from student_grades_from_gradeitems_with_idnumber
 	--select * from student_activity_grade_duedate_status
 	select ROW_NUMBER() OVER(order by user_row_index, activity_row_index) as id,
-	user_row_index as userid, activity_row_index as assessmentid, status,
+	user_row_index as userid, activity_row_index as assessmentid, status, viewed,
 	case when student_duedate_extension = 'Yes' then
 		student_duedate_epoch else 0 end as extension_date,
 	case when finalgrade_percent is null then -1 else finalgrade_percent end as grade
@@ -572,26 +526,33 @@ with q1 as (
 		from early_engagement_activities cm
 		cross join students1 s
 	)
+	,q2 as (
+			select q1.*,
+			case when cm.id is null then -1 when cmv.id is null then 0 else cmv.timecreated end as viewed
+			from q1
+			left join {course_modules} cm on cm.id = q1.cmid and cm.completionview = 1
+			left join {course_modules_viewed} cmv on cmv.userid = q1.userid and cmv.coursemoduleid = q1.cmid
+		)
 	select
-		ROW_NUMBER() OVER(order by q1.student_id, q1.id) as id,
-		q1.student_id as userid,
-		q1.id as earlyengagementid,
+		ROW_NUMBER() OVER(order by q2.student_id, q2.id) as id,
+		q2.student_id as userid,
+		q2.id as earlyengagementid,
 		case
 			when mc.completionstate = 1 then 'completed'
 			else
 				case
-					when q1.completionexpected = 0 then 'notcompleted'
-					when to_timestamp(q1.completionexpected) > now() then 'notdue'
+					when q2.completionexpected = 0 then 'notcompleted'
+					when to_timestamp(q2.completionexpected) > now() then 'notdue'
 					else 'overdue'
 			end
-		end as status
-		from q1
-		left join {course_modules_completion} mc on mc.coursemoduleid = q1.cmid and mc.userid = q1.userid
-		left join excluded_cmids xcm on xcm.id = q1.cmid
+		end as status, viewed
+		from q2
+		left join {course_modules_completion} mc on mc.coursemoduleid = q2.cmid and mc.userid = q2.userid
+		left join excluded_cmids xcm on xcm.id = q2.cmid
 
 		where xcm.id is null
 
-		order by q1.student_id, q1.id
+		order by q2.student_id, q2.id
 )",
                 PARAM_RAW,
                 80,

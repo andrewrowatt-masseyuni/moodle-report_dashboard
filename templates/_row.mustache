@@ -67,6 +67,16 @@
 {{#earlyengagements}}
 <td class="tc_earlyengagement earlyengagement{{earlyengagementid}}">
     <div class="rdbtag-group">
+        {{#viewedlabel}}
+        <span class="rdbtag" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}">
+        {{#vieweddate}}
+        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i>
+        {{/vieweddate}}
+        {{^vieweddate}}
+        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i>
+        {{/vieweddate}}
+        </span>
+        {{/viewedlabel}}
         <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
     </div>
 </td>
@@ -82,6 +92,16 @@
 {{#assessments}}
 <td class="tc_assessment assessment{{assessmentid}}">
     <div class="rdbtag-group">
+        {{#viewedlabel}}
+        <span class="rdbtag" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}">
+        {{#vieweddate}}
+        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i>
+        {{/vieweddate}}
+        {{^vieweddate}}
+        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i>
+        {{/vieweddate}}
+        </span>
+        {{/viewedlabel}}
         <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
         {{#extension_date}}
         <span class="rdbtag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">

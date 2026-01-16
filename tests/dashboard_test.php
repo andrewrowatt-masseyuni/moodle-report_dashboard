@@ -460,4 +460,120 @@ final class dashboard_test extends \advanced_testcase {
         $userearlyengagements = dashboard::get_user_early_engagements($course1->id, $ee1->cmid);
         $this->assertEquals(3 * 1, count($userearlyengagements));
     }
+
+    /**
+     * Tests viewed status for assessments and early engagements.
+     *
+     * @covers ::dashboard
+     */
+    public function test_viewed_status(): void {
+        global $DB;
+
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        $now = time();
+
+        // Create users.
+        $user1 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186051',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email' => 'user2@example.com',
+            'username' => '98186052',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
+        ]);
+
+        // Create course.
+        $course1 = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
+
+        // Create assessment with completion view enabled.
+        $assessment1 = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course1->id,
+            'name' => 'Assignment 1',
+            'duedate' => $now + 86400,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+        ]);
+
+        // Create assessment without completion view.
+        $assessment2 = $this->getDataGenerator()->create_module('quiz', [
+            'course' => $course1->id,
+            'name' => 'Quiz 1',
+            'timeclose' => $now + 86400,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 0,
+        ]);
+
+        // Create early engagement with completion view enabled.
+        $ee1 = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'name' => 'Page 1',
+            'idnumber' => 'EE1',
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+        ]);
+
+        $completion = new \completion_info($course1);
+
+        // Get user assessments - should include viewed field.
+        $items = dashboard::get_user_assessments($course1->id, '');
+        $this->assertEquals(2 * 2, count($items)); // 2 users * 2 assessments.
+
+        // Check initial state - no views recorded yet.
+        foreach ($items as $ua) {
+            if ($ua->assessmentid == 1) {
+                $this->assertEquals(0, $ua->viewed);
+            }
+            if ($ua->assessmentid == 2) {
+                $this->assertEquals(-1, $ua->viewed);
+            }
+        }
+
+        $cm = get_coursemodule_from_id('assign', $assessment1->cmid);
+        $completion->set_module_viewed($cm, $user1->id);
+
+        // Get user assessments again.
+        $items = dashboard::get_user_assessments($course1->id, '');
+        foreach ($items as $ua) {
+            if ($ua->assessmentid == 1) {
+                if ($ua->userid == 1) {
+                    $this->assertTrue($ua->viewed > 0);
+                } else {
+                    $this->assertEquals(0, $ua->viewed);
+                }
+            }
+            if ($ua->assessmentid == 2) {
+                $this->assertEquals(-1, $ua->viewed);
+            }
+        }
+
+        // Test user early engagements.
+        $items = dashboard::get_user_early_engagements($course1->id, '');
+        $this->assertEquals(2 * 1, count($items)); // 2 users * 1 early engagement.
+
+        // Check initial state - no views recorded yet.
+        foreach ($items as $ua) {
+            $this->assertEquals(0, $ua->viewed);
+        }
+
+        $cm = get_coursemodule_from_id('page', $ee1->cmid);
+        $completion->set_module_viewed($cm, $user2->id);
+
+        $items = dashboard::get_user_early_engagements($course1->id, '');
+        foreach ($items as $ua) {
+            if ($ua->userid == 2) {
+                $this->assertTrue($ua->viewed > 0);
+            } else {
+                $this->assertEquals(0, $ua->viewed);
+            }
+        }
+    }
 }
