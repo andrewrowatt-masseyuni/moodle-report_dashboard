@@ -289,6 +289,10 @@ foreach ($userdataset as $userobject) {
             $label = $assessment['grade'];
         }
 
+        $viewedstatus = '';
+        $viewedlabel = '';
+        $vieweddate = '';
+
         if (!in_array($assessment['status'], ['submitted', 'passed', 'failed'])) {
             switch ($assessment['viewed']) {
                 case -1:
@@ -306,7 +310,7 @@ foreach ($userdataset as $userobject) {
             }
         }
 
-        $assessments[] = $assessment + ['label' => $label, 'viewedstatus' => $viewedstatus, 'viewedlabel' => $viewedlabel, 'vieweddate' => $vieweddate ?? ''];
+        $assessments[] = $assessment + ['label' => $label, 'viewedstatus' => $viewedstatus, 'viewedlabel' => $viewedlabel, 'vieweddate' => $vieweddate];
 
         if ($assessment['status'] == 'overdue') {
             $lateassessments = true;
