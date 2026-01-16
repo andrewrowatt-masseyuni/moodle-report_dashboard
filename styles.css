@@ -262,6 +262,10 @@
             &[data-filter-category="notviewed"][data-assessmentstatus="overdue"] {
                 background-color: var(--negative);
             }
+
+            &[data-filter-category="notviewed"][data-earlyengagementstatus="overdue"] {
+                background-color: var(--negative);
+            }
         }
     }
 

@@ -460,4 +460,175 @@ final class dashboard_test extends \advanced_testcase {
         $userearlyengagements = dashboard::get_user_early_engagements($course1->id, $ee1->cmid);
         $this->assertEquals(3 * 1, count($userearlyengagements));
     }
+
+    /**
+     * Tests viewed status for assessments and early engagements.
+     *
+     * @covers ::dashboard
+     */
+    public function test_viewed_status(): void {
+        global $DB;
+
+        $this->resetAfterTest(false);
+        $this->setAdminUser();
+
+        $now = time();
+
+        // Create users.
+        $user1 = $this->getDataGenerator()->create_user([
+            'email' => 'user1@example.com',
+            'username' => '98186051',
+            'firstname' => 'Andy',
+            'lastname' => 'Rowatt',
+        ]);
+
+        $user2 = $this->getDataGenerator()->create_user([
+            'email' => 'user2@example.com',
+            'username' => '98186052',
+            'firstname' => 'Betty',
+            'lastname' => 'Rowatt',
+        ]);
+
+        // Create course.
+        $course1 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
+
+        // Create assessment with completion view enabled.
+        $assessment1 = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course1->id,
+            'name' => 'Assignment 1',
+            'duedate' => $now + 86400,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+        ]);
+
+        // Create assessment without completion view.
+        $assessment2 = $this->getDataGenerator()->create_module('quiz', [
+            'course' => $course1->id,
+            'name' => 'Quiz 1',
+            'timeclose' => $now + 86400,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 0,
+        ]);
+
+        // Create early engagement with completion view enabled.
+        $ee1 = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'name' => 'Page 1',
+            'idnumber' => 'EE1',
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+        ]);
+
+        // Get user assessments - should include viewed field.
+        $userassessments = dashboard::get_user_assessments($course1->id, '');
+        $this->assertEquals(2 * 2, count($userassessments)); // 2 users * 2 assessments.
+
+        // Check initial state - no views recorded yet.
+        // Find user1's assessment1 record.
+        $user1assessment1 = null;
+        $user1assessment2 = null;
+        $user2assessment1 = null;
+        foreach ($userassessments as $ua) {
+            if ($ua->userid == 1 && $ua->assessmentid == 1) {
+                $user1assessment1 = $ua;
+            }
+            if ($ua->userid == 1 && $ua->assessmentid == 2) {
+                $user1assessment2 = $ua;
+            }
+            if ($ua->userid == 2 && $ua->assessmentid == 1) {
+                $user2assessment1 = $ua;
+            }
+        }
+
+        $this->assertNotNull($user1assessment1);
+        $this->assertObjectHasProperty('viewed', $user1assessment1);
+        $this->assertEquals(0, $user1assessment1->viewed); // User1, Assessment1 - not viewed.
+
+        // Check assessment without completionview - should return -1.
+        $this->assertNotNull($user1assessment2);
+        $this->assertEquals(-1, $user1assessment2->viewed); // User1, Assessment2 - no completion tracking.
+
+        // Simulate user1 viewing assignment1.
+        $DB->insert_record('course_modules_viewed', [
+            'coursemoduleid' => $assessment1->cmid,
+            'userid' => $user1->id,
+            'timecreated' => $now,
+        ]);
+
+        // Get user assessments again.
+        $userassessments = dashboard::get_user_assessments($course1->id, '');
+
+        // Find records again.
+        $user1assessment1 = null;
+        $user2assessment1 = null;
+        foreach ($userassessments as $ua) {
+            if ($ua->userid == 1 && $ua->assessmentid == 1) {
+                $user1assessment1 = $ua;
+            }
+            if ($ua->userid == 2 && $ua->assessmentid == 1) {
+                $user2assessment1 = $ua;
+            }
+        }
+
+        // User1's view of assessment1 should now be recorded.
+        $this->assertNotNull($user1assessment1);
+        $this->assertEquals($now, $user1assessment1->viewed);
+
+        // User2 still hasn't viewed it.
+        $this->assertNotNull($user2assessment1);
+        $this->assertEquals(0, $user2assessment1->viewed); // User2, Assessment1.
+
+        // Test early engagements viewed status.
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
+        $this->assertEquals(2 * 1, count($userearlyengagements)); // 2 users * 1 early engagement.
+
+        // Find user1's early engagement record.
+        $user1ee1 = null;
+        $user2ee1 = null;
+        foreach ($userearlyengagements as $uee) {
+            if ($uee->userid == 1 && $uee->earlyengagementid == 1) {
+                $user1ee1 = $uee;
+            }
+            if ($uee->userid == 2 && $uee->earlyengagementid == 1) {
+                $user2ee1 = $uee;
+            }
+        }
+
+        // Check initial state - no views recorded yet.
+        $this->assertNotNull($user1ee1);
+        $this->assertObjectHasProperty('viewed', $user1ee1);
+        $this->assertEquals(0, $user1ee1->viewed); // User1, EE1 - not viewed.
+
+        // Simulate user1 viewing early engagement.
+        $DB->insert_record('course_modules_viewed', [
+            'coursemoduleid' => $ee1->cmid,
+            'userid' => $user1->id,
+            'timecreated' => $now + 100,
+        ]);
+
+        // Get user early engagements again.
+        $userearlyengagements = dashboard::get_user_early_engagements($course1->id, '');
+
+        // Find records again.
+        $user1ee1 = null;
+        $user2ee1 = null;
+        foreach ($userearlyengagements as $uee) {
+            if ($uee->userid == 1 && $uee->earlyengagementid == 1) {
+                $user1ee1 = $uee;
+            }
+            if ($uee->userid == 2 && $uee->earlyengagementid == 1) {
+                $user2ee1 = $uee;
+            }
+        }
+
+        // User1's view of EE1 should now be recorded.
+        $this->assertNotNull($user1ee1);
+        $this->assertEquals($now + 100, $user1ee1->viewed);
+
+        // User2 still hasn't viewed it.
+        $this->assertNotNull($user2ee1);
+        $this->assertEquals(0, $user2ee1->viewed);
+    }
 }
