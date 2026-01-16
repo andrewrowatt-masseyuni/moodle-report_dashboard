@@ -262,7 +262,24 @@ foreach ($userdataset as $userobject) {
             $label = $assessment['grade'];
         }
 
-        $assessments[] = $assessment + ['label' => $label];
+        if (!in_array($assessment['status'], ['submitted', 'passed', 'failed'])) {
+            switch ($assessment['viewed']) {
+                case -1:
+                    $viewedlabel = '';
+                    break;
+                case 0:
+                    $viewedstatus = 'notviewed';
+                    $viewedlabel = get_string('assessmentstatus_notviewed', 'report_dashboard');
+                    break;
+                default:
+                    $viewedstatus = 'viewed';
+                    $viewedlabel = get_string('assessmentstatus_viewed', 'report_dashboard');
+                    $vieweddate = userdate($assessment['viewed']);
+                    break;
+            }
+        }
+
+        $assessments[] = $assessment + ['label' => $label, 'viewedstatus' => $viewedstatus, 'viewedlabel' => $viewedlabel, 'vieweddate' => $vieweddate ?? ''];
 
         if ($assessment['status'] == 'overdue') {
             $lateassessments = true;

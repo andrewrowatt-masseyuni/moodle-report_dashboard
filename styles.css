@@ -250,6 +250,18 @@
             &[data-filter-category="notcompleted"] {
                 background-color: var(--note);
             }
+
+            &[data-filter-category="viewed"] {
+                background-color: var(--positive);
+            }
+
+            &[data-filter-category="notviewed"] {
+                background-color: var(--note);
+            }
+
+            &[data-filter-category="notviewed"][data-assessmentstatus="overdue"] {
+                background-color: var(--negative);
+            }
         }
     }
 

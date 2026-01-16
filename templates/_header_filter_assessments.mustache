@@ -68,6 +68,26 @@
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
                         <label class="form-check-label" data-filter-count="-">
+                            <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="notviewed" checked="checked" data-label="{{#str}} assessmentstatus_notviewed, report_dashboard {{/str}}">
+                            {{#str}} assessmentstatus_notviewed, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="notviewed"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label" data-filter-count="-">
+                            <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="viewed" checked="checked" data-label="{{#str}} assessmentstatus_viewed, report_dashboard {{/str}}">
+                            {{#str}} assessmentstatus_viewed, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="viewed"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <div class="dropdown-item form-group mb-0">
+                    <div class="form-check">
+                        <label class="form-check-label" data-filter-count="-">
                             <input type="checkbox" class="form-check-input" name="assessment{{id}}_filter" value="notdue" checked="checked" data-label="{{#str}} assessmentstatus_notdue, report_dashboard {{/str}}">
                             {{#str}} assessmentstatus_notdue, report_dashboard {{/str}}<span class="rdbtag" data-filter-category="notdue"></span>
                         </label>

@@ -57,6 +57,7 @@ $string['mastersql_desc'] = 'Contains the master SQL statement for all aspects o
 $string['never'] = 'Never';
 $string['nogroups'] = 'No groups';
 $string['noknownissues'] = 'There are currently no known issues.';
+$string['assessmentstatus_notviewed'] = 'Not viewed';
 $string['over_1_days'] = '~ 1 day ago';
 $string['pluginname'] = 'Course Dashboard';
 $string['previousenrolmenthelptext'] = 'Refer to Limitations above.';
@@ -64,3 +65,4 @@ $string['prioritygroups'] = 'Priority groups';
 $string['privacy:metadata'] = 'The Course Dashboard plugin does not store any personal data.';
 $string['supportcontact'] = 'Support contact';
 $string['supportcontact_desc'] = 'Who to contact or process to follow if support is required or a new issue is identified. You can (and should) use <a target="_blank" href="https://docs.moodle.org/en/Markdown">markdown</a> to format the text.';
+$string['assessmentstatus_viewed'] = 'Viewed';
