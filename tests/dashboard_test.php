@@ -555,7 +555,7 @@ final class dashboard_test extends \advanced_testcase {
             }
         }
 
-        // Test user early engagements
+        // Test user early engagements.
         $items = dashboard::get_user_early_engagements($course1->id, '');
         $this->assertEquals(2 * 1, count($items)); // 2 users * 1 early engagement.
 
@@ -566,7 +566,7 @@ final class dashboard_test extends \advanced_testcase {
 
         $cm = get_coursemodule_from_id('page', $ee1->cmid);
         $completion->set_module_viewed($cm, $user2->id);
-        
+
         $items = dashboard::get_user_early_engagements($course1->id, '');
         foreach ($items as $ua) {
             if ($ua->userid == 2) {
@@ -575,6 +575,5 @@ final class dashboard_test extends \advanced_testcase {
                 $this->assertEquals(0, $ua->viewed);
             }
         }
-
     }
 }

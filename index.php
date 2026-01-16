@@ -310,7 +310,12 @@ foreach ($userdataset as $userobject) {
             }
         }
 
-        $assessments[] = $assessment + ['label' => $label, 'viewedstatus' => $viewedstatus, 'viewedlabel' => $viewedlabel, 'vieweddate' => $vieweddate];
+        $assessments[] = $assessment + [
+            'label' => $label,
+            'viewedstatus' => $viewedstatus,
+            'viewedlabel' => $viewedlabel,
+            'vieweddate' => $vieweddate,
+        ];
 
         if ($assessment['status'] == 'overdue') {
             $lateassessments = true;
