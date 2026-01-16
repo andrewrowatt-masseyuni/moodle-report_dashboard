@@ -483,7 +483,19 @@ with q1 as (
 			end as status
 			from q4
 		)
-		select * from q5
+		,q6 as (
+			/* add viewed tracking */
+			select q5.*,
+			case
+				when cm.completionview = 0 then -1
+				when cmv.timecreated is null then 0
+				else cmv.timecreated
+			end as viewed
+			from q5
+			left join {course_modules} cm on cm.id = q5.cmid
+			left join {course_modules_viewed} cmv on cmv.coursemoduleid = q5.cmid and cmv.userid = q5.userid
+		)
+		select * from q6
 	)
 	--select * from student_activity_grade_duedate_status where userid=138996
 	,student_grades_from_gradeitems_with_idnumber as (
@@ -548,7 +560,8 @@ with q1 as (
 	user_row_index as userid, activity_row_index as assessmentid, status,
 	case when student_duedate_extension = 'Yes' then
 		student_duedate_epoch else 0 end as extension_date,
-	case when finalgrade_percent is null then -1 else finalgrade_percent end as grade
+	case when finalgrade_percent is null then -1 else finalgrade_percent end as grade,
+	viewed
 
 	from student_activity_grade_duedate_status
 
@@ -572,10 +585,12 @@ with q1 as (
 		from early_engagement_activities cm
 		cross join students1 s
 	)
-	select
+	,q2 as (
+		select
 		ROW_NUMBER() OVER(order by q1.student_id, q1.id) as id,
 		q1.student_id as userid,
 		q1.id as earlyengagementid,
+		q1.cmid,
 		case
 			when mc.completionstate = 1 then 'completed'
 			else
@@ -590,8 +605,19 @@ with q1 as (
 		left join excluded_cmids xcm on xcm.id = q1.cmid
 
 		where xcm.id is null
+	)
+	select
+		q2.*,
+		case
+			when cm.completionview = 0 then -1
+			when cmv.timecreated is null then 0
+			else cmv.timecreated
+		end as viewed
+		from q2
+		left join {course_modules} cm on cm.id = q2.cmid
+		left join {course_modules_viewed} cmv on cmv.coursemoduleid = q2.cmid and cmv.userid = q2.userid
 
-		order by q1.student_id, q1.id
+		order by q2.student_id, q2.id
 )",
                 PARAM_RAW,
                 80,

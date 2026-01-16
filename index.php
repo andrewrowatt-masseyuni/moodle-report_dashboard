@@ -240,7 +240,34 @@ foreach ($userdataset as $userobject) {
         }
 
         $label = $earlyengagementstatuses[$earlyengagement['status']];
-        $earlyengagements[] = $earlyengagement + ['label' => $label];
+
+        $viewedstatus = '';
+        $viewedlabel = '';
+        $vieweddate = '';
+
+        if ($earlyengagement['status'] != 'completed') {
+            switch ($earlyengagement['viewed']) {
+                case -1:
+                    $viewedlabel = '';
+                    break;
+                case 0:
+                    $viewedstatus = 'notviewed';
+                    $viewedlabel = get_string('earlyengagementstatus_notviewed', 'report_dashboard');
+                    break;
+                default:
+                    $viewedstatus = 'viewed';
+                    $viewedlabel = get_string('earlyengagementstatus_viewed', 'report_dashboard');
+                    $vieweddate = userdate($earlyengagement['viewed']);
+                    break;
+            }
+        }
+
+        $earlyengagements[] = $earlyengagement + [
+            'label' => $label,
+            'viewedstatus' => $viewedstatus,
+            'viewedlabel' => $viewedlabel,
+            'vieweddate' => $vieweddate,
+        ];
         $userearlyengagementindex += 1;
     }
 
