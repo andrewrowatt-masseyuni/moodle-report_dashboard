@@ -35,8 +35,8 @@ Feature: Course Dashboard Report
       | shortname              |
       | priority_group_support |
     And the following "courses" exist:
-      | fullname | shortname | category |
-      | Course 1 | C1        | 0        |
+      | fullname | shortname | category | enablecompletion |
+      | Course 1 | C1        | 0        | 1                |
     And the following "users" exist:
       | username | firstname | lastname | email                | profile_field_InternationalStatus | profile_field_Ethnicity | profile_field_TotalCreditsEarned |
       | teacher1 | Teacher   | One      | teacher1@example.com |                                   |                         |                                  |
@@ -69,11 +69,11 @@ Feature: Course Dashboard Report
       | 12345605 | GB    |
       | 12345606 | GB    |
     And the following "activities" exist:
-      | activity | name              | course | idnumber | duedate        |
-      | assign   | Test Assignment 1 | C1     | A1       | ##yesterday##  |
-      | assign   | Test Assignment 2 | C1     | A2       | ##tomorrow##   |
-      | forum    | Early Forum       | C1     | EE1      |                |
-      | page     | Early Page        | C1     | EE2      |                |
+      | activity | name              | course | idnumber | duedate        | completion | completionview |
+      | assign   | Test Assignment 1 | C1     | A1       | ##yesterday##  | 2          | 1              |
+      | assign   | Test Assignment 2 | C1     | A2       | ##tomorrow##   | 0          | 0              |
+      | forum    | Early Forum       | C1     | EE1      |                | 0          | 0              |
+      | page     | Early Page        | C1     | EE2      |                | 0          | 0              |
     And the following "last access times" exist:
       | user     | course | lastaccess      |
       | 12345601 | C1     | ##today##       |
@@ -101,6 +101,9 @@ Feature: Course Dashboard Report
     And I set the following fields to these values:
       | extensionduedate[year] | 2026 |
     And I press "Save changes"
+
+    # Trigger view status
+    And I am on the "A1" Activity page logged in as 12345601
 
   Scenario: Teacher can access the course dashboard
     Given I am on the "Course 1" "Course" page logged in as "teacher1"
@@ -136,6 +139,10 @@ Feature: Course Dashboard Report
 
     Then I should see "Group B" in the "12345605" "table_row"
     Then I should see "Group B" in the "12345606" "table_row"
+
+    Then I should see "Viewed" in the "12345601" "table_row"
+    And I should not see "Not viewed" in the "12345601" "table_row"
+    Then I should not see "Viewed" in the "12345602" "table_row"
 
   Scenario: Dashboard shows assignment columns
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
@@ -218,6 +225,8 @@ Feature: Course Dashboard Report
     When I click on "#assessment1 > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Clear all"
+    And I should see "Not viewed"
+    And I should see "Viewed"
     And I should see "Not due"
     And I should see "Submitted"
     And I should see "Overdue"

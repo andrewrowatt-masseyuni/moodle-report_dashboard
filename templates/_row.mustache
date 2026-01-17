@@ -95,10 +95,10 @@
         {{#viewedlabel}}
         <span class="rdbtag" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i>
+        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i>
+        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
