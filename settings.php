@@ -430,11 +430,12 @@ with q1 as (
 		)
 		,q2 as (
 			/* assign */
-			select q1.*,
+			select distinct on (q1.userid, q1.cmid) q1.*,
 			sub.status as status_raw
 			from q1
 			left join {assign_submission} sub on sub.userid = q1.userid and sub.assignment = q1.iteminstance
 			where q1.itemmodule = 'assign'
+			order by q1.userid, q1.cmid, sub.timemodified desc
 		),
 		q3 as (
 			/* quiz */
