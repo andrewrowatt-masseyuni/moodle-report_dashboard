@@ -74,6 +74,36 @@
 <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Show assessment {{name}}</button></form>
 {{/hiddenassessments}}
 </div>
+    <div class="dashboard_skeleton_info"><div class="dashboard_skeleton_info_pill"></div></div>
+    <div class="dashboard_skeleton">
+        <div class="dashboard_skeleton_header">
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+            <div class="dashboard_skeleton_header_cell"></div>
+        </div>
+        <div class="dashboard_skeleton_header dashboard_skeleton_filters">
+            <div class="dashboard_skeleton_filter_cell"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_name"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_single"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_single"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_double"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_double"></div>
+            <div class="dashboard_skeleton_filter_cell dashboard_skeleton_filter_double"></div>
+        </div>
+        {{#rows}}<div class="dashboard_skeleton_row">
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+            <div class="dashboard_skeleton_cell"></div>
+        </div>{{/rows}}
+    </div>
     <table id="report_dashboard_dashboard" class="table table-striped display sz-{{fontsize}}">
         <thead>
             <tr><th></th><th>Student ID / Firstname / Lastname</th><th>Email</th><th>Last<br>accessed</th><th>Groups</th>
