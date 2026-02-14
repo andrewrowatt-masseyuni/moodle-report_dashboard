@@ -476,7 +476,7 @@ with q1 as (
 					else '[Error - missing iteminfo - student_activity_grade_duedate_status]'
 				end
 				when q4.status_raw in ('submitted','draft','finished') then 'submitted'
-				when q4.status_raw is null or q4.status_raw in ('new','inprogress') then /* check if due */
+				when q4.status_raw is null or q4.status_raw in ('new','inprogress','reopened') then /* check if due */
 					case
 						when student_duedate_epoch = 0 then 'notsubmitted'
 						when extract(epoch from now()) < q4.student_duedate_epoch then 'notdue'
