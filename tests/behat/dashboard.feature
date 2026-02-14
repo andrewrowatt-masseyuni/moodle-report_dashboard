@@ -278,6 +278,20 @@ Feature: Course Dashboard Report
     Then I should see "Export to Excel"
     # Note: Testing the feature is out of scope
 
+  Scenario: Text size selector is available and defaults to Default
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    Then the field "report_dashboard_fontsize" matches value "14"
+    And "table.sz-14" "css_element" should exist
+
+  Scenario: Text size preference persists after navigation
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    When I set the field "report_dashboard_fontsize" to "Small"
+    And I wait "1" seconds
+    And I am on the "Course 1" "report_dashboard > dashboard" page
+    Then the field "report_dashboard_fontsize" matches value "12"
+    And "table.sz-12" "css_element" should exist
+    And "table.sz-14" "css_element" should not exist
+
   Scenario: Student gets access denied when trying direct URL access
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
     Then I should see "Sorry, but you do not currently have permissions to do that"

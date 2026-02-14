@@ -50,19 +50,95 @@
     --dt-row-selected: 220, 220, 220;
 
     table-layout: auto;
-    width: 100%;
+    width: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th {
+        /* Apply both top and bottom borders to the <th> */
+        border-left: none;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        border-right: 1px solid #eee;
+    }
+
+    td {
+        /* For cells, apply the border to one of each side only (right but not left, bottom but not top) */
+        border-left: none;
+        border-top: none;
+        border-bottom: 1px solid #eee;
+        border-right: 1px solid #eee;
+    }
+
+    th:first-child,
+    td:first-child {
+        /* Apply a left border on the first <td> or <th> in a row */
+        border-left: 1px solid #eee;
+    }
+
+    tr {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 48px;
+    }
 
     thead {
         position: sticky;
-        top: 60px;
-        z-index: 1051; /* Above the Boost fixed header and just below the modal default of 1052 */
+        top: 0;
+        z-index: 1052; /* Above the Boost fixed header and just below the modal default of 1052 */
 
         th {
             background-color: #eee;
+            padding-bottom: 0;
+
+            .dt-column-title:not(:has(.dropdown)) {
+                font-weight: 500;
+                max-width: 20ch;
+            }
         }
 
         tr.filters th {
+            padding-top: 0;
             border-bottom: 1px solid #999;
+            padding-bottom: 0.75rem;
+        }
+    }
+
+    &.sz-11 {
+        font-size: 11px;
+
+        td {
+            padding: 0.4rem;
+        }
+    }
+
+    &.sz-12 {
+        font-size: 12px;
+
+        td {
+            padding: 0.4rem;
+        }
+    }
+
+    &.sz-13 {
+        font-size: 13px;
+
+        td {
+            padding: 0.4rem;
+        }
+    }
+
+    &.sz-14 {
+        font-size: 14px;
+
+        td {
+            padding: 0.5rem;
+        }
+    }
+
+    &.sz-16 {
+        font-size: 16px;
+        td {
+            padding: 0.6rem;
         }
     }
 
@@ -75,6 +151,11 @@
         min-width: 3em;
         white-space: nowrap;
         background-color: #fff7;
+
+        &.compact {
+            padding: 2px 6px;
+            min-width: auto;
+        }
     }
 
     label.form-check-label:has(span:empty.rdbtag) {
@@ -245,6 +326,11 @@
 
             &[data-filter-category="extension"] {
                 background-color: var(--note);
+
+                /* Hide label */
+                span {
+                    display: none;
+                }
             }
 
             &[data-filter-category="notcompleted"] {
@@ -273,9 +359,9 @@
         span.rdbtag:where([data-filter-category="passed"], [data-filter-category="failed"]) {
             &::after {
                 content: "%";
-                font-size: 0.8rem;
+                font-size: 0.8em;
                 color: #0007;
-                padding-left: 0.1rem;
+                padding-left: 0.1em;
             }
         }
     }
