@@ -99,6 +99,9 @@ export const init = () => {
                 initComplete: function() {
                     // Make any adjustments to the columns when the table is initialised.
                     this.api().columns([2]).visible(false); // Hide email column
+
+                    // Reveal the table and hide the skeleton loader.
+                    document.querySelector('.dashboard_container').classList.add('dt-ready');
                 }
             }
         );
