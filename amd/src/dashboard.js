@@ -27,14 +27,16 @@ import 'report_dashboard/dataTables.select';
 import 'report_dashboard/dataTables.buttons';
 import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
+import {setUserPreference} from 'core_user/repository';
 
 export const init = () => {
     $(function() {
+        window.console.log('Report dashboard initialising'); // Debug log to confirm script is running
         var table = new DataTable('#report_dashboard_dashboard',
             {
                 orderCellsTop: true,
                 responsive: false,
-                autoWidth: true,
+                autoWidth: false,
                 paging: false,
                 layout: {
                     topStart: 'info',
@@ -100,6 +102,12 @@ export const init = () => {
                 }
             }
         );
+
+        document.getElementById('report_dashboard_fontsize').addEventListener('change', function() {
+            const dashboardTable = document.getElementById('report_dashboard_dashboard');
+            dashboardTable.className = dashboardTable.className.replace(/\bsz-\d+\b/, 'sz-' + this.value);
+            setUserPreference('report_dashboard_fontsize', this.value);
+        });
 
         updateFilterCounts(true);
 

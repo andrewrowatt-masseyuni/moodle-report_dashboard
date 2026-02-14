@@ -104,8 +104,8 @@
         {{/viewedlabel}}
         <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
         {{#extension_date}}
-        <span class="rdbtag" data-filter-category="extension" title="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
-            {{#str}} assessmentstatus_extension, report_dashboard {{/str}}
+        <span class="rdbtag compact" data-filter-category="extension" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
+            <i class="fa-regular fa-calendar-plus"></i><span>{{#str}} assessmentstatus_extension, report_dashboard {{/str}}</span>
         </span>
         {{/extension_date}}
     </div>

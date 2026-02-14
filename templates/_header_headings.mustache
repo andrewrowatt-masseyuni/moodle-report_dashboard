@@ -40,6 +40,14 @@
         {{#knownissues}}<i class="fa fa-info-circle disabled" aria-hidden="true"></i>{{/knownissues}} {{#str}} knownissues, report_dashboard {{/str}}
         </a>
         {{{supportcontact}}}
+        <label class="mb-0 ml-auto d-flex align-items-center gap-1">
+            <i class="fa-solid fa-text-height"></i><span class="sr-only">{{#str}} fontsize, report_dashboard {{/str}}</span>
+            <select id="report_dashboard_fontsize" class="custom-select custom-select-sm" style="width: auto;">
+                {{#fontsizes}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                {{/fontsizes}}
+            </select>
+        </label>
     </div>
     <div class="collapse" id="collapseInstructions">
     <div class="card card-body markdown">
@@ -66,7 +74,7 @@
 <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Show assessment {{name}}</button></form>
 {{/hiddenassessments}}
 </div>
-    <table id="report_dashboard_dashboard" class="table table-striped table-bordered display">
+    <table id="report_dashboard_dashboard" class="table table-striped display sz-{{fontsize}}">
         <thead>
             <tr><th></th><th>Student ID / Firstname / Lastname</th><th>Email</th><th>Last<br>accessed</th><th>Groups</th>
             {{#earlyengagements}}

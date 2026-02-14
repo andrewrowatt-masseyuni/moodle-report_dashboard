@@ -23,6 +23,23 @@
  */
 
 /**
+ * Define user preferences for this plugin.
+ *
+ * @return array[]
+ */
+function report_dashboard_user_preferences() {
+    $preferences = [];
+    $preferences['report_dashboard_fontsize'] = [
+        'type' => PARAM_INT,
+        'null' => NULL_NOT_ALLOWED,
+        'default' => 14,
+        'choices' => [11, 12, 13, 14, 16],
+        'permissioncallback' => [core_user::class, 'is_current_user'],
+    ];
+    return $preferences;
+}
+
+/**
  * This function extends the navigation with the report items
  *
  * @param navigation_node $navigation The navigation node to extend

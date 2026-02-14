@@ -53,6 +53,15 @@ $PAGE->set_title(
 );
 
 $savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids', serialize([])));
+$fontsize = (int) get_user_preferences('report_dashboard_fontsize', 14);
+$fontsizes = [];
+foreach ([11, 12, 13, 14, 16] as $fs) {
+    $fontsizes[] = [
+        'value' => $fs,
+        'label' => get_string('fontsize_' . $fs, 'report_dashboard'),
+        'selected' => ($fs === $fontsize),
+    ];
+}
 
 $action = optional_param('action', '', PARAM_ALPHA);
 if ($action) {
@@ -351,6 +360,8 @@ echo $OUTPUT->render_from_template('report_dashboard/dashboard', [
     'cohort_groups' => $coursecohortgroupsarray,
     'groups' => $coursegroupsarray,
     'rows' => $rows,
+    'fontsize' => $fontsize,
+    'fontsizes' => $fontsizes,
 ]);
 
 echo $OUTPUT->footer();
