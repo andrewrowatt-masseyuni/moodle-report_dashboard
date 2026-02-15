@@ -28,6 +28,7 @@ import 'report_dashboard/dataTables.buttons';
 import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
 import {setUserPreference} from 'core_user/repository';
+import Chartjs from 'core/chartjs';
 
 export const init = () => {
     $(function() {
@@ -372,6 +373,178 @@ export const init = () => {
                     e.parentElement.classList.toggle("text-muted", !count);
                 }
             });
+            updateVisibleCharts();
         }
+
+        // Chart size constant (px).
+        const CHART_SIZE = 200;
+
+        // Ordered list of facet rings (inner to outer).
+        const FACET_ORDER = ['engagement', 'submission', 'extension'];
+
+        // Colors matching the CSS filter-category colours.
+        const CATEGORY_COLORS = {
+            notdue: '#e0e0e0',
+            submitted: '#c5e0b4',
+            completed: '#c5e0b4',
+            overdue: '#fbe4d5',
+            passed: '#c5e0b4',
+            failed: '#fbe4d5',
+            extension: '#d9edf7',
+            notcompleted: '#d9edf7',
+            viewed: '#c5e0b4',
+            notviewed: '#bdd7ee',
+            none: '#f5f5f5',
+        };
+
+        // Store Chart.js instances so we can destroy before re-rendering.
+        const chartInstances = {};
+
+        /**
+         * Render a multi-ring doughnut chart inside the given container.
+         * Rings are built from data-facet attributes on the table cells.
+         *
+         * @param {string} containerId
+         */
+        function renderChart(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container || container.style.display === 'none') {
+                return;
+            }
+
+            // Derive the column class from the container id, e.g. "chart_assessment5" -> "assessment5".
+            const scope = containerId.replace('chart_', '');
+
+            // Only count rows that pass ALL current filters (groups, last accessed, etc.).
+            const visibleRows = table.rows({search: 'applied'}).nodes().toArray();
+            if (visibleRows.length === 0) {
+                return;
+            }
+
+            // Count occurrences grouped by facet then by filter-category.
+            const facetCounts = {};
+            FACET_ORDER.forEach(function(f) {
+                facetCounts[f] = {};
+            });
+
+            var cellCount = 0;
+            visibleRows.forEach(function(row) {
+                const cell = row.querySelector('td.' + scope);
+                if (!cell) {
+                    return;
+                }
+                cellCount++;
+                cell.querySelectorAll('[data-facet]').forEach(function(span) {
+                    const facet = span.dataset.facet;
+                    const category = span.dataset.filterCategory;
+                    if (facet && category && facetCounts[facet] !== undefined) {
+                        facetCounts[facet][category] = (facetCounts[facet][category] || 0) + 1;
+                    }
+                });
+            });
+
+            // For the extension ring, add a "none" complement so the ring is meaningful.
+            if (facetCounts.extension && Object.keys(facetCounts.extension).length > 0) {
+                const extCount = facetCounts.extension.extension || 0;
+                facetCounts.extension.none = cellCount - extCount;
+            }
+
+            // Build one dataset per facet that has data.
+            const datasets = [];
+            FACET_ORDER.forEach(function(facet) {
+                const counts = facetCounts[facet];
+                const categories = Object.keys(counts);
+                if (categories.length === 0) {
+                    return;
+                }
+                datasets.push({
+                    data: categories.map(function(c) {
+                        return counts[c];
+                    }),
+                    backgroundColor: categories.map(function(c) {
+                        return CATEGORY_COLORS[c] || '#cccccc';
+                    }),
+                    borderWidth: 1,
+                    // Custom property used by the tooltip callback.
+                    _labels: categories,
+                    _facet: facet,
+                });
+            });
+
+            if (datasets.length === 0) {
+                return;
+            }
+
+            // Destroy any previous chart instance for this container.
+            if (chartInstances[containerId]) {
+                chartInstances[containerId].destroy();
+            }
+
+            container.innerHTML = '';
+            const canvas = document.createElement('canvas');
+            canvas.width = CHART_SIZE;
+            canvas.height = CHART_SIZE;
+            container.appendChild(canvas);
+
+            chartInstances[containerId] = new Chartjs(canvas, {
+                type: 'doughnut',
+                data: {datasets: datasets},
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    cutout: '20%',
+                    plugins: {
+                        legend: {display: false},
+                        tooltip: {
+                            callbacks: {
+                                title: function(items) {
+                                    if (items.length > 0) {
+                                        return items[0].dataset._facet || '';
+                                    }
+                                    return '';
+                                },
+                                label: function(context) {
+                                    var label = context.dataset._labels
+                                        ? context.dataset._labels[context.dataIndex]
+                                        : '';
+                                    return label + ': ' + context.raw;
+                                }
+                            }
+                        }
+                    },
+                    animation: false,
+                }
+            });
+        }
+
+        /**
+         * Re-render all currently visible charts.
+         */
+        function updateVisibleCharts() {
+            document.querySelectorAll('.rdb-chart-container').forEach(function(container) {
+                if (container.style.display !== 'none') {
+                    renderChart(container.id);
+                }
+            });
+        }
+
+        // Master chart toggle button – toggles ALL charts at once.
+        var chartsVisible = false;
+        document.getElementById('rdb-chart-toggle').addEventListener('click', function() {
+            chartsVisible = !chartsVisible;
+            document.querySelectorAll('.rdb-chart-container').forEach(function(container) {
+                if (chartsVisible) {
+                    container.style.display = '';
+                    renderChart(container.id);
+                } else {
+                    container.style.display = 'none';
+                    if (chartInstances[container.id]) {
+                        chartInstances[container.id].destroy();
+                        delete chartInstances[container.id];
+                    }
+                    container.innerHTML = '';
+                }
+            });
+        });
     });
 };

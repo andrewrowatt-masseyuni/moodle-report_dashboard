@@ -282,6 +282,8 @@
             padding-top: 0;
             border-bottom: 1px solid #999;
             padding-bottom: 0.75rem;
+
+            vertical-align: bottom;
         }
     }
 
@@ -541,6 +543,10 @@
                 padding-left: 0.1em;
             }
         }
+    }
+
+    .rdb-chart-container {
+        margin-bottom: 0.25em;
     }
 
     [data-filter-count]::after {
