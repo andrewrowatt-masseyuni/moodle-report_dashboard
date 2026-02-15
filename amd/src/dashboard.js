@@ -29,6 +29,7 @@ import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
 import {setUserPreference} from 'core_user/repository';
 import Chartjs from 'core/chartjs';
+import Chartjs from 'core/chartjs';
 
 export const init = (courseid, hiddencmids) => {
     $(function() {
