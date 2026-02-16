@@ -123,6 +123,12 @@ function initDashboard() {
 
                 // Reveal the table and hide the skeleton loader.
                 document.querySelector('.dashboard_container').classList.add('dt-ready');
+
+                // Enable widgets that were disabled while the table was loading.
+                document.getElementById('report_dashboard_fontsize').disabled = false;
+                document.querySelectorAll('.dashboard_container button[disabled]').forEach(btn => {
+                    btn.disabled = false;
+                });
             }
         }
     );

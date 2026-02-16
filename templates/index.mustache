@@ -58,7 +58,7 @@
         {{{supportcontact}}}
         <label class="mb-0 ml-auto d-flex align-items-center gap-1">
             <i class="fa-solid fa-text-height"></i><span class="sr-only">{{#str}} fontsize, report_dashboard {{/str}}</span>
-            <select id="report_dashboard_fontsize" class="custom-select custom-select-sm" style="width: auto;">
+            <select id="report_dashboard_fontsize" class="custom-select custom-select-sm" style="width: auto;" disabled>
                 {{#fontsizes}}
                 <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
                 {{/fontsizes}}
@@ -84,10 +84,10 @@
 <div class="dashboard_container">
     <div class="d-flex flex-row justify-content-end mb-1 gap-2">
     {{#hiddenearlyengagements}}
-    <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Show early engagement activity {{name}}</button></form>
+    <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-eye" aria-hidden="true"></i> Show early engagement activity {{name}}</button></form>
     {{/hiddenearlyengagements}}
     {{#hiddenassessments}}
-    <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Show assessment {{name}}</button></form>
+    <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-eye" aria-hidden="true"></i> Show assessment {{name}}</button></form>
     {{/hiddenassessments}}
     </div>
     <div class="dashboard_skeleton_info"><div class="dashboard_skeleton_info_pill"></div></div>
