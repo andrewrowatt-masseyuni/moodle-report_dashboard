@@ -110,6 +110,7 @@ Feature: Course Dashboard Report
     When I navigate to "Reports" in current page administration
     Then I should see "Course Dashboard"
     When I click on "Course Dashboard" "link"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Course Dashboard"
     And I should see "Student ID / Firstname / Lastname"
     And I should see "accessed"
@@ -146,6 +147,7 @@ Feature: Course Dashboard Report
 
   Scenario: Dashboard shows assignment columns
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Test Assignment 1"
     And I should see "Test Assignment 2"
     And I should see "Lateassessments"
@@ -155,17 +157,20 @@ Feature: Course Dashboard Report
 
   Scenario: Dashboard shows early engagement activities
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Early Forum"
     And I should see "Early Page"
 
   Scenario: Dashboard shows ethnicity data for those with priority group role
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "support1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Māori" in the "12345601" "table_row"
     Then I should see "Māori" in the "12345603" "table_row"
     Then I should see "Pacific" in the "12345603" "table_row"
 
   Scenario: Teacher can hide an assessment
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Test Assignment 1"
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
     Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
@@ -173,14 +178,16 @@ Feature: Course Dashboard Report
 
   Scenario: Teacher can show a hidden assessment
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
     And I should see "Show assessment Test Assignment 1"
     When I click on "Show assessment Test Assignment 1" "button"
     Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
-    And I should not see "Show assessment Test Assignment 1"
+    And "Show assessment Test Assignment 1" "button" should not exist
 
   Scenario: Teacher can hide an early engagement activity
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Early Forum"
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
     Then I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
@@ -188,14 +195,47 @@ Feature: Course Dashboard Report
 
   Scenario: Teacher can show a hidden early engagement activity
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
     And I should see "Show early engagement activity Early Forum"
     When I click on "Show early engagement activity Early Forum" "button"
     Then I should see "Early Forum" in the "report_dashboard_dashboard" "table"
-    And I should not see "Show early engagement activity Early Forum"
+    And "Show early engagement activity Early Forum" "button" should not exist
+
+  Scenario: Hidden assessment persists after page reload
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+    # Navigate away and back to verify persistence
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+
+  Scenario: Hide then show assessment round-trip persists after page reload
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    # Hide the column
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+    # Show the column again via the dynamic show button
+    When I click on "Show assessment Test Assignment 1" "button"
+    Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And "Show assessment Test Assignment 1" "button" should not exist
+    # Navigate away and back — column should still be shown
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And "Show assessment Test Assignment 1" "button" should not exist
 
   Scenario: Name filter works correctly
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I set the field "Start typing to filter by name or ID" to "12345601"
     Then I should see "12345601"
     And I should not see "12345602"
@@ -203,6 +243,7 @@ Feature: Course Dashboard Report
 
   Scenario: Last accessed filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "#lastaccessed > button.dropdown-toggle" "css_element"
     Then I should see "Never"
     And I should see "In the last 24hrs"
@@ -212,6 +253,7 @@ Feature: Course Dashboard Report
 
   Scenario: Groups filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "#group > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Deselect all"
@@ -222,6 +264,7 @@ Feature: Course Dashboard Report
 
   Scenario: Assessment filters are available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "#assessment1 > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Clear all"
@@ -236,6 +279,7 @@ Feature: Course Dashboard Report
 
   Scenario: Early engagement filters are available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "#earlyengagement1 > button.dropdown-toggle" "css_element"
     Then I should see "Select all"
     And I should see "Clear all"
@@ -246,6 +290,7 @@ Feature: Course Dashboard Report
 
   Scenario: Late assessments filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "#lateassessments > button.dropdown-toggle" "css_element"
     Then I should see "Yes"
     And I should see "No"
@@ -269,25 +314,30 @@ Feature: Course Dashboard Report
 
   Scenario: Teacher can select students using checkboxes
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Copy email addresses of selected students"
     And I should see "Create email to selected students..."
     # Note: The actual email functionality would require additional setup
 
   Scenario: Teacher can see Copy & Excel buttons
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Export to Excel"
     # Note: Testing the feature is out of scope
 
   Scenario: Text size selector is available and defaults to Default
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then the field "report_dashboard_fontsize" matches value "14"
     And "table.sz-14" "css_element" should exist
 
   Scenario: Text size preference persists after navigation
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
     When I set the field "report_dashboard_fontsize" to "Small"
     And I wait "1" seconds
     And I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
     Then the field "report_dashboard_fontsize" matches value "12"
     And "table.sz-12" "css_element" should exist
     And "table.sz-14" "css_element" should not exist

@@ -17,30 +17,20 @@
 {{!
     @template report_dashboard/dashboard
 
-    Master template for course engagement dashboard
+    Dashboard table template — renders the data table loaded asynchronously by dashboard.js.
 
     Example context (json):
     {
-        "description": "<p>Welcome to the Course Engagement Dashboard</p>",
-        "instructions": "<p>Use filters to find students who need support.</p>",
-        "limitations": "<p>Data is updated every 24 hours.</p>",
-        "knownissues": "<p>Some grades may be delayed.</p>",
-        "supportcontact": "<a href='mailto:support@example.com'>Contact Support</a>",
+        "fontsize": 14,
         "courseid": 123,
         "sesskey": "abc123def456",
         "earlyengagements": [
             {"id": 1, "name": "Orientation Quiz", "cmid": 101},
             {"id": 2, "name": "Introduction Forum", "cmid": 102}
         ],
-        "hiddenearlyengagements": [
-            {"name": "Hidden Quiz", "cmid": 103, "courseid": 123, "sesskey": "abc123def456"}
-        ],
         "assessments": [
             {"id": 10, "name": "Assignment 1", "cmid": 201},
             {"id": 11, "name": "Assignment 2", "cmid": 202}
-        ],
-        "hiddenassessments": [
-            {"name": "Hidden Assignment", "cmid": 203, "courseid": 123, "sesskey": "abc123def456"}
         ],
         "cohort_groups": [
             {"id": 1, "groupname": "2024 Cohort A"},
@@ -85,7 +75,17 @@
         ]
     }
 }}
-{{> report_dashboard/_header_headings }}
+<table id="report_dashboard_dashboard" class="table table-striped display sz-{{fontsize}}">
+    <thead>
+        <tr><th></th><th>Student ID / Firstname / Lastname</th><th>Email</th><th>Last<br>accessed</th><th>Groups</th>
+        {{#earlyengagements}}
+        <th>{{name}}<small class="d-block font-weight-lighter font-italic fs-1">(Early engagement)</small></th>
+        {{/earlyengagements}}
+        <th>Late<br>assessments</th>
+        {{#assessments}}
+        <th>{{name}}</th>
+        {{/assessments}}
+        </tr>
 {{> report_dashboard/_header_filter_name }}
 {{> report_dashboard/_header_filter_groups }}
 {{> report_dashboard/_header_filter_earlyengagements }}
@@ -94,4 +94,5 @@
 {{#rows}}
 {{> report_dashboard/_row }}
 {{/rows}}
-{{> report_dashboard/_footer }}
+</tbody>
+</table>
