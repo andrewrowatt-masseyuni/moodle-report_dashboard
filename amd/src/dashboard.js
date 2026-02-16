@@ -457,17 +457,22 @@ export const init = () => {
                 if (categories.length === 0) {
                     return;
                 }
+                var values = categories.map(function(c) {
+                    return counts[c];
+                });
+                var total = values.reduce(function(a, b) {
+                    return a + b;
+                }, 0);
                 datasets.push({
-                    data: categories.map(function(c) {
-                        return counts[c];
-                    }),
+                    data: values,
                     backgroundColor: categories.map(function(c) {
                         return CATEGORY_COLORS[c] || '#cccccc';
                     }),
                     borderWidth: 1,
-                    // Custom property used by the tooltip callback.
+                    // Custom properties used by the tooltip callback.
                     _labels: categories,
                     _facet: facet,
+                    _total: total,
                 });
             });
 
@@ -507,7 +512,11 @@ export const init = () => {
                                     var label = context.dataset._labels
                                         ? context.dataset._labels[context.dataIndex]
                                         : '';
-                                    return label + ': ' + context.raw;
+                                    var total = context.dataset._total || 0;
+                                    var pct = total > 0
+                                        ? Math.round(context.raw / total * 100)
+                                        : 0;
+                                    return label + ' ' + pct + '% (' + context.raw + ')';
                                 }
                             }
                         }
