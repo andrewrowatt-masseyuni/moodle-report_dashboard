@@ -37,7 +37,7 @@ require_capability('report/dashboard:view', $context);
 
 $PAGE->set_context($context);
 
-$savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids', serialize([])));
+$savedhiddencmids = json_decode(get_user_preferences('report_dashboard_hidden_cmids', '[]'), true);
 $fontsize = (int) get_user_preferences('report_dashboard_fontsize', 14);
 
 $modinfohelper = new modinfohelper(get_fast_modinfo($course));

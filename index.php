@@ -52,7 +52,7 @@ $PAGE->set_title(
     get_string('pluginname', 'report_dashboard')
 );
 
-$savedhiddencmids = unserialize(get_user_preferences('report_dashboard_hidden_cmids', serialize([])));
+$savedhiddencmids = json_decode(get_user_preferences('report_dashboard_hidden_cmids', '[]'), true);
 $fontsize = (int) get_user_preferences('report_dashboard_fontsize', 14);
 $fontsizes = [];
 foreach ([11, 12, 13, 14, 16] as $fs) {
@@ -68,9 +68,6 @@ if ($action) {
     require_sesskey();
 
     switch ($action) {
-        case 'hideitem':
-            $savedhiddencmids[] = required_param('cmid', PARAM_INT);
-            break;
         case 'showitem':
             $assessmentcmid = required_param('cmid', PARAM_INT);
             $savedhiddencmids = array_diff($savedhiddencmids, [$assessmentcmid]);
@@ -79,7 +76,7 @@ if ($action) {
             // ... Display the report
     }
 
-    set_user_preference('report_dashboard_hidden_cmids', serialize($savedhiddencmids));
+    set_user_preference('report_dashboard_hidden_cmids', json_encode(array_values($savedhiddencmids)));
 
     redirect($url);
 }
@@ -88,7 +85,7 @@ $modinfohelper = new modinfohelper(get_fast_modinfo($course));
 
 // ... DataTables requirements
 $PAGE->requires->css('/report/dashboard/datatables/datatables.min.css');
-$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init', [$courseid]);
+$PAGE->requires->js_call_amd('report_dashboard/dashboard', 'init', [$courseid, $savedhiddencmids]);
 
 // ... JSZip requirement for Excel export. Cannot be loaded via Import statement in AMD module.
 $PAGE->requires->js('/report/dashboard/amd/build/jszip.min.js', true);

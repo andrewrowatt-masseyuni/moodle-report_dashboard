@@ -36,6 +36,12 @@ function report_dashboard_user_preferences() {
         'choices' => [11, 12, 13, 14, 16],
         'permissioncallback' => [core_user::class, 'is_current_user'],
     ];
+    $preferences['report_dashboard_hidden_cmids'] = [
+        'type' => PARAM_RAW,
+        'null' => NULL_NOT_ALLOWED,
+        'default' => '[]',
+        'permissioncallback' => [core_user::class, 'is_current_user'],
+    ];
     return $preferences;
 }
 

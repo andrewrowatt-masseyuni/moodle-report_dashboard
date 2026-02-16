@@ -145,7 +145,7 @@
                 </div>
             </div>
         </div>
-        <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="hideitem"><input type="hidden" name="cmid" value="{{cmid}}"><button title="Hide {{name}}" type="submit" class="btn btn-outline-secondary btn-sm"><i class="fa fa-eye-slash" aria-hidden="true"></i><span class="sr-only"> Hide</span></button></form>
+        <button type="button" title="Hide {{name}}" class="btn btn-outline-secondary btn-sm hide-column-btn" data-cmid="{{cmid}}" data-name="{{name}}" data-type="assessment"><i class="fa fa-eye-slash" aria-hidden="true"></i><span class="sr-only"> Hide</span></button>
     </div>
 </th>
 {{/assessments}}

@@ -29,7 +29,7 @@ import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
 import {setUserPreference} from 'core_user/repository';
 
-export const init = (courseid) => {
+export const init = (courseid, hiddencmids) => {
     $(function() {
         window.console.log('Report dashboard initialising'); // Debug log to confirm script is running
 
@@ -40,7 +40,7 @@ export const init = (courseid) => {
                 // Insert the table HTML into the dashboard container.
                 document.querySelector('.dashboard_container').insertAdjacentHTML('beforeend', html);
 
-                initDashboard();
+                initDashboard(hiddencmids);
                 return true;
             })
             .catch(error => {
@@ -51,8 +51,10 @@ export const init = (courseid) => {
 
 /**
  * Initialise DataTables and all filter logic after the table has been loaded.
+ *
+ * @param {number[]} hiddencmids Array of currently hidden cmids
  */
-function initDashboard() {
+function initDashboard(hiddencmids) {
     var table = new DataTable('#report_dashboard_dashboard',
         {
             orderCellsTop: true,
@@ -376,6 +378,36 @@ function initDashboard() {
         }
 
         table.draw();
+    });
+
+    // Hide column buttons — hide the column instantly and save preference via AJAX.
+    document.querySelectorAll('.hide-column-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const cmid = parseInt(this.dataset.cmid);
+            const name = this.dataset.name;
+            const type = this.dataset.type;
+            const th = this.closest('th');
+            // Use DataTables column(node) to get the correct index regardless of hidden columns.
+            const col = table.column(th);
+
+            col.visible(false);
+            hiddencmids.push(cmid);
+            setUserPreference('report_dashboard_hidden_cmids', JSON.stringify(hiddencmids));
+
+            // Create a dynamic "Show" button in the show/hide container.
+            const showLabel = type === 'assessment' ? 'Show assessment' : 'Show early engagement activity';
+            const showBtn = document.createElement('button');
+            showBtn.type = 'button';
+            showBtn.className = 'btn btn-outline-primary btn-sm';
+            showBtn.innerHTML = `<i class="fa fa-eye" aria-hidden="true"></i> ${showLabel} ${name}`;
+            showBtn.addEventListener('click', function() {
+                col.visible(true);
+                hiddencmids = hiddencmids.filter(id => id !== cmid);
+                setUserPreference('report_dashboard_hidden_cmids', JSON.stringify(hiddencmids));
+                this.remove();
+            });
+            document.getElementById('report_dashboard_showhide').appendChild(showBtn);
+        });
     });
 
     /**

@@ -86,7 +86,7 @@
 
             </div>
         </div>
-        <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="hideitem"><input type="hidden" name="cmid" value="{{cmid}}"><button title="Hide {{name}}" type="submit" class="btn btn-outline-secondary btn-sm"><i class="fa fa-eye-slash" aria-hidden="true"></i> Hide</button></form>
+        <button type="button" title="Hide {{name}}" class="btn btn-outline-secondary btn-sm hide-column-btn" data-cmid="{{cmid}}" data-name="{{name}}" data-type="earlyengagement"><i class="fa fa-eye-slash" aria-hidden="true"></i> Hide</button>
     </div>
 </th>
 {{/earlyengagements}}

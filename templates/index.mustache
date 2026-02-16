@@ -82,7 +82,7 @@
     </div>
 </div>
 <div class="dashboard_container">
-    <div class="d-flex flex-row justify-content-end mb-1 gap-2">
+    <div id="report_dashboard_showhide" class="d-flex flex-row justify-content-end mb-1 gap-2">
     {{#hiddenearlyengagements}}
     <form><input type="hidden" name="id" value="{{courseid}}"><input type="hidden" name="sesskey" value="{{sesskey}}"><input type="hidden" name="action" value="showitem"><input type="hidden" name="cmid" value="{{cmid}}"><button type="submit" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-eye" aria-hidden="true"></i> Show early engagement activity {{name}}</button></form>
     {{/hiddenearlyengagements}}

@@ -173,7 +173,6 @@ Feature: Course Dashboard Report
     And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Test Assignment 1"
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
     And I should see "Show assessment Test Assignment 1"
 
@@ -181,19 +180,16 @@ Feature: Course Dashboard Report
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Show assessment Test Assignment 1"
     When I click on "Show assessment Test Assignment 1" "button"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
-    And I should not see "Show assessment Test Assignment 1"
+    And "Show assessment Test Assignment 1" "button" should not exist
 
   Scenario: Teacher can hide an early engagement activity
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Early Forum"
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
     And I should see "Show early engagement activity Early Forum"
 
@@ -201,12 +197,41 @@ Feature: Course Dashboard Report
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
     When I click on "button[title=\"Hide Early Forum\"]" "css_element"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     And I should see "Show early engagement activity Early Forum"
     When I click on "Show early engagement activity Early Forum" "button"
-    And ".dashboard_container.dt-ready" "css_element" should exist
     Then I should see "Early Forum" in the "report_dashboard_dashboard" "table"
-    And I should not see "Show early engagement activity Early Forum"
+    And "Show early engagement activity Early Forum" "button" should not exist
+
+  Scenario: Hidden assessment persists after page reload
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+    # Navigate away and back to verify persistence
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+
+  Scenario: Hide then show assessment round-trip persists after page reload
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    # Hide the column
+    When I click on "button[title=\"Hide Test Assignment 1\"]" "css_element"
+    Then I should not see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Show assessment Test Assignment 1"
+    # Show the column again via the dynamic show button
+    When I click on "Show assessment Test Assignment 1" "button"
+    Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And "Show assessment Test Assignment 1" "button" should not exist
+    # Navigate away and back — column should still be shown
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And "Show assessment Test Assignment 1" "button" should not exist
 
   Scenario: Name filter works correctly
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
