@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe module dashboard
+ * Dashboard module — loads the data table asynchronously and initialises DataTables.
  *
  * @module     report_dashboard/dashboard
  * @copyright  2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
@@ -29,349 +29,407 @@ import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
 import {setUserPreference} from 'core_user/repository';
 
-export const init = () => {
+export const init = (courseid, hiddencmids) => {
     $(function() {
         window.console.log('Report dashboard initialising'); // Debug log to confirm script is running
-        var table = new DataTable('#report_dashboard_dashboard',
-            {
-                orderCellsTop: true,
-                responsive: false,
-                autoWidth: false,
-                paging: false,
-                layout: {
-                    topStart: 'info',
-                    topEnd: null,
-                    bottomStart: {
-                        buttons: [
-                            {
-                                extend: 'excelHtml5',
-                                text: 'Export to Excel',
-                            },
-                            {
-                                text: 'Copy email addresses of selected students',
-                                className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
-                                action: function(e, dt) {
-                                    let s = '';
-                                    // eslint-disable-next-line array-callback-return, no-unused-vars
-                                    dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
-                                        const node = this.cell(rowIdx, 2).node();
-                                        s += node.dataset.formattedEmail + ';';
-                                    });
 
-                                    navigator.clipboard.writeText(s);
-                                }
-                            },
-                            {
-                                text: 'Create email to selected students...',
-                                className: 'customButton customButtonCreateEmail btn btn-secondary',
-                                action: function(e, dt) {
-                                    var s = '';
-                                    // eslint-disable-next-line array-callback-return, no-unused-vars
-                                    dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
-                                        const node = this.cell(rowIdx, 2).node();
-                                        s += node.dataset.formattedEmail + ';';
-                                    });
-                                    location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
-                                }
-                            },
-                            {
-                                text: 'Clear selected rows',
-                                className: 'customButton customButtonClearSelectedRows btn btn-secondary',
-                                action: function(e, dt) {
-                                    dt.rows({selected: true}).deselect();
-                                }
+        // Load the dashboard table asynchronously.
+        fetch(M.cfg.wwwroot + '/report/dashboard/dashboard.php?id=' + courseid)
+            .then(response => response.text())
+            .then(html => {
+                // Insert the table HTML into the dashboard container.
+                document.querySelector('.dashboard_container').insertAdjacentHTML('beforeend', html);
+
+                initDashboard(hiddencmids);
+                return true;
+            })
+            .catch(error => {
+                window.console.error('Failed to load dashboard:', error);
+            });
+    });
+};
+
+/**
+ * Initialise DataTables and all filter logic after the table has been loaded.
+ *
+ * @param {number[]} hiddencmids Array of currently hidden cmids
+ */
+function initDashboard(hiddencmids) {
+    var table = new DataTable('#report_dashboard_dashboard',
+        {
+            orderCellsTop: true,
+            responsive: false,
+            autoWidth: false,
+            paging: false,
+            layout: {
+                topStart: 'info',
+                topEnd: null,
+                bottomStart: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            text: 'Export to Excel',
+                        },
+                        {
+                            text: 'Copy email addresses of selected students',
+                            className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
+                            action: function(e, dt) {
+                                let s = '';
+                                // eslint-disable-next-line array-callback-return, no-unused-vars
+                                dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
+                                    const node = this.cell(rowIdx, 2).node();
+                                    s += node.dataset.formattedEmail + ';';
+                                });
+
+                                navigator.clipboard.writeText(s);
                             }
-                        ]
-                    }
-                },
-                columnDefs: [
-                    {
-                        orderable: false,
-                        render: DataTable.render.select(),
-                        targets: 0
-                    }
-                ],
-                select: {
-                    style: 'multi',
-                    headerCheckbox: 'select-page'
-                },
-                order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
-                initComplete: function() {
-                    // Make any adjustments to the columns when the table is initialised.
-                    this.api().columns([2]).visible(false); // Hide email column
+                        },
+                        {
+                            text: 'Create email to selected students...',
+                            className: 'customButton customButtonCreateEmail btn btn-secondary',
+                            action: function(e, dt) {
+                                var s = '';
+                                // eslint-disable-next-line array-callback-return, no-unused-vars
+                                dt.rows({selected: true}).every((rowIdx, tableLoop, rowLoop) => {
+                                    const node = this.cell(rowIdx, 2).node();
+                                    s += node.dataset.formattedEmail + ';';
+                                });
+                                location.href = `mailto:?bcc=${encodeURIComponent(s)}`;
+                            }
+                        },
+                        {
+                            text: 'Clear selected rows',
+                            className: 'customButton customButtonClearSelectedRows btn btn-secondary',
+                            action: function(e, dt) {
+                                dt.rows({selected: true}).deselect();
+                            }
+                        }
+                    ]
+                }
+            },
+            columnDefs: [
+                {
+                    orderable: false,
+                    render: DataTable.render.select(),
+                    targets: 0
+                }
+            ],
+            select: {
+                style: 'multi',
+                headerCheckbox: 'select-page'
+            },
+            order: [[1, 'asc']], /* Removes order symbol from column 0 (checkbox) */
+            initComplete: function() {
+                // Make any adjustments to the columns when the table is initialised.
+                this.api().columns([2]).visible(false); // Hide email column
 
-                    // Reveal the table and hide the skeleton loader.
-                    document.querySelector('.dashboard_container').classList.add('dt-ready');
+                // Reveal the table and hide the skeleton loader.
+                document.querySelector('.dashboard_container').classList.add('dt-ready');
+
+                // Enable widgets that were disabled while the table was loading.
+                document.getElementById('report_dashboard_fontsize').disabled = false;
+                document.querySelectorAll('.dashboard_container button[disabled]').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+        }
+    );
+
+    document.getElementById('report_dashboard_fontsize').addEventListener('change', function() {
+        const dashboardTable = document.getElementById('report_dashboard_dashboard');
+        dashboardTable.className = dashboardTable.className.replace(/\bsz-\d+\b/, 'sz-' + this.value);
+        setUserPreference('report_dashboard_fontsize', this.value);
+    });
+
+    updateFilterCounts(true);
+
+    table.on('draw', function() {
+        updateFilterCounts(false);
+    });
+
+    /* eslint complexity: ["error", {"max": 30 }] */
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        let row = $(table.row(dataIndex).node());
+
+        /*
+            Last access filter
+        */
+        let lastaccessed = document.querySelector("input[name='lastaccessed']:checked");
+        document.querySelector("#lastaccessed > button > span").textContent = lastaccessed.dataset.label;
+
+        if (lastaccessed.value != "all") {
+            if (row.find(`td.tc_lastaccessed span[data-filter-category="${lastaccessed.value}"]`).length == 0) {
+                return false;
+            }
+        }
+
+        /*
+            Groups filter
+        */
+        let groupmatch = false; // By default we assume that no groups are matching
+        let groups = document.querySelectorAll("input[name='groups']");
+        let groupschecked = document.querySelectorAll("input[name='groups']:checked").length;
+        let anygroupunchecked = groups.length != groupschecked;
+
+        let dropdownlabel = "Unknown"; // Default label for the dropdown
+
+        for (const group of groups) {
+            if (group.checked) {
+                dropdownlabel = group.dataset.label;
+
+                if (row.find(`td.tc_groups span[data-filter-category="${group.value}"]`).length > 0) {
+                    groupmatch = true;
+                    break;
                 }
             }
-        );
+        }
 
-        document.getElementById('report_dashboard_fontsize').addEventListener('change', function() {
-            const dashboardTable = document.getElementById('report_dashboard_dashboard');
-            dashboardTable.className = dashboardTable.className.replace(/\bsz-\d+\b/, 'sz-' + this.value);
-            setUserPreference('report_dashboard_fontsize', this.value);
-        });
+        document.getElementById("group_select_all").disabled = !anygroupunchecked;
+        document.getElementById("group_select_none").disabled = groupschecked == 0;
 
-        updateFilterCounts(true);
 
-        table.on('draw', function() {
-            updateFilterCounts(false);
-        });
+        if (groupschecked == 0) {
+            dropdownlabel = "None";
+        } else if (groupschecked == 1) {
+            // The dropdownlabel will be set by code above.
+        } else if (anygroupunchecked) {
+            dropdownlabel = "Multiple Groups";
+        } else {
+            dropdownlabel = "All";
+        }
 
-        /* eslint complexity: ["error", {"max": 30 }] */
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            let row = $(table.row(dataIndex).node());
+        document.querySelector("#group > button > span").textContent = dropdownlabel;
 
-            /*
-                Last access filter
-            */
-            let lastaccessed = document.querySelector("input[name='lastaccessed']:checked");
-            document.querySelector("#lastaccessed > button > span").textContent = lastaccessed.dataset.label;
+        if (!groupmatch) {
+            return false;
+        }
 
-            if (lastaccessed.value != "all") {
-                if (row.find(`td.tc_lastaccessed span[data-filter-category="${lastaccessed.value}"]`).length == 0) {
-                    return false;
-                }
+        /*
+            Late assessments filter
+        */
+        let lateassessments = document.querySelector("input[name='lateassessments']:checked");
+        document.querySelector("#lateassessments > button > span").textContent = lateassessments.dataset.label;
+
+        if (lateassessments.value != "all") {
+            if (row.find(`td.tc_lateassessments span[data-filter-category="${lateassessments.value}"]`).length == 0) {
+                return false;
             }
+        }
 
-            /*
-                Groups filter
-            */
-            let groupmatch = false; // By default we assume that no groups are matching
-            let groups = document.querySelectorAll("input[name='groups']");
-            let groupschecked = document.querySelectorAll("input[name='groups']:checked").length;
-            let anygroupunchecked = groups.length != groupschecked;
+        /*
+            Early engagements filter
+        */
+
+        let earlyengagementFilters = document.querySelectorAll(".earlyengagement_filter");
+
+        for (const earlyengagementFilter of earlyengagementFilters) {
+            let id = earlyengagementFilter.dataset.earlyengagementid;
+            let itemMatch = false;
+            let items = document.querySelectorAll(`input[name='earlyengagement${id}_filter']`);
+            let itemsChecked = document.querySelectorAll(`input[name='earlyengagement${id}_filter']:checked`).length;
+            let anyUnchecked = items.length != itemsChecked;
 
             let dropdownlabel = "Unknown"; // Default label for the dropdown
 
-            for (const group of groups) {
-                if (group.checked) {
-                    dropdownlabel = group.dataset.label;
+            for (const item of items) {
+                if (item.checked) {
+                    dropdownlabel = item.dataset.label;
 
-                    if (row.find(`td.tc_groups span[data-filter-category="${group.value}"]`).length > 0) {
-                        groupmatch = true;
+                    // eslint-disable-next-line max-len
+                    if (row.find(`td.tc_earlyengagement.earlyengagement${id} span[data-filter-category="${item.value}"]`).length > 0) {
+                        itemMatch = true;
                         break;
                     }
                 }
             }
 
-            document.getElementById("group_select_all").disabled = !anygroupunchecked;
-            document.getElementById("group_select_none").disabled = groupschecked == 0;
+            document.getElementById(`earlyengagement${id}_select_all`).disabled = !anyUnchecked;
+            document.getElementById(`earlyengagement${id}_select_none`).disabled = itemsChecked == 0;
 
-
-            if (groupschecked == 0) {
+            if (itemsChecked == 0) {
                 dropdownlabel = "None";
-            } else if (groupschecked == 1) {
+            } else if (itemsChecked == 1) {
                 // The dropdownlabel will be set by code above.
-            } else if (anygroupunchecked) {
-                dropdownlabel = "Multiple Groups";
+            } else if (anyUnchecked) {
+                dropdownlabel = "Multiple criteria";
             } else {
                 dropdownlabel = "All";
             }
 
-            document.querySelector("#group > button > span").textContent = dropdownlabel;
+            document.querySelector(`#earlyengagement${id} > button > span`).textContent = dropdownlabel;
 
-            if (!groupmatch) {
+            if (!itemMatch) {
                 return false;
             }
+        }
 
-            /*
-                Late assessments filter
-            */
-            let lateassessments = document.querySelector("input[name='lateassessments']:checked");
-            document.querySelector("#lateassessments > button > span").textContent = lateassessments.dataset.label;
+        /*
+            Assessments filter
+        */
 
-            if (lateassessments.value != "all") {
-                if (row.find(`td.tc_lateassessments span[data-filter-category="${lateassessments.value}"]`).length == 0) {
-                    return false;
-                }
-            }
+        let assessmentFilters = document.querySelectorAll(".assessment_filter");
 
-            /*
-                Early engagements filter
-            */
+        for (const assessmentFilter of assessmentFilters) {
+            let id = assessmentFilter.dataset.assessmentid;
+            let itemMatch = false;
+            let items = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']`);
+            // eslint-disable-next-line max-len
+            let itemsChecked = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']:checked`).length;
+            let anyUnchecked = items.length != itemsChecked;
 
-            let earlyengagementFilters = document.querySelectorAll(".earlyengagement_filter");
+            let dropdownlabel = "Unknown"; // Default label for the dropdown
 
-            for (const earlyengagementFilter of earlyengagementFilters) {
-                let id = earlyengagementFilter.dataset.earlyengagementid;
-                let itemMatch = false;
-                let items = document.querySelectorAll(`input[name='earlyengagement${id}_filter']`);
-                let itemsChecked = document.querySelectorAll(`input[name='earlyengagement${id}_filter']:checked`).length;
-                let anyUnchecked = items.length != itemsChecked;
+            for (const item of items) {
+                if (item.checked) {
+                    dropdownlabel = item.dataset.label;
 
-                let dropdownlabel = "Unknown"; // Default label for the dropdown
-
-                for (const item of items) {
-                    if (item.checked) {
-                        dropdownlabel = item.dataset.label;
-
-                        // eslint-disable-next-line max-len
-                        if (row.find(`td.tc_earlyengagement.earlyengagement${id} span[data-filter-category="${item.value}"]`).length > 0) {
-                            itemMatch = true;
-                            break;
-                        }
+                    if (row.find(`td.tc_assessment.assessment${id} span[data-filter-category="${item.value}"]`).length > 0) {
+                        itemMatch = true;
+                        break;
                     }
                 }
-
-                document.getElementById(`earlyengagement${id}_select_all`).disabled = !anyUnchecked;
-                document.getElementById(`earlyengagement${id}_select_none`).disabled = itemsChecked == 0;
-
-                if (itemsChecked == 0) {
-                    dropdownlabel = "None";
-                } else if (itemsChecked == 1) {
-                    // The dropdownlabel will be set by code above.
-                } else if (anyUnchecked) {
-                    dropdownlabel = "Multiple criteria";
-                } else {
-                    dropdownlabel = "All";
-                }
-
-                document.querySelector(`#earlyengagement${id} > button > span`).textContent = dropdownlabel;
-
-                if (!itemMatch) {
-                    return false;
-                }
             }
 
-            /*
-                Assessments filter
-            */
+            document.getElementById(`assessment${id}_select_all`).disabled = !anyUnchecked;
+            document.getElementById(`assessment${id}_select_none`).disabled = itemsChecked == 0;
 
-            let assessmentFilters = document.querySelectorAll(".assessment_filter");
+            if (itemsChecked == 0) {
+                dropdownlabel = "None";
+            } else if (itemsChecked == 1) {
+                // The dropdownlabel will be set by code above.
+            } else if (anyUnchecked) {
+                dropdownlabel = "Multiple criteria";
+            } else {
+                dropdownlabel = "All";
+            }
 
-            for (const assessmentFilter of assessmentFilters) {
-                let id = assessmentFilter.dataset.assessmentid;
-                let itemMatch = false;
-                let items = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']`);
-                // eslint-disable-next-line max-len
-                let itemsChecked = document.querySelectorAll(`label:not([data-filter-total="0"]) > input[name='assessment${id}_filter']:checked`).length;
-                let anyUnchecked = items.length != itemsChecked;
+            document.querySelector(`#assessment${id} > button > span`).textContent = dropdownlabel;
 
-                let dropdownlabel = "Unknown"; // Default label for the dropdown
+            if (!itemMatch) {
+                return false;
+            }
+        }
 
-                for (const item of items) {
-                    if (item.checked) {
-                        dropdownlabel = item.dataset.label;
+        return true;
+    });
 
-                        if (row.find(`td.tc_assessment.assessment${id} span[data-filter-category="${item.value}"]`).length > 0) {
-                            itemMatch = true;
-                            break;
-                        }
+    $("#name_filter").on("input", function() {
+        // ... Modern search approach
+        table.columns(1).search(this.value).draw();
+    });
+
+    $("tr.filters .earlyengagement_filter .dropdown-menu").on("click", (e) => {
+        let id = e.currentTarget.dataset.earlyengagementid;
+
+        switch (e.target.id) {
+            case `earlyengagement${id}_select_all`:
+                document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
+                    if (!item.disabled) {
+                        item.checked = true;
                     }
-                }
-
-                document.getElementById(`assessment${id}_select_all`).disabled = !anyUnchecked;
-                document.getElementById(`assessment${id}_select_none`).disabled = itemsChecked == 0;
-
-                if (itemsChecked == 0) {
-                    dropdownlabel = "None";
-                } else if (itemsChecked == 1) {
-                    // The dropdownlabel will be set by code above.
-                } else if (anyUnchecked) {
-                    dropdownlabel = "Multiple criteria";
-                } else {
-                    dropdownlabel = "All";
-                }
-
-                document.querySelector(`#assessment${id} > button > span`).textContent = dropdownlabel;
-
-                if (!itemMatch) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        $("#name_filter").on("input", function() {
-            // ... Modern search approach
-            table.columns(1).search(this.value).draw();
-        });
-
-        $("tr.filters .earlyengagement_filter .dropdown-menu").on("click", (e) => {
-            let id = e.currentTarget.dataset.earlyengagementid;
-
-            switch (e.target.id) {
-                case `earlyengagement${id}_select_all`:
-                    document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
-                        if (!item.disabled) {
-                            item.checked = true;
-                        }
-                    });
-                    break;
-                case `earlyengagement${id}_select_none`:
-                    document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
-                        item.checked = false;
-                    });
-                    break;
-            }
-        });
-
-        $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
-            let id = e.currentTarget.dataset.assessmentid;
-
-            switch (e.target.id) {
-                case `assessment${id}_select_all`:
-                    document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
-                        if (!item.disabled) {
-                            item.checked = true;
-                        }
-                    });
-                    break;
-                case `assessment${id}_select_none`:
-                    document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
-                        item.checked = false;
-                    });
-                    break;
-            }
-        });
-
-        $("tr.filters .dropdown-menu").on("click", (e) => {
-            /*
-                Special handling cases for filters
-            */
-
-            switch (e.target.id) {
-                case "group_select_all":
-                    document.querySelectorAll("input[name='groups']").forEach((group) => {
-                        if (!group.disabled) {
-                            group.checked = true;
-                        }
-                    });
-
-                    break;
-                case "group_select_none":
-                    document.querySelectorAll("input[name='groups']").forEach((group) => {
-                        group.checked = false;
-                    });
-                    break;
-            }
-
-            table.draw();
-        });
-
-        /**
-         * Update counts for filters
-         *
-         * @param {boolean} firstTime
-         */
-        function updateFilterCounts(firstTime) {
-            $('[data-filter-count] > input').each(function(i, e) {
-                let filter = e.value;
-                let scope = e.name.replace("_filter", "");
-
-                let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
-                e.parentElement.dataset.filterCount = count;
-                if (firstTime) {
-                    e.parentElement.dataset.filterTotal = count;
-                    e.disabled = !count;
-                    if (!count) {
-                        e.checked = false;
-                    }
-                    e.parentElement.classList.toggle("text-muted", !count);
-                }
-            });
+                });
+                break;
+            case `earlyengagement${id}_select_none`:
+                document.querySelectorAll(`input[name='earlyengagement${id}_filter']`).forEach((item) => {
+                    item.checked = false;
+                });
+                break;
         }
     });
-};
+
+    $("tr.filters .assessment_filter .dropdown-menu").on("click", (e) => {
+        let id = e.currentTarget.dataset.assessmentid;
+
+        switch (e.target.id) {
+            case `assessment${id}_select_all`:
+                document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
+                    if (!item.disabled) {
+                        item.checked = true;
+                    }
+                });
+                break;
+            case `assessment${id}_select_none`:
+                document.querySelectorAll(`input[name='assessment${id}_filter']`).forEach((item) => {
+                    item.checked = false;
+                });
+                break;
+        }
+    });
+
+    $("tr.filters .dropdown-menu").on("click", (e) => {
+        /*
+            Special handling cases for filters
+        */
+
+        switch (e.target.id) {
+            case "group_select_all":
+                document.querySelectorAll("input[name='groups']").forEach((group) => {
+                    if (!group.disabled) {
+                        group.checked = true;
+                    }
+                });
+
+                break;
+            case "group_select_none":
+                document.querySelectorAll("input[name='groups']").forEach((group) => {
+                    group.checked = false;
+                });
+                break;
+        }
+
+        table.draw();
+    });
+
+    // Hide column buttons — hide the column instantly and save preference via AJAX.
+    document.querySelectorAll('.hide-column-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const cmid = parseInt(this.dataset.cmid);
+            const name = this.dataset.name;
+            const type = this.dataset.type;
+            const th = this.closest('th');
+            // Use DataTables column(node) to get the correct index regardless of hidden columns.
+            const col = table.column(th);
+
+            col.visible(false);
+            hiddencmids.push(cmid);
+            setUserPreference('report_dashboard_hidden_cmids', JSON.stringify(hiddencmids));
+
+            // Create a dynamic "Show" button in the show/hide container.
+            const showLabel = type === 'assessment' ? 'Show assessment' : 'Show early engagement activity';
+            const showBtn = document.createElement('button');
+            showBtn.type = 'button';
+            showBtn.className = 'btn btn-outline-primary btn-sm';
+            showBtn.innerHTML = `<i class="fa fa-eye" aria-hidden="true"></i> ${showLabel} ${name}`;
+            showBtn.addEventListener('click', function() {
+                col.visible(true);
+                hiddencmids = hiddencmids.filter(id => id !== cmid);
+                setUserPreference('report_dashboard_hidden_cmids', JSON.stringify(hiddencmids));
+                this.remove();
+            });
+            document.getElementById('report_dashboard_showhide').appendChild(showBtn);
+        });
+    });
+
+    /**
+     * Update counts for filters
+     *
+     * @param {boolean} firstTime
+     */
+    function updateFilterCounts(firstTime) {
+        $('[data-filter-count] > input').each(function(i, e) {
+            let filter = e.value;
+            let scope = e.name.replace("_filter", "");
+
+            let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
+            e.parentElement.dataset.filterCount = count;
+            if (firstTime) {
+                e.parentElement.dataset.filterTotal = count;
+                e.disabled = !count;
+                if (!count) {
+                    e.checked = false;
+                }
+                e.parentElement.classList.toggle("text-muted", !count);
+            }
+        });
+    }
+}
