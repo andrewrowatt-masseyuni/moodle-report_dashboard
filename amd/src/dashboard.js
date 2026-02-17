@@ -65,17 +65,18 @@ function initDashboard(hiddencmids) {
             pageLength: 50,
             lengthMenu: [[5, 25, 50, 100, -1], [5, 25, 50, 100, "All"]],
             layout: {
-                topStart: 'info',
-                topEnd: 'pageLength',
+                topStart: null,
+                topEnd: ['info', 'paging', 'pageLength'],
                 bottomStart: {
                     buttons: [
                         {
                             extend: 'excelHtml5',
                             text: 'Export to Excel',
+                            className: 'customButton customButtonExportExcel btn btn-secondary btn-sm',
                         },
                         {
                             text: 'Copy email addresses of selected students',
-                            className: 'customButton customButtonCopyEmailAddress btn btn-secondary',
+                            className: 'customButton customButtonCopyEmailAddress btn btn-secondary btn-sm',
                             action: function(e, dt) {
                                 let s = '';
                                 // eslint-disable-next-line array-callback-return, no-unused-vars
@@ -89,7 +90,7 @@ function initDashboard(hiddencmids) {
                         },
                         {
                             text: 'Create email to selected students...',
-                            className: 'customButton customButtonCreateEmail btn btn-secondary',
+                            className: 'customButton customButtonCreateEmail btn btn-secondary btn-sm',
                             action: function(e, dt) {
                                 var s = '';
                                 // eslint-disable-next-line array-callback-return, no-unused-vars
@@ -102,14 +103,14 @@ function initDashboard(hiddencmids) {
                         },
                         {
                             text: 'Clear selected rows',
-                            className: 'customButton customButtonClearSelectedRows btn btn-secondary',
+                            className: 'customButton customButtonClearSelectedRows btn btn-secondary btn-sm',
                             action: function(e, dt) {
                                 dt.rows({selected: true}).deselect();
                             }
                         }
                     ]
                 },
-                bottomEnd: 'paging'
+                bottomEnd: ['info', 'paging', 'pageLength']
             },
             columnDefs: [
                 {
