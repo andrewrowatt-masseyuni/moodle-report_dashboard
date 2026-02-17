@@ -50,4 +50,37 @@ class behat_report_dashboard extends behat_base {
                 throw new Exception('Unrecognised dashboard page type "' . $type . '."');
         }
     }
+
+    /**
+     * Changes the DataTables page length via the page-length selector.
+     *
+     * @When I set the dashboard page length to :length
+     * @param string $length The page length value to select (e.g. "5", "25", "All")
+     */
+    public function i_set_the_dashboard_page_length_to(string $length): void {
+        $select = $this->find('css', '.dt-length select');
+        $select->selectOption($length);
+    }
+
+    /**
+     * Checks that the filter count attribute for a given filter option equals the expected value.
+     *
+     * The filter label element carries a data-filter-count attribute that is updated by JS
+     * to reflect the number of matching rows (across all DataTables pages).
+     *
+     * @Then the filter count for :value in :name should be :count
+     * @param string $value  The filter option value (e.g. "overdue")
+     * @param string $name   The filter input name (e.g. "assessment1_filter")
+     * @param string $count  The expected count
+     */
+    public function the_filter_count_for_should_be(string $value, string $name, string $count): void {
+        $xpath = "//input[@name='{$name}'][@value='{$value}']/parent::label[@data-filter-count='{$count}']";
+        $node = $this->find('xpath', $xpath);
+        if (!$node) {
+            throw new \Behat\Mink\Exception\ExpectationException(
+                "Expected filter count '{$count}' for {$name}={$value}, but element not found.",
+                $this->getSession()
+            );
+        }
+    }
 }

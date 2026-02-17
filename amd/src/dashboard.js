@@ -60,10 +60,12 @@ function initDashboard(hiddencmids) {
             orderCellsTop: true,
             responsive: false,
             autoWidth: false,
-            paging: false,
+            paging: true,
+            pageLength: 50,
+            lengthMenu: [[5, 25, 50, 100, -1], [5, 25, 50, 100, "All"]],
             layout: {
                 topStart: 'info',
-                topEnd: null,
+                topEnd: 'pageLength',
                 bottomStart: {
                     buttons: [
                         {
@@ -105,7 +107,8 @@ function initDashboard(hiddencmids) {
                             }
                         }
                     ]
-                }
+                },
+                bottomEnd: 'paging'
             },
             columnDefs: [
                 {
@@ -411,16 +414,25 @@ function initDashboard(hiddencmids) {
     });
 
     /**
-     * Update counts for filters
+     * Update counts for filters.
+     *
+     * Uses the DataTables API to access all row nodes (including those on
+     * non-visible pages when paging is enabled) so that counts are accurate
+     * regardless of the current page.
      *
      * @param {boolean} firstTime
      */
     function updateFilterCounts(firstTime) {
+        // On first load count ALL rows; on subsequent draws count only rows matching the current search/filter.
+        let rows = firstTime
+            ? $(table.rows().nodes())
+            : $(table.rows({search: 'applied'}).nodes());
+
         $('[data-filter-count] > input').each(function(i, e) {
             let filter = e.value;
             let scope = e.name.replace("_filter", "");
 
-            let count = $(`td.${scope} [data-filter-category="${filter}"]`).length;
+            let count = rows.find(`td.${scope} [data-filter-category="${filter}"]`).length;
             e.parentElement.dataset.filterCount = count;
             if (firstTime) {
                 e.parentElement.dataset.filterTotal = count;
