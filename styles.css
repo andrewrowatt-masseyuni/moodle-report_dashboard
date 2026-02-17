@@ -554,3 +554,20 @@
         content: "(none)";
     }
 }
+
+#report_dashboard_dashboard_wrapper {
+    > :last-child {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        z-index: 1;
+        width: 100%;
+        padding: 1em;
+        border-radius: 1em 1em 0 0;
+        box-shadow: 0 -8px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    :is(.pagination, .dt-length, .dt-info) {
+        font-size: .75rem;
+    }
+}
