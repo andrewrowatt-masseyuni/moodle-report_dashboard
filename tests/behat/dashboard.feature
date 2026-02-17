@@ -342,6 +342,18 @@ Feature: Course Dashboard Report
     And "table.sz-12" "css_element" should exist
     And "table.sz-14" "css_element" should not exist
 
+  Scenario: Filter counts are accurate when paging is active
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    # With 6 students and default page length 50, all students fit on one page.
+    # Record the filter count for "Not due" on Test Assignment 2 (due tomorrow, so all 6 students are "notdue").
+    Then the filter count for "notdue" in "assessment2_filter" should be "6"
+    # Change page length to 5 to trigger paging (6 students across 2 pages).
+    When I set the dashboard page length to "5"
+    And I wait "1" seconds
+    # The filter count should still reflect all 6 students across both pages, not just the 5 on page 1.
+    Then the filter count for "notdue" in "assessment2_filter" should be "6"
+
   Scenario: Student gets access denied when trying direct URL access
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
     Then I should see "Sorry, but you do not currently have permissions to do that"
