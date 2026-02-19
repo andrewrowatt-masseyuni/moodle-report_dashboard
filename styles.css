@@ -55,6 +55,11 @@
     &.dt-ready .dashboard_skeleton {
         display: none;
     }
+
+    .course_group_container {
+        max-height: calc(10 * 37px); /* Show max 10 groups, each row is 37px high including borders */
+        overflow: hidden auto;
+    }
 }
 
 .dashboard_skeleton {
