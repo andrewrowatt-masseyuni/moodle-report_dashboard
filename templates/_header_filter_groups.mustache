@@ -33,9 +33,9 @@
             <button class="dropdown-item all" id="group_select_none">{{#str}} deselectall, core {{/str}}</button>
 
             <div class="dropdown-divider"></div>
-            <p class="h6 dropdown-header" title="{{#str}} cohortgroupshelptext, report_dashboard {{/str}}">Cohort groups <i class="fa fa-info-circle" aria-hidden="true"></i></p>
+            <p class="h6 dropdown-header" title="{{#str}} cohortgroupshelptext, report_dashboard {{/str}}">{{#str}} cohortgroups, report_dashboard {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></p>
             {{^cohort_groups}}
-            <div class="dropdown-item disabled">None</div>
+            <div class="dropdown-item disabled">{{#str}} none {{/str}}</div>
             {{/cohort_groups}}
             {{#cohort_groups}}
                 <div class="dropdown-item form-group mb-0">
@@ -46,10 +46,11 @@
                 </div>
             {{/cohort_groups}}
             <div class="dropdown-divider"></div>
-            <p class="h6 dropdown-header">Course groups</p>
+            <p class="h6 dropdown-header">{{#str}} coursegroups, report_dashboard {{/str}}</p>
             {{^groups}}
-            <div class="dropdown-item disabled">None</div>
+            <div class="dropdown-item disabled">{{#str}} none {{/str}}</div>
             {{/groups}}
+            <div class="course_group_container">
             {{#groups}}
                 <div class="dropdown-item form-group mb-0">
                     <div class="form-check">
@@ -57,7 +58,7 @@
                     </div>
                 </div>
             {{/groups}}
-
+            </div>
             <div class="dropdown-divider"></div>
             <p class="h6 dropdown-header" title="Refer to {{#str}} instructions, report_dashboard {{/str}} above">{{#str}} prioritygroups, report_dashboard {{/str}} <i class="fa fa-info-circle" aria-hidden="true"></i></p>
             <!-- <div class="dropdown-item disabled">None</div> -->
