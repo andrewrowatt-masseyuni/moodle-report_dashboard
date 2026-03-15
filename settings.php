@@ -515,7 +515,7 @@ with q1 as (
 	cm.id as cmid,
 	cm.completionexpected
 	from vars v
-	join {course_modules} cm on cm.course = v.course_id and cm.idnumber ~ 'EE\d'
+	join {course_modules} cm on cm.course = v.course_id and cm.idnumber ~ 'EE\d' and cm.visible = 1
 )
 ,get_early_engagements as (
 	select ee.id, ee.cmid
