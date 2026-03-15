@@ -354,6 +354,24 @@ Feature: Course Dashboard Report
     # The filter count should still reflect all 6 students across both pages, not just the 5 on page 1.
     Then the filter count for "notdue" in "assessment2_filter" should be "6"
 
+  Scenario: Hidden activity on the course page does not appear on the dashboard
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I should see "Test Assignment 2" in the "report_dashboard_dashboard" "table"
+    And I should see "Early Forum" in the "report_dashboard_dashboard" "table"
+    When I am on "Course 1" course homepage with editing mode on
+    And I open "Test Assignment 2" actions menu
+    And I choose "Hide" in the open action menu
+    And I open "Early Forum" actions menu
+    And I choose "Hide" in the open action menu
+    And I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should not see "Test Assignment 2" in the "report_dashboard_dashboard" "table"
+    And I should not see "Early Forum" in the "report_dashboard_dashboard" "table"
+    # Other activities should still be visible
+    And I should see "Test Assignment 1" in the "report_dashboard_dashboard" "table"
+    And I should see "Early Page" in the "report_dashboard_dashboard" "table"
+
   Scenario: Student gets access denied when trying direct URL access
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "12345601"
     Then I should see "Sorry, but you do not currently have permissions to do that"
