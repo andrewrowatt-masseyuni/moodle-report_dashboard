@@ -41,6 +41,7 @@ $string['dashboard:view'] = 'View Course coordinator dashboard';
 $string['description'] = 'Description';
 $string['description_desc'] = 'Short description and introduction to the report.';
 $string['earlyengagementstatus_completed'] = 'Completed';
+$string['eventreportviewed'] = 'Course dashboard report viewed';
 $string['earlyengagementstatus_notcompleted'] = 'Not completed';
 $string['earlyengagementstatus_notdue'] = 'Not due';
 $string['earlyengagementstatus_notviewed'] = 'Not viewed';
