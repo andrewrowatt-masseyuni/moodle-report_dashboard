@@ -339,7 +339,7 @@ with q1 as (
 		((gi.itemmodule = 'assign' and gi.iteminstance = a1.id) or
 		(gi.itemmodule = 'quiz' and gi.iteminstance = a2.id))
 	where
-	cm.course = v.course_id
+	cm.course = v.course_id and cm.visible = 1
 	and
 	(m.name in ('assign','quiz'))
 	--and
