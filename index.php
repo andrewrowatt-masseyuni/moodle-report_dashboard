@@ -81,6 +81,10 @@ if ($action) {
     redirect($url);
 }
 
+// Trigger a report viewed event.
+$event = \report_dashboard\event\report_viewed::create(['context' => $context]);
+$event->trigger();
+
 $modinfohelper = new modinfohelper(get_fast_modinfo($course));
 
 // ... DataTables requirements
