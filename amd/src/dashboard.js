@@ -33,6 +33,16 @@ export const init = (courseid, hiddencmids) => {
     $(function() {
         window.console.log('Report dashboard initialising'); // Debug log to confirm script is running
 
+        // Toggle sticky footer when the footer sentinel scrolls into view.
+        const sentinel = document.querySelector('.footersentinel');
+        const container = document.querySelector('.dashboard_container');
+        if (sentinel && container) {
+            const observer = new IntersectionObserver((entries) => {
+                container.classList.toggle('sticky', !entries[0].isIntersecting);
+            });
+            observer.observe(sentinel);
+        }
+
         // Load the dashboard table asynchronously.
         fetch(M.cfg.wwwroot + '/report/dashboard/dashboard.php?id=' + courseid)
             .then(response => response.text())

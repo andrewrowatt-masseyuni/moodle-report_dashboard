@@ -562,17 +562,22 @@
 
 #report_dashboard_dashboard_wrapper {
     > :last-child {
-        position: fixed;
+        position: sticky;
         bottom: 0;
         left: 0;
         right: 0;
         background: white;
         z-index: 1020;
         padding: 1em;
-        box-shadow: 0 0 1rem rgb(0 0 0 / .15); /* Snap fixed footer style */
     }
 
     :is(.pagination, .dt-length, .dt-info) {
         font-size: .75rem;
+    }
+}
+
+.dashboard_container.sticky #report_dashboard_dashboard_wrapper {
+    > :last-child {
+        box-shadow: 0 0 1rem rgb(0 0 0 / .15); /* Snap fixed footer style */
     }
 }
