@@ -40,6 +40,7 @@ $string['chartfacet_submission'] = 'Submission';
 $string['chartnodata'] = 'No data';
 $string['chartnoextension'] = 'No extension';
 $string['cohortgroups'] = 'Cohort groups';
+$string['cohortgroups'] = 'Cohort groups';
 $string['cohortgroupshelptext'] = 'Cohort in this context is a course group based on an enrolment in a linked course.';
 $string['coursegroups'] = 'Course groups';
 $string['dashboard:view'] = 'View Course coordinator dashboard';
