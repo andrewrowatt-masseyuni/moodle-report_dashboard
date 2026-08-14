@@ -28,6 +28,7 @@ import 'report_dashboard/dataTables.buttons';
 import 'report_dashboard/buttons.bootstrap4';
 import 'report_dashboard/buttons.html5';
 import {setUserPreference} from 'core_user/repository';
+import {getStrings} from 'core/str';
 import Chartjs from 'core/chartjs';
 
 export const init = (courseid, hiddencmids) => {
@@ -460,10 +461,50 @@ function initDashboard(hiddencmids) {
     }
 
     // Chart size constant (px).
-    const CHART_SIZE = 200;
+    const CHART_SIZE = 150;
 
-    // Ordered list of facet rings (inner to outer).
+    // Ordered list of facet rings (inner to outer). Every chart always renders all of
+    // these rings, in this order, so that ring positions are comparable between columns.
     const FACET_ORDER = ['engagement', 'submission', 'extension'];
+
+    // The placeholder ring shown when a facet has no data is drawn as a faint diagonal
+    // hatch, so that it reads as absent data rather than as another category colour.
+    // Equivalent to a 135deg repeating-linear-gradient of 1px lines every 12px over a
+    // barely-there fill, the whole thing at 55% opacity.
+    const NO_DATA_HATCH = {
+        opacity: 0.55,
+        fill: 'rgba(0, 0, 0, 0.03)',
+        line: 'rgba(0, 0, 0, 0.1)',
+        linewidth: 1,
+        spacing: 12,
+    };
+
+    // Tile for the hatch, built once and reused by every chart.
+    var noDataTile = null;
+
+    // Language string ids used by the charts, keyed by the name used in the code.
+    // The first three are the ring titles, and so are keyed by facet name.
+    const CHART_STRING_IDS = {
+        engagement: 'chartfacet_engagement',
+        submission: 'chartfacet_submission',
+        extension: 'chartfacet_extension',
+        nodata: 'chartnodata',
+        noextension: 'chartnoextension',
+        graded: 'assessmentstatus_graded',
+    };
+
+    // Resolved chart strings, fetched once and then used by every chart render.
+    const chartStrings = {};
+    const chartStringsLoaded = getStrings(
+        Object.values(CHART_STRING_IDS).map(function(id) {
+            return {key: id, component: 'report_dashboard'};
+        })
+    ).then(function(strings) {
+        Object.keys(CHART_STRING_IDS).forEach(function(name, index) {
+            chartStrings[name] = strings[index];
+        });
+        return chartStrings;
+    });
 
     // Colors matching the CSS filter-category colours.
     const CATEGORY_COLORS = {
@@ -484,6 +525,67 @@ function initDashboard(hiddencmids) {
     const chartInstances = {};
 
     /**
+     * Get the diagonal hatch used to fill a facet ring that has no data.
+     *
+     * @param {CanvasRenderingContext2D} ctx Context of the chart being drawn
+     * @return {CanvasPattern} Repeating hatch
+     */
+    function getNoDataPattern(ctx) {
+        if (!noDataTile) {
+            // A perpendicular line spacing of n needs a tile of n * sqrt(2).
+            const size = Math.round(NO_DATA_HATCH.spacing * Math.SQRT2);
+            noDataTile = document.createElement('canvas');
+            noDataTile.width = size;
+            noDataTile.height = size;
+
+            // Drawing the tile at the target opacity is equivalent to the CSS opacity.
+            const tilectx = noDataTile.getContext('2d');
+            tilectx.globalAlpha = NO_DATA_HATCH.opacity;
+            tilectx.fillStyle = NO_DATA_HATCH.fill;
+            tilectx.fillRect(0, 0, size, size);
+
+            // One "/" stripe, plus the corner fragments that let the tile repeat seamlessly.
+            tilectx.strokeStyle = NO_DATA_HATCH.line;
+            tilectx.lineWidth = NO_DATA_HATCH.linewidth;
+            tilectx.beginPath();
+            tilectx.moveTo(0, size);
+            tilectx.lineTo(size, 0);
+            tilectx.moveTo(-1, 1);
+            tilectx.lineTo(1, -1);
+            tilectx.moveTo(size - 1, size + 1);
+            tilectx.lineTo(size + 1, size - 1);
+            tilectx.stroke();
+        }
+
+        return ctx.createPattern(noDataTile, 'repeat');
+    }
+
+    /**
+     * Build a map of filter category to its translated label for a given column.
+     *
+     * The column's filter checkboxes already carry the translated label for each
+     * category, correctly worded for the column type (assessment or early engagement),
+     * so they are reused here rather than duplicating those strings.
+     *
+     * @param {string} scope Column class, e.g. "assessment5"
+     * @return {Object} Category code to translated label
+     */
+    function getCategoryLabels(scope) {
+        // Categories with no filter checkbox to take a label from: "none" is synthesised
+        // for the extension ring, and "graded" is a status without its own filter.
+        const labels = {
+            none: chartStrings.noextension,
+            graded: chartStrings.graded,
+        };
+        document.querySelectorAll(`[name="${scope}_filter"]`).forEach(function(input) {
+            if (input.value && input.dataset.label) {
+                labels[input.value] = input.dataset.label;
+            }
+        });
+        return labels;
+    }
+
+    /**
      * Render a multi-ring doughnut chart inside the given container.
      * Rings are built from data-facet attributes on the table cells.
      *
@@ -495,14 +597,22 @@ function initDashboard(hiddencmids) {
             return;
         }
 
+        // Chart labels are language strings, so wait for them and then render.
+        if (chartStrings.nodata === undefined) {
+            chartStringsLoaded
+                .then(() => {
+                    updateVisibleCharts();
+                    return true;
+                })
+                .catch(error => window.console.error('Failed to load chart strings:', error));
+            return;
+        }
+
         // Derive the column class from the container id, e.g. "chart_assessment5" -> "assessment5".
         const scope = containerId.replace('chart_', '');
 
         // Only count rows that pass ALL current filters (groups, last accessed, etc.).
         const visibleRows = table.rows({search: 'applied'}).nodes().toArray();
-        if (visibleRows.length === 0) {
-            return;
-        }
 
         // Count occurrences grouped by facet then by filter-category.
         const facetCounts = {};
@@ -526,44 +636,21 @@ function initDashboard(hiddencmids) {
             });
         });
 
-        // For the extension ring, add a "none" complement so the ring is meaningful.
-        if (facetCounts.extension && Object.keys(facetCounts.extension).length > 0) {
-            const extCount = facetCounts.extension.extension || 0;
-            facetCounts.extension.none = cellCount - extCount;
-        }
-
-        // Build one dataset per facet that has data.
-        const datasets = [];
-        FACET_ORDER.forEach(function(facet) {
-            const counts = facetCounts[facet];
-            const categories = Object.keys(counts);
-            if (categories.length === 0) {
-                return;
+        // Extensions are only marked up on the cells that have one, so every other cell in
+        // the column counts as "no extension". This is only done for columns where an
+        // extension can be applied at all, identified by them offering an extension filter;
+        // early engagement columns have no such concept and keep an empty extension facet.
+        const extensionsapply = document.querySelector(`[name="${scope}_filter"][value="extension"]`) !== null;
+        if (extensionsapply) {
+            const noextension = cellCount - (facetCounts.extension.extension || 0);
+            if (noextension > 0) {
+                facetCounts.extension.none = noextension;
             }
-            var values = categories.map(function(c) {
-                return counts[c];
-            });
-            var total = values.reduce(function(a, b) {
-                return a + b;
-            }, 0);
-            datasets.push({
-                data: values,
-                backgroundColor: categories.map(function(c) {
-                    return CATEGORY_COLORS[c] || '#cccccc';
-                }),
-                borderWidth: 1,
-                // Custom properties used by the tooltip callback.
-                _labels: categories,
-                _facet: facet,
-                _total: total,
-            });
-        });
-
-        if (datasets.length === 0) {
-            return;
         }
 
-        // Destroy any previous chart instance for this container.
+        // Destroy any previous chart instance for this container and start a fresh canvas.
+        // The canvas is created up front because the "no data" hatch is a pattern built
+        // from its drawing context.
         if (chartInstances[containerId]) {
             chartInstances[containerId].destroy();
         }
@@ -573,6 +660,50 @@ function initDashboard(hiddencmids) {
         canvas.width = CHART_SIZE;
         canvas.height = CHART_SIZE;
         container.appendChild(canvas);
+        const noDataPattern = getNoDataPattern(canvas.getContext('2d'));
+
+        // Translated labels for this column's filter categories, e.g. "Not viewed".
+        const categoryLabels = getCategoryLabels(scope);
+
+        // Build one dataset per facet, always in the same order, so that every chart has
+        // the same rings in the same positions. A facet with no data gets a placeholder
+        // ring labelled "No data".
+        const datasets = FACET_ORDER.map(function(facet) {
+            const counts = facetCounts[facet];
+            const categories = Object.keys(counts);
+            if (categories.length === 0) {
+                return {
+                    data: [1],
+                    backgroundColor: [noDataPattern],
+                    borderWidth: 1,
+                    // Custom properties used by the tooltip callback.
+                    _labels: [chartStrings.nodata],
+                    _facet: chartStrings[facet],
+                    _total: 0,
+                    _nodata: true,
+                };
+            }
+            var values = categories.map(function(c) {
+                return counts[c];
+            });
+            var total = values.reduce(function(a, b) {
+                return a + b;
+            }, 0);
+            return {
+                data: values,
+                backgroundColor: categories.map(function(c) {
+                    return CATEGORY_COLORS[c] || '#cccccc';
+                }),
+                borderWidth: 1,
+                // Custom properties used by the tooltip callback.
+                _labels: categories.map(function(c) {
+                    return categoryLabels[c] || c;
+                }),
+                _facet: chartStrings[facet],
+                _total: total,
+                _nodata: false,
+            };
+        });
 
         chartInstances[containerId] = new Chartjs(canvas, {
             type: 'doughnut',
@@ -592,6 +723,9 @@ function initDashboard(hiddencmids) {
                                 return '';
                             },
                             label: function(context) {
+                                if (context.dataset._nodata) {
+                                    return chartStrings.nodata;
+                                }
                                 var label = context.dataset._labels
                                     ? context.dataset._labels[context.dataIndex]
                                     : '';
