@@ -68,7 +68,7 @@
 <td class="tc_earlyengagement earlyengagement{{earlyengagementid}}">
     <div class="rdbtag-group">
         {{#viewedlabel}}
-        <span class="rdbtag" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}">
+        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}" data-facet="engagement">
         {{#vieweddate}}
         <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i>
         {{/vieweddate}}
@@ -77,7 +77,7 @@
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
-        <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
+        <span class="rdbtag" data-filter-category="{{status}}" data-facet="submission">{{label}}</span>
     </div>
 </td>
 {{/earlyengagements}}
@@ -93,7 +93,7 @@
 <td class="tc_assessment assessment{{assessmentid}}">
     <div class="rdbtag-group">
         {{#viewedlabel}}
-        <span class="rdbtag" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}">
+        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}" data-facet="engagement">
         {{#vieweddate}}
         <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
@@ -102,9 +102,9 @@
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
-        <span class="rdbtag" data-filter-category="{{status}}">{{label}}</span>
+        <span class="rdbtag" data-filter-category="{{status}}" data-facet="submission">{{label}}</span>
         {{#extension_date}}
-        <span class="rdbtag compact" data-filter-category="extension" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
+        <span class="rdbtag compact" data-filter-category="extension" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}" data-facet="extension">
             <i class="fa-regular fa-calendar-plus"></i><span class="sr-only">{{#str}} assessmentstatus_extension, report_dashboard {{/str}}</span>
         </span>
         {{/extension_date}}
