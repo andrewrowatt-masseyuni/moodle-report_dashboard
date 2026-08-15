@@ -165,7 +165,7 @@ foreach ($userdataset as $userobject) {
     if ($row['cohortgroups']) {
         foreach (explode(', ', $row['cohortgroups']) as $groupid) {
             $groupdetails = \report_dashboard\dashboard::get_item_by_id($coursecohortgroups, $groupid);
-            $cohortgroups[] = $groupdetails + ['class' => 'tag-cohort-group'];
+            $cohortgroups[] = $groupdetails + ['class' => 'rdbtag-cohort-group'];
         }
     }
 

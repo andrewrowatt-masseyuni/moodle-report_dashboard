@@ -26,7 +26,7 @@
 <tr>
 <td class="tc_select"></td>
 <td class="tc_name" data-search="{{row.username}} {{row.firstname}} {{row.lastname}}">
-    <div><span class="username">{{row.username}}</span> <span class="firstname">{{row.firstname}}</span> <span class="lastname">{{row.lastname}}</span><a class="email-link" href="mailto:{{row.firstname}}%20{{row.lastname}}%3C{{row.email}}%3E" title="Email {{row.firstname}}..." onclick="event.stopPropagation();"></a></div>
+    <div><span class="username">{{row.username}}</span> <span class="firstname">{{row.firstname}}</span> <span class="lastname">{{row.lastname}}</span><a class="email-link" href="mailto:{{row.firstname}}%20{{row.lastname}}%3C{{row.email}}%3E" data-toggle="tooltip" title="{{#str}} emailstudent, report_dashboard, {{row.firstname}}{{/str}}" onclick="event.stopPropagation();"></a></div>
 </td>
 <td class="tc_email" data-formatted-email="{{row.firstname}} {{row.lastname}} <{{row.email}}>">
     <div><span class="email">{{row.email}}</span></div>
@@ -37,7 +37,7 @@
 <td class="tc_groups groups">
 <div class="rdbtag-group">
 {{#groups}}
-<span class="rdbtag {{class}}" data-filter-category="group-{{id}}" title="Course group '{{groupname}}'">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="group-{{id}}" data-toggle="tooltip" title="{{#str}} coursegrouptooltip, report_dashboard, {{groupname}} {{/str}}">{{groupname}}</span>
 {{/groups}}
 {{^groups}}
 {{^cohort_groups}}
@@ -45,7 +45,7 @@
 {{/cohort_groups}}
 {{/groups}}
 {{#cohort_groups}}
-<span class="rdbtag {{class}}" data-filter-category="cohortgroup-{{id}}" title="Cohort (via meta-link) group '{{groupname}}'">{{groupname}}</span>
+<span class="rdbtag {{class}}" data-filter-category="cohortgroup-{{id}}" data-toggle="tooltip" title="{{#str}} cohorttooltip, report_dashboard, {{groupname}} {{/str}}">{{groupname}}</span>
 {{/cohort_groups}}
 {{#row.international}}
 <span class="rdbtag rdbtag-priority-group" data-filter-category="priority-international">International</span>
@@ -57,10 +57,10 @@
 <span class="rdbtag rdbtag-priority-group" data-filter-category="priority-pacific">Pacific</span>
 {{/row.pacific}}
 {{#row.new}}
-<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-new" title="New to Massey">New</span>
+<span class="rdbtag rdbtag-priority-group" data-filter-category="priority-new" data-toggle="tooltip" title="{{#str}} newtomassey, report_dashboard {{/str}}">New</span>
 {{/row.new}}
 {{#row.previous_enrolments}}
-<span class="rdbtag rdbtag-previousenrolments" data-filter-category="previousenrolments" title="Previous enrolment(s) in {{row.previous_enrolments}}">{{row.previous_enrolments}}</span>
+<span class="rdbtag rdbtag-previousenrolments" data-filter-category="previousenrolments" data-toggle="tooltip" title="{{#str}} previousenrolments, report_dashboard, {{row.previous_enrolments}} {{/str}}">{{row.previous_enrolments}}</span>
 {{/row.previous_enrolments}}
 </div>
 </td>
@@ -70,10 +70,10 @@
         {{#viewedlabel}}
         <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}" data-facet="engagement">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i>
+        <i class="fa-regular fa-sm fa-eye" data-toggle="tooltip" title="{{viewedlabel}}: {{vieweddate}}"></i>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i>
+        <i class="fa-regular fa-sm fa-eye-slash" data-toggle="tooltip" title="{{viewedlabel}}"></i>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
@@ -95,16 +95,16 @@
         {{#viewedlabel}}
         <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}" data-facet="engagement">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye" title="{{viewedlabel}}: {{vieweddate}}"></i><span class="sr-only">{{viewedlabel}}</span>
+        <i class="fa-regular fa-sm fa-eye" data-toggle="tooltip" title="{{viewedlabel}}: {{vieweddate}}"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash" title="{{viewedlabel}}"></i><span class="sr-only">{{viewedlabel}}</span>
+        <i class="fa-regular fa-sm fa-eye-slash" data-toggle="tooltip" title="{{viewedlabel}}"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
         <span class="rdbtag" data-filter-category="{{status}}" data-facet="submission">{{label}}</span>
         {{#extension_date}}
-        <span class="rdbtag compact" data-filter-category="extension" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}" data-facet="extension">
+        <span class="rdbtag compact" data-filter-category="extension" data-toggle="tooltip" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}" data-facet="extension">
             <i class="fa-regular fa-calendar-plus"></i><span class="sr-only">{{#str}} assessmentstatus_extension, report_dashboard {{/str}}</span>
         </span>
         {{/extension_date}}

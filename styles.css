@@ -18,6 +18,10 @@
     label {
         font-weight: 400;
     }
+
+    footer {
+        display: none;
+    }
 }
 
 .dashboard_header {
@@ -280,6 +284,9 @@
             .dt-column-title:not(:has(.dropdown)) {
                 font-weight: 500;
                 max-width: 20ch;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
             }
         }
 
@@ -456,6 +463,10 @@
 
             &.rdbtag-course-group {
                 background-color: var(--note2);
+
+                &[data-filter-category="nogroups"] {
+                    background-color: var(--neutral);
+                }
             }
 
             &.rdbtag-cohort-group {
