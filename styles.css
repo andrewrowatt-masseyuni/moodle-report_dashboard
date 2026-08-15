@@ -591,6 +591,17 @@
     :is(.pagination, .dt-length, .dt-info) {
         font-size: .75rem;
     }
+
+    #group.dropdown.show {
+        .dropdown-menu.show {
+            max-height: 70vh;
+            overflow: hidden auto;
+        }
+    }
+
+    .dropdown-menu {
+        box-shadow: 0 0 1rem rgb(0 0 0 / .15);
+    }
 }
 
 .dashboard_container.sticky #report_dashboard_dashboard_wrapper {
