@@ -93,12 +93,12 @@
 <td class="tc_assessment assessment{{assessmentid}}">
     <div class="rdbtag-group">
         {{#viewedlabel}}
-        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}" data-facet="engagement">
+        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-assessmentstatus="{{status}}" data-facet="engagement" data-toggle="tooltip" title="{{#vieweddate}}{{viewedlabel}}: {{vieweddate}}{{/vieweddate}}{{^vieweddate}}{{viewedlabel}}{{/vieweddate}}">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye" data-toggle="tooltip" title="{{viewedlabel}}: {{vieweddate}}"></i><span class="sr-only">{{viewedlabel}}</span>
+        <i class="fa-regular fa-sm fa-eye"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash" data-toggle="tooltip" title="{{viewedlabel}}"></i><span class="sr-only">{{viewedlabel}}</span>
+        <i class="fa-regular fa-sm fa-eye-slash"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
