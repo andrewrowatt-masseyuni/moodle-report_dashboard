@@ -22,6 +22,11 @@
     footer {
         display: none;
     }
+
+    /* Tooltips are appended to the body. Allows multi-line tooltips e.g., last accessed. */
+    .tooltip-inner {
+        white-space: pre-line;
+    }
 }
 
 .dashboard_header {
@@ -448,8 +453,18 @@
 
             &[data-filter-category="over1week"],
             &[data-filter-category="over2week"],
-            &[data-filter-category="over3week"] {
-                background-color: var(--warning);
+            &[data-filter-category="over3week"],
+            &[data-filter-category="streamothercourse"] {
+                background-color: var(--note);
+            }
+
+            /* Stream access colours are distinct from each other so they can be told apart in the chart. */
+            &[data-filter-category="streamonly"] {
+                background-color: var(--note);
+            }
+
+            &[data-filter-category="streamnever"] {
+                background-color: var(--negative);
             }
         }
     }

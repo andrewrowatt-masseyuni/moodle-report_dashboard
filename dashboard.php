@@ -90,6 +90,12 @@ $assessmentstatuses = \report_dashboard\dashboard::get_assessment_statuses();
 $userassessments = \report_dashboard\dashboard::get_user_assessments($courseid, join(' ', $savedhiddencmids));
 
 $userdataset = \report_dashboard\dashboard::get_user_dataset($courseid);
+$streamaccesscategories = \report_dashboard\dashboard::get_stream_access_categories();
+$streamaccessicons = [
+    'streamothercourse' => 'fa-book-open',
+    'streamonly' => 'fa-globe',
+    'streamnever' => 'fa-user-slash',
+];
 
 // Collect all row data first.
 $rows = [];
@@ -149,6 +155,27 @@ foreach ($userdataset as $userobject) {
                 $row['lastaccessed_filter_category'] = 'over4week';
                 $row['lastaccessed_label'] = get_string('lastaccessed_over_28_days', 'report_dashboard');
         }
+    }
+
+    // ... Older Master SQL statements may not include site/other course access, so skip the Stream access tag.
+    $row['lastaccessed_stream_category'] = '';
+    if (isset($row['site_lastaccessed_timestamp'], $row['othercourse_lastaccessed_timestamp'])) {
+        $row['lastaccessed_stream_category'] = \report_dashboard\dashboard::get_stream_access_category(
+            $row['lastaccessed_timestamp'],
+            $row['site_lastaccessed_timestamp'],
+            $row['othercourse_lastaccessed_timestamp']
+        );
+    }
+
+    if ($row['lastaccessed_stream_category']) {
+        $row['lastaccessed_stream_label'] = $streamaccesscategories[$row['lastaccessed_stream_category']];
+        $row['lastaccessed_stream_icon'] = $streamaccessicons[$row['lastaccessed_stream_category']];
+        $row['lastaccessed_tooltip'] = \report_dashboard\dashboard::get_lastaccessed_tooltip(
+            $row['lastaccessed_timestamp'],
+            $row['site_lastaccessed_timestamp'],
+            $row['othercourse_lastaccessed_timestamp'],
+            time()
+        );
     }
 
     $groups = [];

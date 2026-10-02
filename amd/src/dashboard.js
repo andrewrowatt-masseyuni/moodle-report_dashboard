@@ -463,8 +463,9 @@ function initDashboard(hiddencmids) {
     // Chart size constant (px).
     const CHART_SIZE = 150;
 
-    // Ordered list of facet rings (inner to outer). Every chart always renders all of
-    // these rings, in this order, so that ring positions are comparable between columns.
+    // Ordered list of facet rings (inner to outer). Every assessment and early engagement chart
+    // always renders all of these rings, in this order, so that ring positions are comparable
+    // between columns. Other charts list their own rings in the container's data-facets.
     const FACET_ORDER = ['engagement', 'submission', 'extension'];
 
     // The placeholder ring shown when a facet has no data is drawn as a faint diagonal
@@ -483,14 +484,17 @@ function initDashboard(hiddencmids) {
     var noDataTile = null;
 
     // Language string ids used by the charts, keyed by the name used in the code.
-    // The first three are the ring titles, and so are keyed by facet name.
+    // The first five are the ring titles, and so are keyed by facet name.
     const CHART_STRING_IDS = {
         engagement: 'chartfacet_engagement',
         submission: 'chartfacet_submission',
         extension: 'chartfacet_extension',
+        courseaccess: 'chartfacet_courseaccess',
+        streamaccess: 'chartfacet_streamaccess',
         nodata: 'chartnodata',
         noextension: 'chartnoextension',
         graded: 'assessmentstatus_graded',
+        streamnone: 'streamaccess_none',
     };
 
     // Resolved chart strings, fetched once and then used by every chart render.
@@ -519,6 +523,18 @@ function initDashboard(hiddencmids) {
         viewed: '#c5e0b4',
         notviewed: '#bdd7ee',
         none: '#f5f5f5',
+        today: '#c5e0b4',
+        yesterday: '#c5e0b4',
+        '1week': '#c5e0b4',
+        over1week: '#fff2cc',
+        over2week: '#fff2cc',
+        over3week: '#fff2cc',
+        over4week: '#fbe4d5',
+        never: '#fbe4d5',
+        streamothercourse: '#fff2cc',
+        streamonly: '#ffd966',
+        streamnever: '#f4b183',
+        streamnone: '#e0e0e0',
     };
 
     // Store Chart.js instances so we can destroy before re-rendering.
@@ -567,21 +583,26 @@ function initDashboard(hiddencmids) {
      * category, correctly worded for the column type (assessment or early engagement),
      * so they are reused here rather than duplicating those strings.
      *
+     * Labels are in filter order, which is also the order of the chart segments.
+     *
      * @param {string} scope Column class, e.g. "assessment5"
      * @return {Object} Category code to translated label
      */
     function getCategoryLabels(scope) {
-        // Categories with no filter checkbox to take a label from: "none" is synthesised
-        // for the extension ring, and "graded" is a status without its own filter.
-        const labels = {
-            none: chartStrings.noextension,
-            graded: chartStrings.graded,
-        };
-        document.querySelectorAll(`[name="${scope}_filter"]`).forEach(function(input) {
+        const labels = {};
+        // The last accessed filter uses radio buttons named after the column.
+        document.querySelectorAll(`[name="${scope}_filter"], [name="${scope}"]`).forEach(function(input) {
             if (input.value && input.dataset.label) {
                 labels[input.value] = input.dataset.label;
             }
         });
+
+        // Categories with no filter checkbox to take a label from: "none" and "streamnone" are
+        // synthesised for the extension and Stream access rings, and "graded" is a status
+        // without its own filter.
+        labels.none = chartStrings.noextension;
+        labels.streamnone = chartStrings.streamnone;
+        labels.graded = chartStrings.graded;
         return labels;
     }
 
@@ -610,13 +631,14 @@ function initDashboard(hiddencmids) {
 
         // Derive the column class from the container id, e.g. "chart_assessment5" -> "assessment5".
         const scope = containerId.replace('chart_', '');
+        const facets = container.dataset.facets ? container.dataset.facets.split(' ') : FACET_ORDER;
 
         // Only count rows that pass ALL current filters (groups, last accessed, etc.).
         const visibleRows = table.rows({search: 'applied'}).nodes().toArray();
 
         // Count occurrences grouped by facet then by filter-category.
         const facetCounts = {};
-        FACET_ORDER.forEach(function(f) {
+        facets.forEach(function(f) {
             facetCounts[f] = {};
         });
 
@@ -648,6 +670,16 @@ function initDashboard(hiddencmids) {
             }
         }
 
+        // Likewise, Stream access is only marked up on the cells with something to flag.
+        if (facetCounts.streamaccess !== undefined) {
+            const flagged = Object.values(facetCounts.streamaccess).reduce(function(a, b) {
+                return a + b;
+            }, 0);
+            if (cellCount - flagged > 0) {
+                facetCounts.streamaccess.streamnone = cellCount - flagged;
+            }
+        }
+
         // Destroy any previous chart instance for this container and start a fresh canvas.
         // The canvas is created up front because the "no data" hatch is a pattern built
         // from its drawing context.
@@ -665,12 +697,21 @@ function initDashboard(hiddencmids) {
         // Translated labels for this column's filter categories, e.g. "Not viewed".
         const categoryLabels = getCategoryLabels(scope);
 
+        // Segments follow the filter order, so they keep their positions as filters change.
+        const categoryOrder = Object.keys(categoryLabels);
+        const segmentPosition = function(c) {
+            const position = categoryOrder.indexOf(c);
+            return position === -1 ? categoryOrder.length : position;
+        };
+
         // Build one dataset per facet, always in the same order, so that every chart has
         // the same rings in the same positions. A facet with no data gets a placeholder
         // ring labelled "No data".
-        const datasets = FACET_ORDER.map(function(facet) {
+        const datasets = facets.map(function(facet) {
             const counts = facetCounts[facet];
-            const categories = Object.keys(counts);
+            const categories = Object.keys(counts).sort(function(a, b) {
+                return segmentPosition(a) - segmentPosition(b);
+            });
             if (categories.length === 0) {
                 return {
                     data: [1],

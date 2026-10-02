@@ -24,6 +24,9 @@ namespace report_dashboard;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dashboard {
+    /** @var int Minimum gap (in seconds) before access elsewhere in Stream is shown in the last accessed tooltip. */
+    public const LASTACCESSED_TOOLTIP_THRESHOLD = 2 * DAYSECS;
+
     /**
      * Gets the Master SQL statement and appended the specific dataset required
      *
@@ -180,6 +183,106 @@ class dashboard {
             'completed' => get_string('earlyengagementstatus_completed', 'report_dashboard'),
             'overdue' => get_string('earlyengagementstatus_overdue', 'report_dashboard'),
             'notcompleted' => get_string('earlyengagementstatus_notcompleted', 'report_dashboard'),
+        ];
+    }
+
+    /**
+     * Gets the last accessed tooltip, describing access elsewhere in Stream when it is significantly
+     * more recent than the student's last access to this course.
+     *
+     * All timestamps are -1 if never accessed.
+     *
+     * @param int $courseaccess When the student last accessed this course
+     * @param int $siteaccess When the student last accessed Stream
+     * @param int $othercourseaccess When the student last accessed any other course
+     * @param int $now
+     * @return string One line per item, or empty if there is nothing to add
+     */
+    public static function get_lastaccessed_tooltip(int $courseaccess, int $siteaccess, int $othercourseaccess, int $now): string {
+        if ($courseaccess == -1 && $siteaccess == -1 && $othercourseaccess == -1) {
+            return get_string('lastaccessed_site_never', 'report_dashboard');
+        }
+
+        [$othercourse, $site] = self::get_lastaccessed_elsewhere($courseaccess, $siteaccess, $othercourseaccess);
+        $lines = [];
+
+        if ($othercourse) {
+            $deltadays = max(0, (int)floor(($now - $othercourseaccess) / DAYSECS));
+            $lines[] = match ($deltadays) {
+                0 => get_string('lastaccessed_othercourse_today', 'report_dashboard'),
+                1 => get_string('lastaccessed_othercourse_1_day', 'report_dashboard'),
+                default => get_string('lastaccessed_othercourse_n_days', 'report_dashboard', $deltadays),
+            };
+        }
+
+        if ($site) {
+            $deltadays = max(0, (int)floor(($now - $siteaccess) / DAYSECS));
+            $lines[] = match ($deltadays) {
+                0 => get_string('lastaccessed_site_today', 'report_dashboard'),
+                1 => get_string('lastaccessed_site_1_day', 'report_dashboard'),
+                default => get_string('lastaccessed_site_n_days', 'report_dashboard', $deltadays),
+            };
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Gets the Stream access category for the last accessed tag and filter.
+     *
+     * All timestamps are -1 if never accessed.
+     *
+     * @param int $courseaccess When the student last accessed this course
+     * @param int $siteaccess When the student last accessed Stream
+     * @param int $othercourseaccess When the student last accessed any other course
+     * @return string A key of {@see get_stream_access_categories()}, or empty if there is nothing to add
+     */
+    public static function get_stream_access_category(int $courseaccess, int $siteaccess, int $othercourseaccess): string {
+        if ($courseaccess == -1 && $siteaccess == -1 && $othercourseaccess == -1) {
+            return 'streamnever';
+        }
+
+        [$othercourse, $site] = self::get_lastaccessed_elsewhere($courseaccess, $siteaccess, $othercourseaccess);
+
+        // ... Activity in another course is the stronger signal, so it takes precedence.
+        if ($othercourse) {
+            return 'streamothercourse';
+        }
+
+        if ($site) {
+            return 'streamonly';
+        }
+
+        return '';
+    }
+
+    /**
+     * Get the Stream access categories
+     *
+     * @return array
+     */
+    public static function get_stream_access_categories(): array {
+        return [
+            'streamothercourse' => get_string('streamaccess_othercourse', 'report_dashboard'),
+            'streamonly' => get_string('streamaccess_only', 'report_dashboard'),
+            'streamnever' => get_string('streamaccess_never', 'report_dashboard'),
+        ];
+    }
+
+    /**
+     * Checks whether access to another course, and to Stream, is significantly more recent than
+     * the student's last access to this course.
+     *
+     * @param int $courseaccess
+     * @param int $siteaccess
+     * @param int $othercourseaccess
+     * @return bool[] Whether another course, and Stream, were accessed significantly more recently
+     */
+    private static function get_lastaccessed_elsewhere(int $courseaccess, int $siteaccess, int $othercourseaccess): array {
+        return [
+            $othercourseaccess - $courseaccess >= self::LASTACCESSED_TOOLTIP_THRESHOLD,
+            // ... Site access always includes course access, so only count it when it adds something.
+            $siteaccess - max($courseaccess, $othercourseaccess) >= self::LASTACCESSED_TOOLTIP_THRESHOLD,
         ];
     }
 

@@ -251,6 +251,44 @@ Feature: Course Dashboard Report
     And I should see "In the last 7 days"
     And I should see "Over a week ago"
 
+  Scenario: Last accessed shows access elsewhere in Stream
+    Given the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 2 | C2        | 0        |
+    And the following "last access times" exist:
+      | user     | course | lastaccess |
+      | 12345604 | C2     | ##today##  |
+    # Accessing Stream, but not a course, makes 12345605 active on Stream only.
+    And I am on the "My courses" page logged in as "12345605"
+    And I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then the "title" attribute of "//tr[contains(., '12345603')]//span[@data-filter-category='streamnever']" "xpath_element" should contain "Never accessed Stream"
+    And the "title" attribute of "//tr[contains(., '12345604')]//span[@data-filter-category='streamothercourse']" "xpath_element" should contain "Last accessed another course in Stream in the last 24 hrs"
+    And the "title" attribute of "//tr[contains(., '12345605')]//span[@data-filter-category='streamonly']" "xpath_element" should contain "Last accessed Stream in the last 24 hrs"
+    And "//tr[contains(., '12345601')]//span[@data-facet='streamaccess']" "xpath_element" should not exist
+    And the filter count for "streamothercourse" in "lastaccessed" should be "1"
+    And the filter count for "streamonly" in "lastaccessed" should be "1"
+    And the filter count for "streamnever" in "lastaccessed" should be "1"
+    When I click on "#lastaccessed > button.dropdown-toggle" "css_element"
+    And I click on "#lastaccessed_streamothercourse" "css_element"
+    Then I should see "12345604" in the "report_dashboard_dashboard" "table"
+    And I should not see "12345603" in the "report_dashboard_dashboard" "table"
+    And I should not see "12345605" in the "report_dashboard_dashboard" "table"
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    And I click on "#lastaccessed > button.dropdown-toggle" "css_element"
+    And I click on "#lastaccessed_streamnever" "css_element"
+    Then I should see "12345603" in the "report_dashboard_dashboard" "table"
+    And I should not see "12345601" in the "report_dashboard_dashboard" "table"
+    And I should not see "12345604" in the "report_dashboard_dashboard" "table"
+
+  Scenario: Last accessed chart is shown with the other charts
+    Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    When I click on "#rdb-chart-toggle" "css_element"
+    Then "#chart_lastaccessed canvas" "css_element" should exist
+    And "#chart_assessment1 canvas" "css_element" should exist
+
   Scenario: Groups filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
