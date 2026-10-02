@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Hook callbacks for Course Dashboard
  *
  * @package     report_dashboard
- * @copyright   2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+ * @copyright   2026 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'report_dashboard';
-$plugin->release = '1.0';
-$plugin->version = 2026100300;
-$plugin->requires     = 2024100700;
-$plugin->supported    = [405, 501];
-$plugin->maturity     = MATURITY_STABLE;
+$callbacks = [
+    [
+        'hook' => \core_course\hook\before_course_deleted::class,
+        'callback' => [\report_dashboard\hook_callbacks::class, 'before_course_deleted'],
+    ],
+];

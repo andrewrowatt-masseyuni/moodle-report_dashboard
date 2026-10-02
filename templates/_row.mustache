@@ -68,12 +68,12 @@
 <td class="tc_earlyengagement earlyengagement{{earlyengagementid}}">
     <div class="rdbtag-group">
         {{#viewedlabel}}
-        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}" data-facet="engagement">
+        <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}" data-facet="engagement" data-toggle="tooltip" title="{{#vieweddate}}{{viewedlabel}}: {{vieweddate}}{{/vieweddate}}{{^vieweddate}}{{viewedlabel}}{{/vieweddate}}">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye" data-toggle="tooltip" title="{{viewedlabel}}: {{vieweddate}}"></i>
+        <i class="fa-regular fa-sm fa-eye"></i>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash" data-toggle="tooltip" title="{{viewedlabel}}"></i>
+        <i class="fa-regular fa-sm fa-eye-slash"></i>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}

@@ -462,6 +462,71 @@ final class dashboard_test extends \advanced_testcase {
     }
 
     /**
+     * Tests early engagement activities flagged via the activity setting and the legacy ID number.
+     *
+     * @covers ::dashboard
+     */
+    public function test_early_engagement_activity_setting(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course1 = $this->getDataGenerator()->create_course(['enablecompletion' => COMPLETION_ENABLED]);
+
+        // Legacy approach: flagged via the ID number, with or without completion tracking.
+        $legacy = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'idnumber' => 'EE1',
+        ]);
+
+        // Flagged via the activity setting.
+        $flagged = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'completion' => COMPLETION_TRACKING_MANUAL,
+        ]);
+
+        // Flagged via both approaches.
+        $both = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'idnumber' => 'EE2',
+            'completion' => COMPLETION_TRACKING_MANUAL,
+        ]);
+
+        // Flagged via the activity setting, but without completion conditions.
+        $nocompletion = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'completion' => COMPLETION_TRACKING_NONE,
+        ]);
+
+        // Not flagged.
+        $notflagged = $this->getDataGenerator()->create_module('page', [
+            'course' => $course1->id,
+            'completion' => COMPLETION_TRACKING_MANUAL,
+        ]);
+
+        foreach ([$flagged, $both, $nocompletion] as $page) {
+            $DB->insert_record('report_dashboard_cm', ['cmid' => $page->cmid, 'earlyengagement' => 1]);
+        }
+        $DB->insert_record('report_dashboard_cm', ['cmid' => $notflagged->cmid, 'earlyengagement' => 0]);
+
+        $earlyengagements = dashboard::get_early_engagements($course1->id);
+        $this->assertEqualsCanonicalizing(
+            [$legacy->cmid, $flagged->cmid, $both->cmid],
+            array_column($earlyengagements, 'cmid')
+        );
+
+        // Activities flagged via the activity setting require course completion tracking.
+        $DB->set_field('course', 'enablecompletion', COMPLETION_DISABLED, ['id' => $course1->id]);
+
+        $earlyengagements = dashboard::get_early_engagements($course1->id);
+        $this->assertEqualsCanonicalizing(
+            [$legacy->cmid, $both->cmid],
+            array_column($earlyengagements, 'cmid')
+        );
+    }
+
+    /**
      * Tests viewed status for assessments and early engagements.
      *
      * @covers ::dashboard

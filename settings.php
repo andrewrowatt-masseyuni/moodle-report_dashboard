@@ -511,11 +511,18 @@ with q1 as (
 )
 ,early_engagement_activities as (
 	select
-	ROW_NUMBER() OVER(order by cm.completionexpected, cm.idnumber) as id,
+	ROW_NUMBER() OVER(order by cm.completionexpected, cm.idnumber, cm.id) as id,
 	cm.id as cmid,
 	cm.completionexpected
 	from vars v
-	join {course_modules} cm on cm.course = v.course_id and cm.idnumber ~ 'EE\d' and cm.visible = 1
+	join {course} c on c.id = v.course_id
+	join {course_modules} cm on cm.course = v.course_id and cm.visible = 1
+	left join {report_dashboard_cm} rdcm on rdcm.cmid = cm.id
+	where
+	cm.idnumber ~ 'EE\d' /* Legacy: flagged via the activity ID number */
+	or
+	(rdcm.earlyengagement = 1 and c.enablecompletion = 1 and cm.completion != 0)
+		/* Flagged via the activity setting, which requires completion tracking */
 )
 ,get_early_engagements as (
 	select ee.id, ee.cmid

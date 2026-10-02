@@ -14,19 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace report_dashboard;
+
+use core_course\hook\before_course_deleted;
+
 /**
- * Plugin version and other meta-data are defined here.
+ * Hook callbacks for Course Dashboard
  *
  * @package     report_dashboard
- * @copyright   2025 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
+ * @copyright   2026 Andrew Rowatt <A.J.Rowatt@massey.ac.nz>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class hook_callbacks {
+    /**
+     * Delete the course dashboard preferences for all course modules in a course that is being deleted.
+     *
+     * Course deletion does not call the pre_course_module_delete callback for each course module.
+     *
+     * @param before_course_deleted $hook
+     */
+    public static function before_course_deleted(before_course_deleted $hook): void {
+        global $DB;
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'report_dashboard';
-$plugin->release = '1.0';
-$plugin->version = 2026100300;
-$plugin->requires     = 2024100700;
-$plugin->supported    = [405, 501];
-$plugin->maturity     = MATURITY_STABLE;
+        $DB->delete_records_select(
+            'report_dashboard_cm',
+            'cmid IN (SELECT id FROM {course_modules} WHERE course = :courseid)',
+            ['courseid' => $hook->course->id]
+        );
+    }
+}
