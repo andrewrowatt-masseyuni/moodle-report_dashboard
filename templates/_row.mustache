@@ -31,8 +31,15 @@
 <td class="tc_email" data-formatted-email="{{row.firstname}} {{row.lastname}} <{{row.email}}>">
     <div><span class="email">{{row.email}}</span></div>
 </td>
-<td class="tc_lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
-    <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}"{{#row.lastaccessed_tooltip}} data-toggle="tooltip" title="{{row.lastaccessed_tooltip}}"{{/row.lastaccessed_tooltip}}>{{row.lastaccessed_label}}</span>
+<td class="tc_lastaccessed lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
+    <div class="rdbtag-group">
+        <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}" data-facet="courseaccess">{{row.lastaccessed_label}}</span>
+        {{#row.lastaccessed_stream_category}}
+        <span class="rdbtag compact" data-filter-category="{{row.lastaccessed_stream_category}}" data-facet="streamaccess" data-toggle="tooltip" title="{{row.lastaccessed_tooltip}}">
+            <i class="fa-solid fa-sm {{row.lastaccessed_stream_icon}}"></i><span class="sr-only">{{row.lastaccessed_stream_label}}</span>
+        </span>
+        {{/row.lastaccessed_stream_category}}
+    </div>
 </td>
 <td class="tc_groups groups">
 <div class="rdbtag-group">

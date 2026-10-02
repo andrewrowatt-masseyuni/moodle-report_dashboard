@@ -751,4 +751,47 @@ final class dashboard_test extends \advanced_testcase {
             'Accessed course recently' => [HOURSECS, HOURSECS, 10 * DAYSECS, ''],
         ];
     }
+
+    /**
+     * Tests the Stream access category.
+     *
+     * @dataProvider stream_access_category_provider
+     * @covers ::get_stream_access_category
+     * @param int|null $courseago Seconds since this course was accessed, or null if never
+     * @param int|null $siteago Seconds since Stream was accessed, or null if never
+     * @param int|null $othercourseago Seconds since another course was accessed, or null if never
+     * @param string $expected
+     */
+    public function test_get_stream_access_category(?int $courseago, ?int $siteago, ?int $othercourseago, string $expected): void {
+        $now = time();
+        $timestamp = fn(?int $ago): int => $ago === null ? -1 : $now - $ago;
+
+        $category = dashboard::get_stream_access_category(
+            $timestamp($courseago),
+            $timestamp($siteago),
+            $timestamp($othercourseago)
+        );
+        $this->assertEquals($expected, $category);
+
+        if ($category) {
+            $this->assertArrayHasKey($category, dashboard::get_stream_access_categories());
+        }
+    }
+
+    /**
+     * Data provider for {@see test_get_stream_access_category}.
+     *
+     * @return array
+     */
+    public static function stream_access_category_provider(): array {
+        return [
+            'Never accessed Stream' => [null, null, null, 'streamnever'],
+            'Never accessed course, accessed Stream only' => [null, 5 * DAYSECS, null, 'streamonly'],
+            'Never accessed course, accessed another course' => [null, 3 * DAYSECS, 3 * DAYSECS, 'streamothercourse'],
+            'Accessed another course and Stream since' => [null, HOURSECS, 10 * DAYSECS, 'streamothercourse'],
+            'Accessed another course less recently' => [10 * DAYSECS, 3 * HOURSECS, 20 * DAYSECS, 'streamonly'],
+            'Accessed another course within 48 hrs of course' => [3 * DAYSECS, 2 * DAYSECS, 2 * DAYSECS, ''],
+            'Accessed course recently' => [HOURSECS, HOURSECS, 10 * DAYSECS, ''],
+        ];
+    }
 }
