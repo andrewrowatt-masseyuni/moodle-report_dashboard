@@ -1,3 +1,6 @@
+@charset "UTF-8";
+/* Moodle: @charset must stay on the first line so the non-ASCII content characters below decode correctly
+ * when the web server sends no charset. Re-add it after rebuilding this file. */
 /*
  * This combined file was created by the DataTables downloader builder:
  *   https://datatables.net/download
