@@ -139,7 +139,10 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 		u.firstname as firstname,
 		u.lastname as lastname,
 		u.email as email,
-		case when ula.id is null then -1 else ula.timeaccess end as lastaccessed_timestamp
+		case when ula.id is null then -1 else ula.timeaccess end as lastaccessed_timestamp,
+		case when u.lastaccess = 0 then -1 else u.lastaccess end as site_lastaccessed_timestamp,
+		coalesce((select max(ula2.timeaccess) from {user_lastaccess} ula2
+			where ula2.userid = u.id and ula2.courseid != v.course_id), -1) as othercourse_lastaccessed_timestamp
 		from {user} u
 		cross join vars v
 		join {role_assignments} ra on ra.userid = u.id and ra.roleid = 5
@@ -214,7 +217,7 @@ vars as (select :course_id::int as course_id, :user_id::int as userid, :exclude_
 
 	left join {groups_members} gmc on gmc.userid = s1.userid
 	left join get_cohort_groups gc on gc.groupid = gmc.groupid
-	group by 1,2,3,4,5,6,7
+	group by 1,2,3,4,5,6,7,8,9
 )
 --select * from students2
 ,previous_enrolments as (

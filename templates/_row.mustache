@@ -32,7 +32,7 @@
     <div><span class="email">{{row.email}}</span></div>
 </td>
 <td class="tc_lastaccessed" data-order="{{row.lastaccessed_timestamp}}">
-    <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}">{{row.lastaccessed_label}}</span>
+    <span class="rdbtag" data-filter-category="{{row.lastaccessed_filter_category}}"{{#row.lastaccessed_tooltip}} data-toggle="tooltip" title="{{row.lastaccessed_tooltip}}"{{/row.lastaccessed_tooltip}}>{{row.lastaccessed_label}}</span>
 </td>
 <td class="tc_groups groups">
 <div class="rdbtag-group">

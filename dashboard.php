@@ -151,6 +151,17 @@ foreach ($userdataset as $userobject) {
         }
     }
 
+    // ... Older Master SQL statements may not include site/other course access, so skip the tooltip.
+    $row['lastaccessed_tooltip'] = '';
+    if (isset($row['site_lastaccessed_timestamp'], $row['othercourse_lastaccessed_timestamp'])) {
+        $row['lastaccessed_tooltip'] = \report_dashboard\dashboard::get_lastaccessed_tooltip(
+            $row['lastaccessed_timestamp'],
+            $row['site_lastaccessed_timestamp'],
+            $row['othercourse_lastaccessed_timestamp'],
+            time()
+        );
+    }
+
     $groups = [];
 
     if ($row['groups']) {

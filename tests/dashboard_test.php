@@ -641,4 +641,114 @@ final class dashboard_test extends \advanced_testcase {
             }
         }
     }
+
+    /**
+     * Tests the course, Stream and other course last accessed timestamps in the user dataset.
+     *
+     * @covers ::get_user_dataset
+     */
+    public function test_lastaccessed_timestamps(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $now = time();
+        $generator = $this->getDataGenerator();
+
+        $course1 = $generator->create_course();
+        $course2 = $generator->create_course();
+        $course3 = $generator->create_course();
+
+        // Never accessed Stream.
+        $user1 = $generator->create_user(['username' => '98186061', 'lastaccess' => 0]);
+
+        // Accessed other courses, but not this one.
+        $user2 = $generator->create_user(['username' => '98186062', 'lastaccess' => $now - HOURSECS]);
+        $generator->create_user_course_lastaccess($user2, $course2, $now - DAYSECS);
+        $generator->create_user_course_lastaccess($user2, $course3, $now - 3 * DAYSECS);
+
+        // Accessed this course only.
+        $user3 = $generator->create_user(['username' => '98186063', 'lastaccess' => $now - HOURSECS]);
+        $generator->create_user_course_lastaccess($user3, $course1, $now - 5 * DAYSECS);
+
+        $generator->enrol_user($user1->id, $course1->id);
+        $generator->enrol_user($user2->id, $course1->id);
+        $generator->enrol_user($user3->id, $course1->id);
+
+        $userdataset = dashboard::get_user_dataset($course1->id);
+        $this->assertEquals(3, count($userdataset));
+
+        $this->assertEquals(-1, $userdataset[1]->lastaccessed_timestamp);
+        $this->assertEquals(-1, $userdataset[1]->site_lastaccessed_timestamp);
+        $this->assertEquals(-1, $userdataset[1]->othercourse_lastaccessed_timestamp);
+
+        $this->assertEquals(-1, $userdataset[2]->lastaccessed_timestamp);
+        $this->assertEquals($now - HOURSECS, $userdataset[2]->site_lastaccessed_timestamp);
+        $this->assertEquals($now - DAYSECS, $userdataset[2]->othercourse_lastaccessed_timestamp);
+
+        $this->assertEquals($now - 5 * DAYSECS, $userdataset[3]->lastaccessed_timestamp);
+        $this->assertEquals($now - HOURSECS, $userdataset[3]->site_lastaccessed_timestamp);
+        $this->assertEquals(-1, $userdataset[3]->othercourse_lastaccessed_timestamp);
+    }
+
+    /**
+     * Tests the last accessed tooltip.
+     *
+     * @dataProvider lastaccessed_tooltip_provider
+     * @covers ::get_lastaccessed_tooltip
+     * @param int|null $courseago Seconds since this course was accessed, or null if never
+     * @param int|null $siteago Seconds since Stream was accessed, or null if never
+     * @param int|null $othercourseago Seconds since another course was accessed, or null if never
+     * @param string $expected
+     */
+    public function test_get_lastaccessed_tooltip(?int $courseago, ?int $siteago, ?int $othercourseago, string $expected): void {
+        $now = 1700000000;
+        $timestamp = fn(?int $ago): int => $ago === null ? -1 : $now - $ago;
+
+        $this->assertEquals($expected, dashboard::get_lastaccessed_tooltip(
+            $timestamp($courseago),
+            $timestamp($siteago),
+            $timestamp($othercourseago),
+            $now
+        ));
+    }
+
+    /**
+     * Data provider for {@see test_get_lastaccessed_tooltip}.
+     *
+     * @return array
+     */
+    public static function lastaccessed_tooltip_provider(): array {
+        return [
+            'Never accessed Stream' => [null, null, null, 'Never accessed Stream'],
+            'Never accessed course, accessed Stream only' => [
+                null, 5 * DAYSECS, null,
+                'Last accessed Stream 5 days ago',
+            ],
+            'Never accessed course, accessed another course' => [
+                null, 3 * DAYSECS, 3 * DAYSECS,
+                'Last accessed another course in Stream 3 days ago',
+            ],
+            'Never accessed course, accessed another course and Stream since' => [
+                null, HOURSECS, 10 * DAYSECS,
+                "Last accessed another course in Stream 10 days ago\nLast accessed Stream in the last 24 hrs",
+            ],
+            'Accessed another course more recently' => [
+                10 * DAYSECS, 36 * HOURSECS, 36 * HOURSECS,
+                'Last accessed another course in Stream 1 day ago',
+            ],
+            'Accessed another course less recently' => [
+                10 * DAYSECS, 3 * HOURSECS, 20 * DAYSECS,
+                'Last accessed Stream in the last 24 hrs',
+            ],
+            'Accessed another course within 48 hrs of course' => [
+                3 * DAYSECS, 2 * DAYSECS, 2 * DAYSECS,
+                '',
+            ],
+            'Accessed Stream within 48 hrs of course' => [
+                5 * DAYSECS, 4 * DAYSECS, null,
+                '',
+            ],
+            'Accessed course recently' => [HOURSECS, HOURSECS, 10 * DAYSECS, ''],
+        ];
+    }
 }

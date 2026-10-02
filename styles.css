@@ -22,6 +22,11 @@
     footer {
         display: none;
     }
+
+    /* Tooltips are appended to the body. Allows multi-line tooltips e.g., last accessed. */
+    .tooltip-inner {
+        white-space: pre-line;
+    }
 }
 
 .dashboard_header {

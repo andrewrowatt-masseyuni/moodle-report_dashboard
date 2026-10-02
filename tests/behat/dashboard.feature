@@ -251,6 +251,19 @@ Feature: Course Dashboard Report
     And I should see "In the last 7 days"
     And I should see "Over a week ago"
 
+  Scenario: Last accessed tooltip shows access elsewhere in Stream
+    Given the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 2 | C2        | 0        |
+    And the following "last access times" exist:
+      | user     | course | lastaccess |
+      | 12345604 | C2     | ##today##  |
+    And I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then the "title" attribute of "//tr[contains(., '12345603')]/td[contains(@class, 'tc_lastaccessed')]/span" "xpath_element" should contain "Never accessed Stream"
+    And the "title" attribute of "//tr[contains(., '12345604')]/td[contains(@class, 'tc_lastaccessed')]/span" "xpath_element" should contain "Last accessed another course in Stream in the last 24 hrs"
+    And "//tr[contains(., '12345601')]/td[contains(@class, 'tc_lastaccessed')]/span[@title]" "xpath_element" should not exist
+
   Scenario: Groups filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
