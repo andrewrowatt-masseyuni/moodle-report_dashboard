@@ -1,5 +1,20 @@
 # Changes
 
+## 2026100401 (2026-10-04)
+
+### Changed
+
+- Improved *Export to Excel*:
+  - The row of filters is no longer exported as a second heading row.
+  - Student ID, first name, last name and email are in separate columns.
+  - Each part of the *Last accessed*, early engagement and assessment columns has its own column, titled with the column and the part, for example *Assignment 1 - Engagement*, *Assignment 1 - Submission* and *Assignment 1 - Extension*.
+  - The *Extension* column gives the extension date.
+  - The empty column for the row selection checkboxes is no longer exported.
+
+### Fixed
+
+- The viewed status icon for early engagements now has text for screen readers, as assessments already did.
+
 ## 2026100400 (2026-10-04)
 
 ### Added
