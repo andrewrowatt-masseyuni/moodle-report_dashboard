@@ -34,7 +34,7 @@ class backup_report_dashboard_plugin extends backup_report_plugin {
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
         $plugin->add_child($pluginwrapper);
 
-        $cm = new backup_nested_element('dashboard_cm', ['id'], ['earlyengagement']);
+        $cm = new backup_nested_element('dashboard_cm', ['id'], ['earlyengagement', 'showondashboard', 'titleoverride']);
         $pluginwrapper->add_child($cm);
 
         $cm->set_source_table('report_dashboard_cm', ['cmid' => backup::VAR_MODID]);

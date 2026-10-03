@@ -27,6 +27,18 @@ class dashboard {
     /** @var int Minimum gap (in seconds) before access elsewhere in Stream is shown in the last accessed tooltip. */
     public const LASTACCESSED_TOOLTIP_THRESHOLD = 2 * DAYSECS;
 
+    /** @var int Show an assessment on the course dashboard report if it has a close or due date. */
+    public const SHOW_AUTO = 0;
+
+    /** @var int Always show an assessment on the course dashboard report. */
+    public const SHOW_ALWAYS = 1;
+
+    /** @var int Never show an assessment on the course dashboard report. */
+    public const SHOW_NEVER = 2;
+
+    /** @var string[] Activity modules that can be shown as assessments on the course dashboard report. */
+    public const ASSESSMENT_MODULES = ['assign', 'quiz'];
+
     /**
      * Gets the Master SQL statement and appended the specific dataset required
      *
@@ -38,6 +50,20 @@ class dashboard {
         $mastersql .= "select * from $subquery";
 
         return $mastersql;
+    }
+
+    /**
+     * Gets a form field label with inline help shown beneath it.
+     *
+     * @param string $label
+     * @param string $inlinehelp
+     * @return string HTML
+     */
+    public static function get_field_label(string $label, string $inlinehelp): string {
+        return $label . \html_writer::span(
+            $inlinehelp,
+            'report-dashboard-field-desc d-block small text-muted font-weight-normal fw-normal mb-1'
+        );
     }
 
     /**

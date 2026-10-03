@@ -29,8 +29,8 @@
             {"id": 2, "name": "Introduction Forum", "cmid": 102}
         ],
         "assessments": [
-            {"id": 10, "name": "Assignment 1", "cmid": 201},
-            {"id": 11, "name": "Assignment 2", "cmid": 202}
+            {"id": 10, "name": "Assignment 1", "cmid": 201, "noduedate": false},
+            {"id": 11, "name": "Reflection", "cmid": 202, "noduedate": true}
         ],
         "cohort_groups": [
             {"id": 1, "groupname": "2024 Cohort A"},
@@ -87,7 +87,7 @@
         {{/earlyengagements}}
         <th>Late<br>assessments</th>
         {{#assessments}}
-        <th>{{name}}</th>
+        <th><span class="rdb-header-name">{{name}}</span>{{#noduedate}} <span role="img" aria-label="{{#str}} noduedate, report_dashboard {{/str}}" data-toggle="tooltip" title="{{#str}} noduedate, report_dashboard {{/str}}"><i class="fa-solid fa-calendar-xmark rdb-header-icon" aria-hidden="true"></i></span>{{/noduedate}}</th>
         {{/assessments}}
         </tr>
 {{> report_dashboard/_header_filter_name }}

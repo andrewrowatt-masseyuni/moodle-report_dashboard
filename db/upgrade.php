@@ -56,5 +56,28 @@ function xmldb_report_dashboard_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026100300, 'report', 'dashboard');
     }
 
+    if ($oldversion < 2026100400) {
+        $table = new xmldb_table('report_dashboard_cm');
+
+        // Define field showondashboard to be added to report_dashboard_cm.
+        $field = new xmldb_field('showondashboard', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'earlyengagement');
+
+        // Conditionally launch add field showondashboard.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field titleoverride to be added to report_dashboard_cm.
+        $field = new xmldb_field('titleoverride', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'showondashboard');
+
+        // Conditionally launch add field titleoverride.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Dashboard savepoint reached.
+        upgrade_plugin_savepoint(true, 2026100400, 'report', 'dashboard');
+    }
+
     return true;
 }

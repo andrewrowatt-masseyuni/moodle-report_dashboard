@@ -65,7 +65,8 @@ $hiddenearlyengagements = [];
 
 foreach ($assessments as $assessmentobject) {
     $assessment = (array)$assessmentobject;
-    $assessment += ['name' => $modinfohelper->get_cm_name($assessment['cmid'])];
+    $assessment['name'] = $modinfohelper->get_cm_title($assessment['cmid'], $assessment['titleoverride'] ?? null);
+    $assessment['noduedate'] = !empty($assessment['noduedate']);
     if (in_array($assessment['cmid'], $savedhiddencmids)) {
         $hiddenassessments[] = $assessment;
     } else {
@@ -75,7 +76,7 @@ foreach ($assessments as $assessmentobject) {
 
 foreach ($earlyengagements as $earlyengagementobject) {
     $earlyengagement = (array)$earlyengagementobject;
-    $earlyengagement += ['name' => $modinfohelper->get_cm_name($earlyengagement['cmid'])];
+    $earlyengagement['name'] = $modinfohelper->get_cm_title($earlyengagement['cmid'], $earlyengagement['titleoverride'] ?? null);
     if (in_array($earlyengagement['cmid'], $savedhiddencmids)) {
         $hiddenearlyengagements[] = $earlyengagement;
     } else {

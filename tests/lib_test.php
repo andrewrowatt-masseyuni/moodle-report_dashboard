@@ -79,7 +79,65 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Tests the early engagement setting is copied when an activity is duplicated (backup and restore).
+     * Tests saving the Show on course dashboard report and Title override settings.
+     *
+     * @covers ::report_dashboard_coursemodule_edit_post_actions
+     */
+    public function test_coursemodule_edit_post_actions_assessment(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        // Defaults when created, so nothing is saved.
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course->id,
+            'report_dashboard_showondashboard' => dashboard::SHOW_AUTO,
+            'report_dashboard_titleoverride' => '  ',
+        ]);
+        $this->assertFalse($DB->record_exists('report_dashboard_cm', ['cmid' => $assign->cmid]));
+
+        // Always shown, with a title override.
+        report_dashboard_coursemodule_edit_post_actions(
+            (object) [
+                'coursemodule' => $assign->cmid,
+                'report_dashboard_showondashboard' => dashboard::SHOW_ALWAYS,
+                'report_dashboard_titleoverride' => ' Short title ',
+            ],
+            $course
+        );
+        $record = $DB->get_record('report_dashboard_cm', ['cmid' => $assign->cmid]);
+        $this->assertEquals(dashboard::SHOW_ALWAYS, $record->showondashboard);
+        $this->assertEquals('Short title', $record->titleoverride);
+        $this->assertEquals(0, $record->earlyengagement);
+
+        // Never shown, and the title override is cleared.
+        report_dashboard_coursemodule_edit_post_actions(
+            (object) [
+                'coursemodule' => $assign->cmid,
+                'report_dashboard_showondashboard' => dashboard::SHOW_NEVER,
+                'report_dashboard_titleoverride' => '',
+            ],
+            $course
+        );
+        $record = $DB->get_record('report_dashboard_cm', ['cmid' => $assign->cmid]);
+        $this->assertEquals(dashboard::SHOW_NEVER, $record->showondashboard);
+        $this->assertNull($record->titleoverride);
+
+        // A title override alone is saved for any activity.
+        $page = $this->getDataGenerator()->create_module('page', [
+            'course' => $course->id,
+            'report_dashboard_titleoverride' => 'Short page',
+        ]);
+        $record = $DB->get_record('report_dashboard_cm', ['cmid' => $page->cmid]);
+        $this->assertEquals('Short page', $record->titleoverride);
+        $this->assertEquals(dashboard::SHOW_AUTO, $record->showondashboard);
+    }
+
+    /**
+     * Tests the course dashboard preferences are copied when an activity is duplicated (backup and restore).
      *
      * @covers \backup_report_dashboard_plugin
      * @covers \restore_report_dashboard_plugin
@@ -100,13 +158,22 @@ final class lib_test extends \advanced_testcase {
             'course' => $course->id,
             'completion' => COMPLETION_TRACKING_MANUAL,
         ]);
+        $assign = $this->getDataGenerator()->create_module('assign', [
+            'course' => $course->id,
+            'report_dashboard_showondashboard' => dashboard::SHOW_ALWAYS,
+            'report_dashboard_titleoverride' => 'Short title',
+        ]);
 
         $modinfo = get_fast_modinfo($course);
         $newflagged = duplicate_module($course, $modinfo->get_cm($flagged->cmid));
         $newnotflagged = duplicate_module($course, $modinfo->get_cm($notflagged->cmid));
+        $newassign = duplicate_module($course, $modinfo->get_cm($assign->cmid));
 
         $this->assertEquals(1, $DB->get_field('report_dashboard_cm', 'earlyengagement', ['cmid' => $newflagged->id]));
         $this->assertFalse($DB->record_exists('report_dashboard_cm', ['cmid' => $newnotflagged->id]));
+        $record = $DB->get_record('report_dashboard_cm', ['cmid' => $newassign->id]);
+        $this->assertEquals(dashboard::SHOW_ALWAYS, $record->showondashboard);
+        $this->assertEquals('Short title', $record->titleoverride);
     }
 
     /**

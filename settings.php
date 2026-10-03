@@ -331,11 +331,18 @@ with q1 as (
 		coalesce(a1.name,a2.name,'[Unknown]') as name,
 		coalesce(a1.duedate,a2.timeclose,null) as activity_duedate_epoch,
 	gi.id as grade_item_id, gi.iteminfo, gi.idnumber as activity_idnumber,gi.gradepass,
-	case when xcm.id is null then 0 else 1 end as excluded
+	case when xcm.id is null then 0 else 1 end as excluded,
+	coalesce(rdcm.showondashboard, 0) as showondashboard,
+		/* Show on course dashboard report: 0 = Auto (if it has a close/due date), 1 = Always, 2 = Never */
+	rdcm.titleoverride,
+	cs.section as course_section,
+	array_position(string_to_array(cs.sequence, ',')::bigint[], cm.id) as course_section_position
 	from {course_modules} cm
 	left join excluded_cmids xcm on xcm.id = cm.id
 	cross join vars v
 	join {modules} m on m.id = cm.module
+	join {course_sections} cs on cs.id = cm.section
+	left join {report_dashboard_cm} rdcm on rdcm.cmid = cm.id
 	left join {assign} a1 on a1.id = cm.instance and m.name='assign'
 	left join {quiz}   a2 on a2.id = cm.instance and m.name='quiz'
 	left join {grade_items} gi on gi.courseid = v.course_id and
@@ -348,11 +355,30 @@ with q1 as (
 	--and
 	--xcm.id is null
 )
+,q2 as (
+	select q1.*,
+	case
+		when q1.activity_duedate_epoch != 0 then q1.activity_duedate_epoch
+		else /* No close/due date: placed after the dated activity that precedes it in the course */
+			coalesce((
+				select p.activity_duedate_epoch from q1 p
+				where p.activity_duedate_epoch != 0 and p.showondashboard != 2
+				and (p.course_section, p.course_section_position) < (q1.course_section, q1.course_section_position)
+				order by p.course_section desc, p.course_section_position desc
+				limit 1
+			), 0)
+	end as activity_order_epoch
+	from q1
+	where
+	q1.showondashboard = 1
+	or
+	(q1.showondashboard = 0 and q1.activity_duedate_epoch != 0)
+)
 	select
 	*,
-	ROW_NUMBER() OVER(order by excluded, activity_duedate_epoch,cmid) as activity_row_index
-	from q1
-	where activity_duedate_epoch != 0
+	ROW_NUMBER() OVER(order by excluded, activity_order_epoch, course_section, course_section_position, cmid)
+		as activity_row_index
+	from q2
 )
 
 --select * from activity
@@ -360,7 +386,9 @@ with q1 as (
 ,get_assessments as (
 	select
 		activity_row_index as id,
-		cmid
+		cmid,
+		titleoverride,
+		case when activity_duedate_epoch != 0 then 0 else 1 end as noduedate
 		from activity
 		order by activity_row_index
 )
@@ -481,7 +509,7 @@ with q1 as (
 				when q4.status_raw in ('submitted','draft','finished') then 'submitted'
 				when q4.status_raw is null or q4.status_raw in ('new','inprogress','reopened') then /* check if due */
 					case
-						when student_duedate_epoch = 0 then 'notsubmitted'
+						when student_duedate_epoch = 0 then 'notdue' /* No close or due date */
 						when extract(epoch from now()) < q4.student_duedate_epoch then 'notdue'
 						when extract(epoch from now()) > q4.student_duedate_epoch then 'overdue'
 					end
@@ -516,7 +544,8 @@ with q1 as (
 	select
 	ROW_NUMBER() OVER(order by cm.completionexpected, cm.idnumber, cm.id) as id,
 	cm.id as cmid,
-	cm.completionexpected
+	cm.completionexpected,
+	rdcm.titleoverride
 	from vars v
 	join {course} c on c.id = v.course_id
 	join {course_modules} cm on cm.course = v.course_id and cm.visible = 1
@@ -528,7 +557,7 @@ with q1 as (
 		/* Flagged via the activity setting, which requires completion tracking */
 )
 ,get_early_engagements as (
-	select ee.id, ee.cmid
+	select ee.id, ee.cmid, ee.titleoverride
 	from early_engagement_activities ee
 )
 ,get_user_early_engagements as (

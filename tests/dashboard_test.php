@@ -794,4 +794,77 @@ final class dashboard_test extends \advanced_testcase {
             'Accessed course recently' => [HOURSECS, HOURSECS, 10 * DAYSECS, ''],
         ];
     }
+
+    /**
+     * Tests the Show on course dashboard report and Title override settings for assessments.
+     *
+     * @covers ::get_assessments
+     * @covers ::get_user_assessments
+     * @covers ::get_early_engagements
+     */
+    public function test_show_on_dashboard(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $now = time();
+        $generator = $this->getDataGenerator();
+
+        $course = $generator->create_course(['numsections' => 2, 'enablecompletion' => 1]);
+        $user = $generator->create_user(['username' => '98186071']);
+        $generator->enrol_user($user->id, $course->id);
+
+        // Activities in course order: name, module, section, close/due date, show on dashboard, title override.
+        // Only dated activities are shown by default.
+        $activities = [
+            ['Undated always first', 'assign', 1, 0, dashboard::SHOW_ALWAYS, ''],
+            ['Dated later', 'assign', 1, $now + 2 * DAYSECS, dashboard::SHOW_AUTO, ''],
+            ['Undated always after dated later', 'quiz', 1, 0, dashboard::SHOW_ALWAYS, ''],
+            ['Dated never', 'quiz', 1, $now + DAYSECS, dashboard::SHOW_NEVER, ''],
+            ['Undated auto', 'assign', 1, 0, dashboard::SHOW_AUTO, ''],
+            ['Dated sooner', 'quiz', 2, $now + DAYSECS, dashboard::SHOW_AUTO, ''],
+            ['Undated always after dated sooner', 'assign', 2, 0, dashboard::SHOW_ALWAYS, 'Short title'],
+        ];
+        $cmids = [];
+        foreach ($activities as [$name, $module, $section, $date, $showondashboard, $titleoverride]) {
+            $cmids[$name] = $generator->create_module($module, [
+                'course' => $course->id,
+                'section' => $section,
+                'name' => $name,
+                ($module == 'assign' ? 'duedate' : 'timeclose') => $date,
+                'report_dashboard_showondashboard' => $showondashboard,
+                'report_dashboard_titleoverride' => $titleoverride,
+            ])->cmid;
+        }
+
+        // Undated activities follow the dated activity that precedes them in the course, ignoring those never shown.
+        $expected = [
+            'Undated always first',
+            'Dated sooner',
+            'Undated always after dated sooner',
+            'Dated later',
+            'Undated always after dated later',
+        ];
+        $items = array_values(dashboard::get_assessments($course->id));
+        $this->assertEquals(
+            array_map(fn($name) => $cmids[$name], $expected),
+            array_column($items, 'cmid')
+        );
+        $this->assertEquals([1, 0, 1, 0, 1], array_map('intval', array_column($items, 'noduedate')));
+        $this->assertEquals([null, null, 'Short title', null, null], array_column($items, 'titleoverride'));
+
+        // Undated activities are never due.
+        $statuses = array_column(array_values(dashboard::get_user_assessments($course->id, '')), 'status');
+        $this->assertEquals(['notdue', 'notdue', 'notdue', 'notdue', 'notdue'], $statuses);
+
+        // Title override for an early engagement activity.
+        $page = $generator->create_module('page', [
+            'course' => $course->id,
+            'completion' => COMPLETION_TRACKING_MANUAL,
+            'report_dashboard_earlyengagement' => 1,
+            'report_dashboard_titleoverride' => 'Short page',
+        ]);
+        $items = array_values(dashboard::get_early_engagements($course->id));
+        $this->assertEquals($page->cmid, $items[0]->cmid);
+        $this->assertEquals('Short page', $items[0]->titleoverride);
+    }
 }

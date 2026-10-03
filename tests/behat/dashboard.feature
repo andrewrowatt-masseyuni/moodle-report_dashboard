@@ -289,6 +289,30 @@ Feature: Course Dashboard Report
     Then "#chart_lastaccessed canvas" "css_element" should exist
     And "#chart_assessment1 canvas" "css_element" should exist
 
+  Scenario: Show on course dashboard report and title override settings are applied
+    Given the following "activities" exist:
+      | activity | name              | course | idnumber | duedate |
+      | assign   | Test Assignment 3 | C1     | A3       | 0       |
+    And I am on the "Test Assignment 3" "assign activity editing" page logged in as "teacher1"
+    And I expand all fieldsets
+    And I set the following fields to these values:
+      | Show on course dashboard report | Always     |
+      | Title override                  | Reflection |
+    And I press "Save and return to course"
+    And I am on the "Test Assignment 2" "assign activity editing" page
+    And I expand all fieldsets
+    And I set the field "Show on course dashboard report" to "Never"
+    And I press "Save and return to course"
+    When I am on the "Course 1" "report_dashboard > dashboard" page
+    And ".dashboard_container.dt-ready" "css_element" should exist
+    Then I should see "Reflection" in the "report_dashboard_dashboard" "table"
+    And I should not see "Test Assignment 3" in the "report_dashboard_dashboard" "table"
+    And I should not see "Test Assignment 2" in the "report_dashboard_dashboard" "table"
+    And "//th[contains(., 'Reflection')]//span[@title='No close or due date available']" "xpath_element" should exist
+    And "//th[contains(., 'Test Assignment 1')]//span[@title='No close or due date available']" "xpath_element" should not exist
+    # With no due date, Reflection is never due.
+    And I should see "Not due" in the "12345602" "table_row"
+
   Scenario: Groups filter is available
     Given I am on the "Course 1" "report_dashboard > dashboard" page logged in as "teacher1"
     And ".dashboard_container.dt-ready" "css_element" should exist
