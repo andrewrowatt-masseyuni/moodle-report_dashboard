@@ -293,6 +293,23 @@
                 text-overflow: ellipsis;
                 overflow: hidden;
             }
+
+            /* Only the name is truncated, so the icon is always displayed. */
+            .dt-column-title:has(.rdb-header-icon) {
+                display: flex;
+                align-items: baseline;
+                gap: 0.25em;
+
+                .rdb-header-name {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            .rdb-header-icon {
+                opacity: 0.5;
+            }
         }
 
         tr.filters th {

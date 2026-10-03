@@ -83,7 +83,7 @@
     <thead>
         <tr><th></th><th>Student ID / Firstname / Lastname</th><th>Email</th><th>Last<br>accessed</th><th>Groups</th>
         {{#earlyengagements}}
-        <th>{{name}}<small class="d-block font-weight-lighter font-italic fs-1">(Early engagement)</small></th>
+        <th><span class="rdb-header-name">{{name}}</span> <span role="img" aria-label="{{#str}} earlyengagementactivity, report_dashboard {{/str}}" data-toggle="tooltip" title="{{#str}} earlyengagementactivity, report_dashboard {{/str}}"><i class="fa-solid fa-seedling rdb-header-icon" aria-hidden="true"></i></span></th>
         {{/earlyengagements}}
         <th>Late<br>assessments</th>
         {{#assessments}}

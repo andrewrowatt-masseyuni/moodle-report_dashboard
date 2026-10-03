@@ -52,6 +52,7 @@ $string['description'] = 'Description';
 $string['description_desc'] = 'Short description and introduction to the report.';
 $string['earlyengagement'] = 'Show in course dashboard as an early engagement activity';
 $string['earlyengagement_help'] = 'Display completion tracking status on the course dashboard. Course completion tracking must be enabled and completion conditions for this activity need to be set.';
+$string['earlyengagementactivity'] = 'Early engagement activity';
 $string['earlyengagementstatus_completed'] = 'Completed';
 $string['earlyengagementstatus_notcompleted'] = 'Not completed';
 $string['earlyengagementstatus_notdue'] = 'Not due';
