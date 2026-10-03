@@ -232,6 +232,7 @@ foreach ($userdataset as $userobject) {
 
         $earlyengagements[] = $earlyengagement + [
             'label' => $label,
+            'completed' => $earlyengagement['status'] == 'completed',
             'viewedstatus' => $viewedstatus,
             'viewedlabel' => $viewedlabel,
             'vieweddate' => $vieweddate,

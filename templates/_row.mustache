@@ -84,7 +84,7 @@
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
-        <span class="rdbtag" data-filter-category="{{status}}" data-facet="submission">{{label}}</span>
+        <span class="rdbtag compact" data-filter-category="{{status}}" data-facet="submission" data-toggle="tooltip" title="{{label}}"><i class="fa-sm {{#completed}}fa-solid fa-circle-check{{/completed}}{{^completed}}fa-regular fa-circle-check{{/completed}}"></i><span class="sr-only">{{label}}</span></span>
     </div>
 </td>
 {{/earlyengagements}}

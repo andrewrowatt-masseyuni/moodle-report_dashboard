@@ -525,6 +525,7 @@
 
             &[data-filter-category="completed"] {
                 background-color: var(--positive);
+                color: #357a32;
             }
 
             &[data-filter-category="overdue"] {
