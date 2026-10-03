@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Moodle plugin (`report_dashboard`) that provides a Course Engagement Dashboard for Course Coordinators to monitor student engagement during the semester. The plugin integrates into Moodle's reporting system and displays data using DataTables for interactive filtering and visualization.
 
-**Current Version**: 1.0 (version 2026100302)
+**Current Version**: 1.0 (version 2026100400)
 **Supported Moodle**: 4.05 - 5.01 (`requires = 2024100700`)
 **Maturity**: STABLE
 

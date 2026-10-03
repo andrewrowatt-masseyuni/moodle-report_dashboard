@@ -57,4 +57,15 @@ class modinfohelper {
     public function get_cm_name($cmid) {
         return $this->modinfo->cms[$cmid]->name;
     }
+
+    /**
+     * Returns the title of the course module with the given cmid on the course dashboard report.
+     *
+     * @param mixed $cmid
+     * @param string|null $titleoverride Title override from the course dashboard preferences, if any
+     * @return string
+     */
+    public function get_cm_title($cmid, ?string $titleoverride): string {
+        return trim($titleoverride ?? '') !== '' ? $titleoverride : $this->get_cm_name($cmid);
+    }
 }

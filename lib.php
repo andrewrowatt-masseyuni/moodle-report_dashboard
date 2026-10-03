@@ -79,25 +79,62 @@ function report_dashboard_coursemodule_standard_elements($formwrapper, $mform) {
 
     $mform->addElement('header', 'report_dashboard_header', get_string('coursedashboardpreferences', 'report_dashboard'));
 
+    $record = false;
+    if ($cm = $formwrapper->get_coursemodule()) {
+        $record = $DB->get_record('report_dashboard_cm', ['cmid' => $cm->id]);
+    }
+
+    // Only assessments are shown on the course dashboard report based on their close or due date.
+    $isassessment = in_array($formwrapper->get_current()->modulename, \report_dashboard\dashboard::ASSESSMENT_MODULES);
+
+    $mform->addElement(
+        'select',
+        'report_dashboard_showondashboard',
+        \report_dashboard\dashboard::get_field_label(
+            get_string('showondashboard', 'report_dashboard'),
+            get_string('showondashboard_inlinehelp', 'report_dashboard')
+        ),
+        [
+            \report_dashboard\dashboard::SHOW_AUTO => get_string('showondashboard_auto', 'report_dashboard'),
+            \report_dashboard\dashboard::SHOW_ALWAYS => get_string('showondashboard_always', 'report_dashboard'),
+            \report_dashboard\dashboard::SHOW_NEVER => get_string('showondashboard_never', 'report_dashboard'),
+        ],
+        $isassessment ? [] : ['disabled' => 'disabled']
+    );
+    $mform->setDefault(
+        'report_dashboard_showondashboard',
+        $record ? (int) $record->showondashboard : \report_dashboard\dashboard::SHOW_AUTO
+    );
+
     // The activity completion elements are only in the form when completion tracking is enabled for the course.
     $completionenabled = $mform->elementExists('completion');
 
     $mform->addElement(
         'selectyesno',
         'report_dashboard_earlyengagement',
-        get_string('earlyengagement', 'report_dashboard'),
+        \report_dashboard\dashboard::get_field_label(
+            get_string('earlyengagement', 'report_dashboard'),
+            get_string('earlyengagement_inlinehelp', 'report_dashboard')
+        ),
         $completionenabled ? [] : ['disabled' => 'disabled']
     );
-    $mform->addHelpButton('report_dashboard_earlyengagement', 'earlyengagement', 'report_dashboard');
     if ($completionenabled) {
         $mform->disabledIf('report_dashboard_earlyengagement', 'completion', 'eq', COMPLETION_TRACKING_NONE);
     }
+    $mform->setDefault('report_dashboard_earlyengagement', $record ? (int) $record->earlyengagement : 0);
 
-    $earlyengagement = 0;
-    if ($cm = $formwrapper->get_coursemodule()) {
-        $earlyengagement = (int) $DB->get_field('report_dashboard_cm', 'earlyengagement', ['cmid' => $cm->id]);
-    }
-    $mform->setDefault('report_dashboard_earlyengagement', $earlyengagement);
+    $mform->addElement(
+        'text',
+        'report_dashboard_titleoverride',
+        \report_dashboard\dashboard::get_field_label(
+            get_string('titleoverride', 'report_dashboard'),
+            get_string('titleoverride_inlinehelp', 'report_dashboard')
+        ),
+        ['size' => 40]
+    );
+    $mform->setType('report_dashboard_titleoverride', PARAM_TEXT);
+    $mform->addRule('report_dashboard_titleoverride', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+    $mform->setDefault('report_dashboard_titleoverride', $record ? (string) $record->titleoverride : '');
 }
 
 /**
@@ -110,19 +147,34 @@ function report_dashboard_coursemodule_standard_elements($formwrapper, $mform) {
 function report_dashboard_coursemodule_edit_post_actions($data, $course) {
     global $DB;
 
-    // The setting is not submitted while it is disabled, in which case the saved value is kept.
-    if (!isset($data->report_dashboard_earlyengagement)) {
-        return $data;
+    // Settings are not submitted while disabled, or for activities they do not apply to, in which case the saved
+    // values are kept.
+    $fields = [];
+    if (isset($data->report_dashboard_showondashboard)) {
+        $fields['showondashboard'] = (int) $data->report_dashboard_showondashboard;
+    }
+    if (isset($data->report_dashboard_earlyengagement)) {
+        $fields['earlyengagement'] = empty($data->report_dashboard_earlyengagement) ? 0 : 1;
+    }
+    if (isset($data->report_dashboard_titleoverride)) {
+        $titleoverride = trim($data->report_dashboard_titleoverride);
+        $fields['titleoverride'] = $titleoverride === '' ? null : $titleoverride;
     }
 
-    $earlyengagement = empty($data->report_dashboard_earlyengagement) ? 0 : 1;
     if ($record = $DB->get_record('report_dashboard_cm', ['cmid' => $data->coursemodule])) {
-        if ($record->earlyengagement != $earlyengagement) {
-            $record->earlyengagement = $earlyengagement;
+        $changed = false;
+        foreach ($fields as $name => $value) {
+            if ($record->$name != $value) {
+                $record->$name = $value;
+                $changed = true;
+            }
+        }
+        if ($changed) {
             $DB->update_record('report_dashboard_cm', $record);
         }
-    } else if ($earlyengagement) {
-        $DB->insert_record('report_dashboard_cm', ['cmid' => $data->coursemodule, 'earlyengagement' => $earlyengagement]);
+    } else if (array_filter($fields, fn($value) => $value !== 0 && $value !== null)) {
+        // ... Only activities with a non-default setting need a record.
+        $DB->insert_record('report_dashboard_cm', ['cmid' => $data->coursemodule] + $fields);
     }
 
     return $data;

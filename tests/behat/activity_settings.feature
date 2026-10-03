@@ -63,3 +63,26 @@ Feature: Flag an activity as an early engagement activity
     Then I should see "Course dashboard preferences"
     And the field "Show in course dashboard as an early engagement activity" matches value "No"
     And the "Show in course dashboard as an early engagement activity" "field" should be disabled
+
+  Scenario: Show on course dashboard report is only enabled for assessments
+    Given the following "activities" exist:
+      | activity | name     | course |
+      | assign   | Assign 1 | C1     |
+    And I am on the "Assign 1" "assign activity editing" page logged in as "teacher1"
+    When I expand all fieldsets
+    Then the field "Show on course dashboard report" matches value "Auto"
+    And I should see "if the activity has no close or due date, but you want it to appear on the course dashboard report"
+    And I set the following fields to these values:
+      | Show on course dashboard report | Always      |
+      | Title override                  | Short title |
+    And I press "Save and return to course"
+    And I am on the "Assign 1" "assign activity editing" page
+    And I expand all fieldsets
+    And the field "Show on course dashboard report" matches value "Always"
+    And the field "Title override" matches value "Short title"
+    And I am on the "Page 1" "page activity editing" page
+    And I expand all fieldsets
+    And the field "Show on course dashboard report" matches value "Auto"
+    And the "Show on course dashboard report" "field" should be disabled
+    And the field "Title override" matches value ""
+    And I should see "By default, the course dashboard report uses the activity name"
