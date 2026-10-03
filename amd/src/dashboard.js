@@ -67,6 +67,13 @@ export const init = (courseid, hiddencmids) => {
  * @param {number[]} hiddencmids Array of currently hidden cmids
  */
 function initDashboard(hiddencmids) {
+    // Columns included in the Excel export: every column except the row selection checkboxes.
+    const EXPORT_COLUMNS = (idx) => idx !== 0;
+
+    // Spreadsheet columns that each exported table column is split into, keyed by column index.
+    // Worked out when an export starts, see getExportColumns().
+    let exportColumns = {};
+
     var table = new DataTable('#report_dashboard_dashboard',
         {
             orderCellsTop: true,
@@ -84,6 +91,29 @@ function initDashboard(hiddencmids) {
                             extend: 'excelHtml5',
                             text: 'Export to Excel',
                             className: 'customButton customButtonExportExcel btn btn-secondary btn-sm',
+                            exportOptions: {
+                                columns: EXPORT_COLUMNS,
+                                format: {
+                                    // One value per spreadsheet column, flattened into the row by customizeExportData().
+                                    body: (data, rowIdx, colIdx, cell) => exportColumns[colIdx].map(
+                                        (column) => column.value(cell, data)
+                                    ),
+                                },
+                                customizeData: customizeExportData,
+                            },
+                            action: function(e, dt, button, config, cb) {
+                                // Spreadsheet column titles use language strings, so wait for them first.
+                                chartStringsLoaded
+                                    .then(() => {
+                                        exportColumns = {};
+                                        dt.columns(EXPORT_COLUMNS).indexes().each((colIdx) => {
+                                            exportColumns[colIdx] = getExportColumns(colIdx);
+                                        });
+                                        DataTable.ext.buttons.excelHtml5.action.call(this, e, dt, button, config, cb);
+                                        return true;
+                                    })
+                                    .catch(error => window.console.error('Failed to export to Excel:', error));
+                            }
                         },
                         {
                             text: 'Copy email addresses of selected students',
@@ -483,8 +513,9 @@ function initDashboard(hiddencmids) {
     // Tile for the hatch, built once and reused by every chart.
     var noDataTile = null;
 
-    // Language string ids used by the charts, keyed by the name used in the code.
-    // The first five are the ring titles, and so are keyed by facet name.
+    // Language string ids used by the charts and the Excel export, keyed by the name used in the code.
+    // The first five are the ring titles, and so are keyed by facet name. The last three are the
+    // spreadsheet column titles for the name column, and so are keyed by the field's class.
     const CHART_STRING_IDS = {
         engagement: 'chartfacet_engagement',
         submission: 'chartfacet_submission',
@@ -495,6 +526,9 @@ function initDashboard(hiddencmids) {
         noextension: 'chartnoextension',
         graded: 'assessmentstatus_graded',
         streamnone: 'streamaccess_none',
+        username: 'exportcolumn_username',
+        firstname: 'exportcolumn_firstname',
+        lastname: 'exportcolumn_lastname',
     };
 
     // Resolved chart strings, fetched once and then used by every chart render.
@@ -607,6 +641,29 @@ function initDashboard(hiddencmids) {
     }
 
     /**
+     * Get the facets that a column's cells are marked up with, in ring order.
+     *
+     * @param {HTMLElement} container The column's chart container
+     * @return {string[]} Facet names
+     */
+    function getFacets(container) {
+        return container.dataset.facets ? container.dataset.facets.split(' ') : FACET_ORDER;
+    }
+
+    /**
+     * Whether an extension can be applied in a column, identified by it offering an extension filter.
+     *
+     * The filter is looked for in the column's own header cell rather than the document, as the
+     * header cells of a hidden column are removed from the document.
+     *
+     * @param {HTMLElement} container The column's chart container
+     * @return {boolean}
+     */
+    function extensionsApply(container) {
+        return container.closest('th').querySelector('input[value="extension"]') !== null;
+    }
+
+    /**
      * Render a multi-ring doughnut chart inside the given container.
      * Rings are built from data-facet attributes on the table cells.
      *
@@ -631,7 +688,7 @@ function initDashboard(hiddencmids) {
 
         // Derive the column class from the container id, e.g. "chart_assessment5" -> "assessment5".
         const scope = containerId.replace('chart_', '');
-        const facets = container.dataset.facets ? container.dataset.facets.split(' ') : FACET_ORDER;
+        const facets = getFacets(container);
 
         // Only count rows that pass ALL current filters (groups, last accessed, etc.).
         const visibleRows = table.rows({search: 'applied'}).nodes().toArray();
@@ -660,10 +717,9 @@ function initDashboard(hiddencmids) {
 
         // Extensions are only marked up on the cells that have one, so every other cell in
         // the column counts as "no extension". This is only done for columns where an
-        // extension can be applied at all, identified by them offering an extension filter;
-        // early engagement columns have no such concept and keep an empty extension facet.
-        const extensionsapply = document.querySelector(`[name="${scope}_filter"][value="extension"]`) !== null;
-        if (extensionsapply) {
+        // extension can be applied at all; early engagement columns have no such concept
+        // and keep an empty extension facet.
+        if (extensionsApply(container)) {
             const noextension = cellCount - (facetCounts.extension.extension || 0);
             if (noextension > 0) {
                 facetCounts.extension.none = noextension;
@@ -793,6 +849,77 @@ function initDashboard(hiddencmids) {
                 renderChart(container.id);
             }
         });
+    }
+
+    /**
+     * Get the text of an element for the Excel export.
+     *
+     * @param {HTMLElement|null} node Element, which may give its export value in data-export
+     * @return {string} Text with whitespace collapsed, or an empty string if there is no element
+     */
+    function exportText(node) {
+        if (!node) {
+            return '';
+        }
+        return (node.dataset.export || node.textContent).replace(/\s+/g, ' ').trim();
+    }
+
+    /**
+     * Work out the spreadsheet columns that a table column is exported as.
+     *
+     * The name column is split into student ID, first name and last name. A column whose cells
+     * are marked up with facets (any column with a chart) is split into one column per facet,
+     * titled e.g. "Assignment 1 - Submission". Any other column is exported as its text.
+     *
+     * @param {number} colIdx Table column index
+     * @return {Object[]} Spreadsheet columns, each with a title and a value(cell, data) function
+     */
+    function getExportColumns(colIdx) {
+        const column = table.column(colIdx);
+        // Headings such as "Last<br>accessed" are on two lines in the table, but one in the spreadsheet.
+        const title = DataTable.Buttons.stripData(column.title().replace(/<br\s*\/?>/gi, ' '));
+
+        if (colIdx === 1) {
+            return ['username', 'firstname', 'lastname'].map((field) => ({
+                title: chartStrings[field],
+                value: (cell) => exportText(cell.querySelector('.' + field)),
+            }));
+        }
+
+        // Facet columns are identified by the chart in their filter header cell.
+        const filtercell = column.header(1);
+        const container = filtercell ? filtercell.querySelector('.rdb-chart-container') : null;
+        if (container) {
+            return getFacets(container)
+                // Leave out an always empty extension column where extensions do not apply.
+                .filter((facet) => facet !== 'extension' || extensionsApply(container))
+                .map((facet) => ({
+                    title: title + ' - ' + chartStrings[facet],
+                    value: (cell) => exportText(cell.querySelector(`[data-facet="${facet}"]`)),
+                }));
+        }
+
+        return [{
+            title: title,
+            value: (cell, data) => DataTable.Buttons.stripData(data),
+        }];
+    }
+
+    /**
+     * Expand the exported data so that each table column becomes its spreadsheet columns.
+     *
+     * Body cells are already lists of values (see the body format option of the export), so
+     * they are flattened into the row. The header is rebuilt as a single row of the spreadsheet
+     * column titles, which also leaves out the row of filters.
+     *
+     * @param {Object} data Export data from DataTables Buttons
+     */
+    function customizeExportData(data) {
+        data.header = table.columns(EXPORT_COLUMNS).indexes().toArray().flatMap(
+            (colIdx) => exportColumns[colIdx].map((column) => column.title)
+        );
+        data.headerStructure = [data.header.map((title) => ({title: title, colSpan: 1, rowSpan: 1}))];
+        data.body = data.body.map((row) => row.flat());
     }
 
     // Master chart toggle button – toggles ALL charts at once.

@@ -77,10 +77,10 @@
         {{#viewedlabel}}
         <span class="rdbtag compact" data-filter-category="{{viewedstatus}}" data-earlyengagementstatus="{{status}}" data-facet="engagement" data-toggle="tooltip" title="{{#vieweddate}}{{viewedlabel}}: {{vieweddate}}{{/vieweddate}}{{^vieweddate}}{{viewedlabel}}{{/vieweddate}}">
         {{#vieweddate}}
-        <i class="fa-regular fa-sm fa-eye"></i>
+        <i class="fa-regular fa-sm fa-eye"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         {{^vieweddate}}
-        <i class="fa-regular fa-sm fa-eye-slash"></i>
+        <i class="fa-regular fa-sm fa-eye-slash"></i><span class="sr-only">{{viewedlabel}}</span>
         {{/vieweddate}}
         </span>
         {{/viewedlabel}}
@@ -111,7 +111,7 @@
         {{/viewedlabel}}
         <span class="rdbtag" data-filter-category="{{status}}" data-facet="submission">{{label}}</span>
         {{#extension_date}}
-        <span class="rdbtag compact" data-filter-category="extension" data-toggle="tooltip" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}" data-facet="extension">
+        <span class="rdbtag compact" data-filter-category="extension" data-toggle="tooltip" title="{{#str}} assessmentstatus_extension, report_dashboard {{/str}}: {{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}" data-facet="extension" data-export="{{#userdate}} {{extension_date}}, {{#str}} strftimedate, core_langconfig {{/str}} {{/userdate}}">
             <i class="fa-regular fa-calendar-plus"></i><span class="sr-only">{{#str}} assessmentstatus_extension, report_dashboard {{/str}}</span>
         </span>
         {{/extension_date}}
